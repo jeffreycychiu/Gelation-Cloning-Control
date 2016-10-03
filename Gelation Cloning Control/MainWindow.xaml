@@ -9,5 +9,9 @@
         Title="Gelation Control" Height="500" Width="800">
     <Grid>
         
+        <ComboBox x:Name="cmbBoxSerialPort" DropDownOpened="cmbBoxSerialPort_DropDownOpened" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="120" Height="25"/>
+        <Button x:Name="btnConnect" Content="Connect" HorizontalAlignment="Left" Margin="144,10,0,0" VerticalAlignment="Top" Width="75" Height="25"  
+                Controls:ButtonHelper.PreserveTextCase="true" Style="{DynamicResource SquareButtonStyle}" />
+
     </Grid>
 </Controls:MetroWindow>
