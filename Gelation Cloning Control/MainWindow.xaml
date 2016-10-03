@@ -8,10 +8,13 @@
         xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         Title="Gelation Control" Height="500" Width="800">
     <Grid>
-        
+
         <ComboBox x:Name="cmbBoxSerialPort" DropDownOpened="cmbBoxSerialPort_DropDownOpened" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="120" Height="25"/>
-        <Button x:Name="btnConnect" Content="Connect" HorizontalAlignment="Left" Margin="144,10,0,0" VerticalAlignment="Top" Width="75" Height="25"  
+        <Button x:Name="btnConnect" Content="Connect" Click="btnConnect_Click" HorizontalAlignment="Left" Margin="144,10,0,0" VerticalAlignment="Top" Width="75" Height="25"  
                 Controls:ButtonHelper.PreserveTextCase="true" Style="{DynamicResource SquareButtonStyle}" />
+
+        <Button x:Name="btnnReadValue" Click="btnnReadValue_Click" Content="Read Value" HorizontalAlignment="Left" Margin="144,123,0,0" VerticalAlignment="Top" Width="75"/>
+        <ListBox x:Name="listBoxSerialPort" HorizontalAlignment="Left" Height="276" Margin="234,123,0,0" VerticalAlignment="Top" Width="280" BorderThickness="2"/>
 
     </Grid>
 </Controls:MetroWindow>
