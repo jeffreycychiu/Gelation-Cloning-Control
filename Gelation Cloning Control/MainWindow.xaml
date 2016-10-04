@@ -13,8 +13,9 @@
         <Button x:Name="btnConnect" Content="Connect" Click="btnConnect_Click" HorizontalAlignment="Left" Margin="144,10,0,0" VerticalAlignment="Top" Width="75" Height="25"  
                 Controls:ButtonHelper.PreserveTextCase="true" Style="{DynamicResource SquareButtonStyle}" />
 
-        <Button x:Name="btnnReadValue" Click="btnnReadValue_Click" Content="Read Value" HorizontalAlignment="Left" Margin="144,123,0,0" VerticalAlignment="Top" Width="75"/>
-        <ListBox x:Name="listBoxSerialPort" HorizontalAlignment="Left" Height="276" Margin="234,123,0,0" VerticalAlignment="Top" Width="280" BorderThickness="2"/>
+        <Button x:Name="btnnReadValue" Click="btnnReadValue_Click" Content="Read Value" HorizontalAlignment="Left" Margin="605,112,0,0" VerticalAlignment="Top" Width="75"/>
+        <ListBox x:Name="listBoxSerialPort" HorizontalAlignment="Left" Height="276" Margin="10,56,0,0" VerticalAlignment="Top" Width="209" BorderThickness="2"/>
+        <TextBlock x:Name="textBlock" HorizontalAlignment="Left" Margin="592,177,0,0" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top"/>
 
     </Grid>
 </Controls:MetroWindow>

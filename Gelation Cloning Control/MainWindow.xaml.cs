@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO.Ports;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -23,7 +24,7 @@ namespace Gelation_Cloning_Control
     public partial class MainWindow : MetroWindow
     {
         SerialPort serialPortArroyo = new SerialPort();
-
+        //Thread readThread = new Thread();
 
         public MainWindow()
         {
@@ -49,6 +50,9 @@ namespace Gelation_Cloning_Control
                     serialPortArroyo.PortName = cmbBoxSerialPort.Text;
                     serialPortArroyo.Open();
                     btnConnect.Content = "Disconnect";
+                    cmbBoxSerialPort.IsEnabled = false;
+
+                    serialPortArroyo.Write("*IDN?\n");
                 }
                 catch (Exception ex)
                 {
@@ -72,9 +76,8 @@ namespace Gelation_Cloning_Control
         //Test button for reading the things on serial port
         private void btnnReadValue_Click(object sender, RoutedEventArgs e)
         {
-            string query = "*IDN?";
-            serialPortArroyo.Write(query);
-
+            textBlock.Text = serialPortArroyo.ReadBufferSize.ToString();
+            //Console.WriteLine("Data Recieved: " + serialPortArroyo.ReadLine());
 
         }
 
@@ -95,6 +98,7 @@ namespace Gelation_Cloning_Control
         private void SerialPortArroyo_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
             string indata = serialPortArroyo.ReadExisting();
+            //listBoxSerialPort.Items.Add(indata);
             Console.WriteLine("Data Received:");
             Console.Write(indata);
         }
