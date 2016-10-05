@@ -12,16 +12,27 @@
         <ComboBox x:Name="cmbBoxSerialPort" DropDownOpened="cmbBoxSerialPort_DropDownOpened" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="120" Height="25"/>
         <Button x:Name="btnConnect" Content="Connect" Click="btnConnect_Click" HorizontalAlignment="Left" Margin="144,10,0,0" VerticalAlignment="Top" Width="75" Height="25"  
                 Controls:ButtonHelper.PreserveTextCase="true" Style="{DynamicResource SquareButtonStyle}" />
-        <ListBox x:Name="listBoxSerialPort" x:FieldModifier="public" FontSize="10" HorizontalAlignment="Left" Height="398" Margin="10,62,0,0" VerticalAlignment="Top" Width="209" BorderThickness="2"/>
-        <TextBlock x:Name="textBlockSerialTitle" Text="Serial Communictaion" HorizontalAlignment="Left" Margin="10,41,0,0" TextWrapping="Wrap" VerticalAlignment="Top"/>
-        
+
+        <TextBlock x:Name="textBlockSerialSent" Text="Serial Sent" HorizontalAlignment="Left" Margin="10,297,0,0" TextWrapping="Wrap" VerticalAlignment="Top"/>
+        <TextBlock x:Name="textBlockSerialSendSingleCommand" Text="Serial Send Command" HorizontalAlignment="Left" Margin="10,245,0,0" TextWrapping="Wrap" VerticalAlignment="Top"/>
+        <TextBlock x:Name="textBlockSerialRecieved" Text="Serial Recieved" HorizontalAlignment="Left" Margin="10,59,0,0" TextWrapping="Wrap" VerticalAlignment="Top"/>
+
+        <ListBox x:Name="listBoxSerialRecieved" x:FieldModifier="public" FontSize="10" HorizontalAlignment="Left" Height="160" Margin="10,80,0,0" VerticalAlignment="Top" Width="209" BorderThickness="2"/>
+        <ListBox x:Name="listBoxSerialSent" HorizontalAlignment="Left" Height="142" Margin="10,0,0,10" VerticalAlignment="Bottom" Width="209" BorderThickness="2"/>
+        <TextBox x:Name="textBoxSerialSendCommand" IsEnabled="False" HorizontalAlignment="Left" Height="25" Margin="10,266,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="161"/>
+        <Button x:Name="btnSerialSendCommand" Content="Send" Click="btnSerialSendCommand_Click"  IsEnabled="False" HorizontalAlignment="Left" Margin="176,267,0,0" VerticalAlignment="Top" Width="43" 
+                Height="25" Controls:ButtonHelper.PreserveTextCase="true" Style="{DynamicResource SquareButtonStyle}" />
+
         <Controls:ToggleSwitch Name="toggleLaser"  Click="toggleLaser_Click" Header="Laser Output" IsEnabled="False" Margin="282,62,408,341" HorizontalAlignment="Left" VerticalAlignment="Top"/>
 
         <TextBlock x:Name="textBlock" Margin="282,134,0,0" TextWrapping="Wrap" Text="Laser Current (mA)" VerticalAlignment="Top" HorizontalAlignment="Left"/>
         <Button x:Name="btnSetCurrent" Content="Set" Click="btnSetCurrent_Click" IsEnabled="False" HorizontalAlignment="Left" Margin="341,155,0,0" VerticalAlignment="Top" Width="43" Height="25"  
                 Controls:ButtonHelper.PreserveTextCase="true" Style="{DynamicResource SquareButtonStyle}" />
         <TextBox x:Name="textBoxCurrentSet" IsEnabled="False" TextChanged="textBoxCurrentSet_TextChanged" PreviewTextInput="textBoxCurrent_PreviewTextInput" Text=""
-                 HorizontalAlignment="Left" Height="23" Margin="282,155,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="54"/>
+                 HorizontalAlignment="Left" Height="25" Margin="282,155,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="54"/>
+
+
+
 
 
     </Grid>

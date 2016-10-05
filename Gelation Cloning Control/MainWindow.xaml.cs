@@ -28,7 +28,7 @@ namespace Gelation_Cloning_Control
     {
         SerialPort serialPortArroyo = new SerialPort();
 
-        static int CURRENTLIMIT = 5000;
+        static int CURRENTLIMIT = 6000;
 
         public MainWindow()
         {
@@ -56,11 +56,14 @@ namespace Gelation_Cloning_Control
                     cmbBoxSerialPort.IsEnabled = false;
 
                     //Attempt to send/recieve message - get the identification number of the driver
-                    serialPortArroyo.Write("*IDN?\n");
+                    //serialPortArroyo.Write("*IDN?\n");
+                    serialPortArroyoSend("*IDN?");
 
-                    //Enable buttons
+                    //Enable buttons & inputs
                     toggleLaser.IsEnabled = true;
                     textBoxCurrentSet.IsEnabled = true;
+                    textBoxSerialSendCommand.IsEnabled = true;
+                    btnSerialSendCommand.IsEnabled = true;
                 }
                 catch (Exception ex)
                 {
@@ -75,8 +78,11 @@ namespace Gelation_Cloning_Control
                     btnConnect.Content = "Connect";
                     cmbBoxSerialPort.IsEnabled = true;
 
-                    //Disable
+                    //Disable Buttons & Inputs
                     toggleLaser.IsEnabled = false;
+                    textBoxCurrentSet.IsEnabled = false;
+                    textBoxSerialSendCommand.IsEnabled = false;
+                    btnSerialSendCommand.IsEnabled = false;
                 }
                 catch (Exception ex)
                 {
@@ -104,7 +110,12 @@ namespace Gelation_Cloning_Control
             string recievedData = serialPortArroyo.ReadExisting();
             this.Dispatcher.Invoke(() =>
             {
-                listBoxSerialPort.Items.Add(recievedData);
+                listBoxSerialRecieved.Items.Add(recievedData);
+                listBoxSerialRecieved.SelectedIndex = listBoxSerialRecieved.Items.Count - 1;
+                listBoxSerialRecieved.ScrollIntoView(listBoxSerialRecieved.Items);
+
+                Console.WriteLine("sel index " + listBoxSerialRecieved.SelectedIndex);
+                Console.WriteLine("sel item " + listBoxSerialRecieved.SelectedItem);
             });
             
             //Handle the recieved data
@@ -113,8 +124,20 @@ namespace Gelation_Cloning_Control
                 //case: ""
             }
             
-            Console.WriteLine("Data Received:");
-            Console.Write(recievedData);
+            //Console.WriteLine("Data Received:");
+            //Console.Write(recievedData);
+        }
+
+        private void serialPortArroyoSend(string command)
+        {
+            listBoxSerialSent.Items.Add(command);
+            listBoxSerialSent.SelectedIndex = listBoxSerialSent.Items.Count - 1;
+            listBoxSerialSent.ScrollIntoView(listBoxSerialSent.SelectedItem);
+
+            Console.WriteLine(listBoxSerialSent.Items.Count - 1);
+
+            serialPortArroyo.Write(command + "\n"); //Requires carriage return to send c
+        
         }
 
         //Turn the laser on in continuous wave (CW). Return the state of the laser (ON/OFF) after the button is toggled
@@ -122,13 +145,13 @@ namespace Gelation_Cloning_Control
         {
             if (toggleLaser.IsChecked == true)
             {
-                serialPortArroyo.Write("LASer:OUTput 1\n");
-                serialPortArroyo.Write("LASer:OUTput?\n");
+                serialPortArroyoSend("LASer:OUTput 1");
+                serialPortArroyoSend("LASer:OUTput?");
             }
             else
             {
-                serialPortArroyo.Write("LASer:OUTput 0\n");
-                serialPortArroyo.Write("LASer:OUTput?\n");
+                serialPortArroyoSend("LASer:OUTput 0");
+                serialPortArroyoSend("LASer:OUTput?");
             }
         }
 
@@ -138,13 +161,14 @@ namespace Gelation_Cloning_Control
             int currentSetPoint = 0;
             if (int.TryParse(textBoxCurrentSet.Text, out currentSetPoint) && currentSetPoint >= 0 && currentSetPoint < CURRENTLIMIT)
             {
-                serialPortArroyo.Write("LASer:LDI " + currentSetPoint.ToString());
-                serialPortArroyo.Write("LASer:LDI?");
+                serialPortArroyoSend("LASer:LDI " + currentSetPoint.ToString());
+                serialPortArroyoSend("LASer:LDI?");
                 btnSetCurrent.IsEnabled = false;
             }
             else
             {
                 MessageBox.Show("Error: Current Set Point out of Range or Incorrect Syntax");
+                textBoxCurrentSet.Text = 0.ToString() ;
             }
             
         }
@@ -169,6 +193,11 @@ namespace Gelation_Cloning_Control
         {
             Regex regex = new Regex("[^0-9]"); //regex that matches disallowed text
             return !regex.IsMatch(text);
+        }
+
+        private void btnSerialSendCommand_Click(object sender, RoutedEventArgs e)
+        {
+            serialPortArroyoSend(textBoxSerialSendCommand.Text);
         }
     }
 
