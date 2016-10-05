@@ -15,12 +15,13 @@
         <ListBox x:Name="listBoxSerialPort" x:FieldModifier="public" FontSize="10" HorizontalAlignment="Left" Height="398" Margin="10,62,0,0" VerticalAlignment="Top" Width="209" BorderThickness="2"/>
         <TextBlock x:Name="textBlockSerialTitle" Text="Serial Communictaion" HorizontalAlignment="Left" Margin="10,41,0,0" TextWrapping="Wrap" VerticalAlignment="Top"/>
         
-        <Controls:ToggleSwitch Name="toggleLaser"  Click="toggleLaser_Click" Header="Laser Output" IsEnabled="False" Margin="282,62,408,341" />
+        <Controls:ToggleSwitch Name="toggleLaser"  Click="toggleLaser_Click" Header="Laser Output" IsEnabled="False" Margin="282,62,408,341" HorizontalAlignment="Left" VerticalAlignment="Top"/>
 
         <TextBlock x:Name="textBlock" Margin="282,134,0,0" TextWrapping="Wrap" Text="Laser Current (mA)" VerticalAlignment="Top" HorizontalAlignment="Left"/>
         <Button x:Name="btnSetCurrent" Content="Set" Click="btnSetCurrent_Click" IsEnabled="False" HorizontalAlignment="Left" Margin="341,155,0,0" VerticalAlignment="Top" Width="43" Height="25"  
                 Controls:ButtonHelper.PreserveTextCase="true" Style="{DynamicResource SquareButtonStyle}" />
-        <TextBox x:Name="textBoxCurrent" IsEnabled="False" TextChanged="textBoxCurrent_TextChanged" PreviewTextInput="textBoxCurrent_PreviewTextInput" HorizontalAlignment="Left" Height="23" Margin="282,155,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="54"/>
+        <TextBox x:Name="textBoxCurrentSet" IsEnabled="False" TextChanged="textBoxCurrentSet_TextChanged" PreviewTextInput="textBoxCurrent_PreviewTextInput" Text=""
+                 HorizontalAlignment="Left" Height="23" Margin="282,155,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="54"/>
 
 
     </Grid>

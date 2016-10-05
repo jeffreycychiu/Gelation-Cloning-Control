@@ -17,6 +17,8 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using MahApps.Metro.Controls;
 
+
+
 namespace Gelation_Cloning_Control
 {
     /// <summary>
@@ -25,7 +27,8 @@ namespace Gelation_Cloning_Control
     public partial class MainWindow : MetroWindow
     {
         SerialPort serialPortArroyo = new SerialPort();
-        //Thread readThread = new Thread();
+
+        static int CURRENTLIMIT = 5000;
 
         public MainWindow()
         {
@@ -57,7 +60,7 @@ namespace Gelation_Cloning_Control
 
                     //Enable buttons
                     toggleLaser.IsEnabled = true;
-                    textBoxCurrent.IsEnabled = true;
+                    textBoxCurrentSet.IsEnabled = true;
                 }
                 catch (Exception ex)
                 {
@@ -82,15 +85,7 @@ namespace Gelation_Cloning_Control
             }
         }
 
-        //Test button for reading the things on serial port
-        private void btnnReadValue_Click(object sender, RoutedEventArgs e)
-        {
-            serialPortArroyo.Write("*IDN?\n");
-            //Console.WriteLine("Data Recieved: " + serialPortArroyo.ReadLine());
-
-        }
-
-        //Set the serial port object to the Arroyo Driver fixed defaults
+        //Set the serial port object parameters (baud rate etc.) to the Arroyo Driver fixed defaults
         public void setSerialPortArroyo()
         {
             serialPortArroyo.BaudRate = 38400;
@@ -103,19 +98,26 @@ namespace Gelation_Cloning_Control
 
         }
 
+        //Write the data recieved from the Arroyo instrument to the listbox. Helpful for debugging
         private void SerialPortArroyo_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
-            string indata = serialPortArroyo.ReadExisting();
+            string recievedData = serialPortArroyo.ReadExisting();
             this.Dispatcher.Invoke(() =>
             {
-                listBoxSerialPort.Items.Add(indata);
+                listBoxSerialPort.Items.Add(recievedData);
             });
             
+            //Handle the recieved data
+            switch (recievedData)
+            {
+                //case: ""
+            }
+            
             Console.WriteLine("Data Received:");
-            Console.Write(indata);
+            Console.Write(recievedData);
         }
 
-        //Turn the laser on in continuous wave (CW)
+        //Turn the laser on in continuous wave (CW). Return the state of the laser (ON/OFF) after the button is toggled
         private void toggleLaser_Click(object sender, RoutedEventArgs e)
         {
             if (toggleLaser.IsChecked == true)
@@ -130,14 +132,25 @@ namespace Gelation_Cloning_Control
             }
         }
 
+        //Set the current set point in milliamps. Queries the Arroyo laser driver after setting the set point
         private void btnSetCurrent_Click(object sender, RoutedEventArgs e)
         {
-
-            btnSetCurrent.IsEnabled = false;
+            int currentSetPoint = 0;
+            if (int.TryParse(textBoxCurrentSet.Text, out currentSetPoint) && currentSetPoint >= 0 && currentSetPoint < CURRENTLIMIT)
+            {
+                serialPortArroyo.Write("LASer:LDI " + currentSetPoint.ToString());
+                serialPortArroyo.Write("LASer:LDI?");
+                btnSetCurrent.IsEnabled = false;
+            }
+            else
+            {
+                MessageBox.Show("Error: Current Set Point out of Range or Incorrect Syntax");
+            }
+            
         }
 
         //Enable the Set Current Button (btnSetCurrent) when the current is changed
-        private void textBoxCurrent_TextChanged(object sender, TextChangedEventArgs e)
+        private void textBoxCurrentSet_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (serialPortArroyo.IsOpen == true)
                 btnSetCurrent.IsEnabled = true;
@@ -148,13 +161,13 @@ namespace Gelation_Cloning_Control
         //TODO: Use the IsTextAllowed to make sure that only an integer value from 0-5000ish is allowed
         private void textBoxCurrent_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
-            Console.WriteLine(e);
-
+            e.Handled = !IsTextAllowed(e.Text);
         }
 
+        //Helper function - only allow 0 to 9 to be entered
         private static bool IsTextAllowed(string text)
         {
-            Regex regex = new Regex("[^0-9.-]+"); //regex that matches disallowed text
+            Regex regex = new Regex("[^0-9]"); //regex that matches disallowed text
             return !regex.IsMatch(text);
         }
     }
