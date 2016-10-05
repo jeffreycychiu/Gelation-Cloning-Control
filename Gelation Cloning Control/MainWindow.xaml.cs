@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO.Ports;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -30,7 +31,6 @@ namespace Gelation_Cloning_Control
         {
             InitializeComponent();
             setSerialPortArroyo();
-
         }
 
         //Fill the combo box with the names of the avaliable serial ports
@@ -52,7 +52,12 @@ namespace Gelation_Cloning_Control
                     btnConnect.Content = "Disconnect";
                     cmbBoxSerialPort.IsEnabled = false;
 
+                    //Attempt to send/recieve message - get the identification number of the driver
                     serialPortArroyo.Write("*IDN?\n");
+
+                    //Enable buttons
+                    toggleLaser.IsEnabled = true;
+                    textBoxCurrent.IsEnabled = true;
                 }
                 catch (Exception ex)
                 {
@@ -65,6 +70,10 @@ namespace Gelation_Cloning_Control
                 {
                     serialPortArroyo.Close();
                     btnConnect.Content = "Connect";
+                    cmbBoxSerialPort.IsEnabled = true;
+
+                    //Disable
+                    toggleLaser.IsEnabled = false;
                 }
                 catch (Exception ex)
                 {
@@ -76,7 +85,7 @@ namespace Gelation_Cloning_Control
         //Test button for reading the things on serial port
         private void btnnReadValue_Click(object sender, RoutedEventArgs e)
         {
-            textBlock.Text = serialPortArroyo.ReadBufferSize.ToString();
+            serialPortArroyo.Write("*IDN?\n");
             //Console.WriteLine("Data Recieved: " + serialPortArroyo.ReadLine());
 
         }
@@ -92,15 +101,61 @@ namespace Gelation_Cloning_Control
 
             serialPortArroyo.DataReceived += SerialPortArroyo_DataReceived;
 
-
         }
 
         private void SerialPortArroyo_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
             string indata = serialPortArroyo.ReadExisting();
-            //listBoxSerialPort.Items.Add(indata);
+            this.Dispatcher.Invoke(() =>
+            {
+                listBoxSerialPort.Items.Add(indata);
+            });
+            
             Console.WriteLine("Data Received:");
             Console.Write(indata);
+        }
+
+        //Turn the laser on in continuous wave (CW)
+        private void toggleLaser_Click(object sender, RoutedEventArgs e)
+        {
+            if (toggleLaser.IsChecked == true)
+            {
+                serialPortArroyo.Write("LASer:OUTput 1\n");
+                serialPortArroyo.Write("LASer:OUTput?\n");
+            }
+            else
+            {
+                serialPortArroyo.Write("LASer:OUTput 0\n");
+                serialPortArroyo.Write("LASer:OUTput?\n");
+            }
+        }
+
+        private void btnSetCurrent_Click(object sender, RoutedEventArgs e)
+        {
+
+            btnSetCurrent.IsEnabled = false;
+        }
+
+        //Enable the Set Current Button (btnSetCurrent) when the current is changed
+        private void textBoxCurrent_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (serialPortArroyo.IsOpen == true)
+                btnSetCurrent.IsEnabled = true;
+            else
+                btnSetCurrent.IsEnabled = false;
+        }
+
+        //TODO: Use the IsTextAllowed to make sure that only an integer value from 0-5000ish is allowed
+        private void textBoxCurrent_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            Console.WriteLine(e);
+
+        }
+
+        private static bool IsTextAllowed(string text)
+        {
+            Regex regex = new Regex("[^0-9.-]+"); //regex that matches disallowed text
+            return !regex.IsMatch(text);
         }
     }
 
