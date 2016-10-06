@@ -34,6 +34,7 @@ namespace Gelation_Cloning_Control
         {
             InitializeComponent();
             setSerialPortArroyo();
+            
         }
 
         //Fill the combo box with the names of the avaliable serial ports
@@ -41,6 +42,12 @@ namespace Gelation_Cloning_Control
         {
             string[] ports = SerialPort.GetPortNames();
             cmbBoxSerialPort.ItemsSource = SerialPort.GetPortNames();
+            Console.WriteLine("font family: " + toggleLaser.FontFamily.ToString());
+            Console.WriteLine("font size:  " + toggleLaser.FontSize.ToString());
+            Console.WriteLine("font style:  " + toggleLaser.FontStyle.ToString());
+            Console.WriteLine("font header font family: " + toggleLaser.HeaderFontFamily.ToString());
+            Console.WriteLine("font stretch:  " + toggleLaser.FontStretch.ToString());
+            Console.WriteLine("font weight:  " + toggleLaser.FontWeight.ToString());
         }
 
         //Connect to the serial port selected in the combo box

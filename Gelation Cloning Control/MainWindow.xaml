@@ -7,6 +7,12 @@
         mc:Ignorable="d"
         xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         Title="Gelation Control" Height="500" Width="800">
+    <Controls:MetroWindow.Style>
+        <Style TargetType="{x:Type Controls:MetroWindow}">
+            <Setter Property="FontFamily" Value="Veranda" />
+            <Setter Property="FontSize" Value="14.667" />
+        </Style>
+    </Controls:MetroWindow.Style>
     <Grid>
 
         <ComboBox x:Name="cmbBoxSerialPort" DropDownOpened="cmbBoxSerialPort_DropDownOpened" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="120" Height="25"/>
@@ -25,7 +31,7 @@
 
         <Controls:ToggleSwitch Name="toggleLaser"  Click="toggleLaser_Click" Header="Laser Output" IsEnabled="False" Margin="282,62,408,341" HorizontalAlignment="Left" VerticalAlignment="Top"/>
 
-        <TextBlock x:Name="textBlock" Margin="282,134,0,0" TextWrapping="Wrap" Text="Laser Current (mA)" VerticalAlignment="Top" HorizontalAlignment="Left"/>
+        <TextBlock x:Name="textBlock" Margin="282,134,0,0" TextWrapping="Wrap" Text="Laser Output" VerticalAlignment="Top" HorizontalAlignment="Left"/>
         <Button x:Name="btnSetCurrent" Content="Set" Click="btnSetCurrent_Click" IsEnabled="False" HorizontalAlignment="Left" Margin="341,155,0,0" VerticalAlignment="Top" Width="43" Height="25"  
                 Controls:ButtonHelper.PreserveTextCase="true" Style="{DynamicResource SquareButtonStyle}" />
         <TextBox x:Name="textBoxCurrentSet" IsEnabled="False" TextChanged="textBoxCurrentSet_TextChanged" PreviewTextInput="textBoxCurrent_PreviewTextInput" Text=""
