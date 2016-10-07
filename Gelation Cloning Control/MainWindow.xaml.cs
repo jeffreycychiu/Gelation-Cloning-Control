@@ -29,6 +29,7 @@ namespace Gelation_Cloning_Control
         SerialPort serialPortArroyo = new SerialPort();
 
         static int CURRENTLIMIT = 6000;
+        static int PERIODLIMIT = 10000; //Max period in milliseconds
 
         public MainWindow()
         {
@@ -67,10 +68,14 @@ namespace Gelation_Cloning_Control
                     serialPortArroyoSend("*IDN?");
 
                     //Enable buttons & inputs
-                    toggleLaser.IsEnabled = true;
-                    textBoxCurrentSet.IsEnabled = true;
+
                     textBoxSerialSendCommand.IsEnabled = true;
                     btnSerialSendCommand.IsEnabled = true;
+
+                    toggleLaser.IsEnabled = true;
+                    textBoxCurrentSet.IsEnabled = true;
+                    radioBtnCW.IsEnabled = true;
+                    radioBtnPWM.IsEnabled = true;
                 }
                 catch (Exception ex)
                 {
@@ -111,6 +116,8 @@ namespace Gelation_Cloning_Control
 
         }
 
+        //---------------Event Handlers (Serial Data)---------------
+
         //Write the data recieved from the Arroyo instrument to the listbox. Helpful for debugging
         private void SerialPortArroyo_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
@@ -135,31 +142,41 @@ namespace Gelation_Cloning_Control
             //Console.Write(recievedData);
         }
 
-        private void serialPortArroyoSend(string command)
+        private void btnSerialSendCommand_Click(object sender, RoutedEventArgs e)
         {
-            listBoxSerialSent.Items.Add(command);
-            listBoxSerialSent.SelectedIndex = listBoxSerialSent.Items.Count - 1;
-            listBoxSerialSent.ScrollIntoView(listBoxSerialSent.SelectedItem);
-
-            Console.WriteLine(listBoxSerialSent.Items.Count - 1);
-
-            serialPortArroyo.Write(command + "\n"); //Requires carriage return to send c
-        
+            serialPortArroyoSend(textBoxSerialSendCommand.Text);
         }
+
+
+        //---------------Event Handlers (Laser Commands)---------------
 
         //Turn the laser on in continuous wave (CW). Return the state of the laser (ON/OFF) after the button is toggled
         private void toggleLaser_Click(object sender, RoutedEventArgs e)
         {
-            if (toggleLaser.IsChecked == true)
+            if (radioBtnCW.IsChecked == true && radioBtnPWM.IsChecked == false)
             {
-                serialPortArroyoSend("LASer:OUTput 1");
-                serialPortArroyoSend("LASer:OUTput?");
+                if (toggleLaser.IsChecked == true)
+                {
+                    serialPortArroyoSend("LASer:OUTput 1");
+                    serialPortArroyoSend("LASer:OUTput?");
+                }
+                else
+                {
+                    serialPortArroyoSend("LASer:OUTput 0");
+                    serialPortArroyoSend("LASer:OUTput?");
+                }
+            }
+            else if (radioBtnCW.IsChecked == false && radioBtnPWM.IsChecked == true)
+            {
+                //HANDLE PWM CODE. Create a timer maybe? And then turn things on/off? Use dispatcher timer
+
             }
             else
             {
-                serialPortArroyoSend("LASer:OUTput 0");
-                serialPortArroyoSend("LASer:OUTput?");
+                MessageBox.Show("Error: One of Continuous Wave or PWM must be selected");
+                toggleLaser.IsChecked = false;
             }
+
         }
 
         //Set the current set point in milliamps. Queries the Arroyo laser driver after setting the set point
@@ -189,23 +206,113 @@ namespace Gelation_Cloning_Control
                 btnSetCurrent.IsEnabled = false;
         }
 
-        //TODO: Use the IsTextAllowed to make sure that only an integer value from 0-5000ish is allowed
+        //Make sure that only numbers can be typed into the current set point textbox
         private void textBoxCurrent_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
             e.Handled = !IsTextAllowed(e.Text);
         }
 
-        //Helper function - only allow 0 to 9 to be entered
+        private void radioBtnCW_Checked(object sender, RoutedEventArgs e)
+        {
+            radioBtnPWM.IsEnabled = false;
+        }
+
+        private void radioBtnCW_Unchecked(object sender, RoutedEventArgs e)
+        {
+            radioBtnPWM.IsEnabled = true;
+        }
+
+        private void radioBtnPWM_Checked(object sender, RoutedEventArgs e)
+        {
+            radioBtnCW.IsEnabled = false;
+            textBoxPeriodSet.IsEnabled = true;
+            textBoxDutyCycleSet.IsEnabled = true;
+            //btnSetPeriod.IsEnabled = true;
+            //btnSetDutyCycle.IsEnabled = true;
+        }
+
+        private void radioBtnPWM_Unchecked(object sender, RoutedEventArgs e)
+        {
+            radioBtnCW.IsEnabled = true;
+            textBoxPeriodSet.IsEnabled = false;
+            textBoxDutyCycleSet.IsEnabled = false;
+            btnSetPeriod.IsEnabled = false;
+            btnSetDutyCycle.IsEnabled = false;
+        }
+
+        private void btnSetPeriod_Click(object sender, RoutedEventArgs e)
+        {
+            int period;
+            if (int.TryParse(textBoxDutyCycleSet.Text, out period) && period >= 0 && period <= PERIODLIMIT)
+            {
+                //
+            }
+            else
+            {
+                MessageBox.Show("Error: Period must be between 0 and " + PERIODLIMIT.ToString());
+                textBoxPeriodSet.Text = 0.ToString();
+            }
+            btnSetDutyCycle.IsEnabled = false;
+            btnSetPeriod.IsEnabled = false;
+        }
+
+        private void btnSetDutyCycle_Click(object sender, RoutedEventArgs e)
+        {
+            int dutyCycle;
+            if(int.TryParse(textBoxDutyCycleSet.Text, out dutyCycle) && dutyCycle >= 0 && dutyCycle <= 100)
+            {
+                //
+            }
+            else
+            {
+                MessageBox.Show("Error: Duty Cycle must be between 0 and 100");
+                textBoxDutyCycleSet.Text = 0.ToString();
+            }
+            btnSetDutyCycle.IsEnabled = false;
+        }
+
+        private void textBoxPeriodSet_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            btnSetPeriod.IsEnabled = true;
+        }
+
+        private void textBoxDutyCycleSet_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            btnSetDutyCycle.IsEnabled = true;
+        }
+
+        private void textBoxPeriodSet_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            e.Handled = !IsTextAllowed(e.Text);
+        }
+
+        private void textBoxDutyCycleSet_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            e.Handled = !IsTextAllowed(e.Text);
+        }
+
+
+        //---------------Helper Functions---------------
+        //Send serial port data to the Arroyo. Automatically appends an endline "\n" character
+        private void serialPortArroyoSend(string command)
+        {
+            listBoxSerialSent.Items.Add(command);
+            listBoxSerialSent.SelectedIndex = listBoxSerialSent.Items.Count - 1;
+            listBoxSerialSent.ScrollIntoView(listBoxSerialSent.SelectedItem);
+
+            Console.WriteLine(listBoxSerialSent.Items.Count - 1);
+
+            serialPortArroyo.Write(command + "\n"); //Requires carriage return to send c
+        }
+
+        //Only allow 0 to 9 to be entered in text boxes
         private static bool IsTextAllowed(string text)
         {
             Regex regex = new Regex("[^0-9]"); //regex that matches disallowed text
             return !regex.IsMatch(text);
         }
 
-        private void btnSerialSendCommand_Click(object sender, RoutedEventArgs e)
-        {
-            serialPortArroyoSend(textBoxSerialSendCommand.Text);
-        }
+
     }
 
 }
