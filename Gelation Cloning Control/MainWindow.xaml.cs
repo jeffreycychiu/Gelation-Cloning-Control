@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Collections.Generic;
 using System.IO.Ports;
 using System.Linq;
@@ -230,6 +231,8 @@ namespace Gelation_Cloning_Control
             textBoxDutyCycleSet.IsEnabled = true;
             //btnSetPeriod.IsEnabled = true;
             //btnSetDutyCycle.IsEnabled = true;
+
+
         }
 
         private void radioBtnPWM_Unchecked(object sender, RoutedEventArgs e)
@@ -271,6 +274,33 @@ namespace Gelation_Cloning_Control
             }
             btnSetDutyCycle.IsEnabled = false;
         }
+
+        //Fire one period of the cycle set by the duty cycle/period settings
+        private void btnFireCycleOnce_Click(object sender, RoutedEventArgs e)
+        {
+            //Create a new timer for this purpose:
+            int period = int.Parse(textBoxPeriodSet.Text.ToString());
+            double dutyCycle = double.Parse(textBoxDutyCycleSet.Text.ToString());
+            
+
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+
+            serialPortArroyoSend("LASer:OUTput 1");
+            serialPortArroyoSend("LASer:OUTput?");
+
+            while (stopwatch.ElapsedMilliseconds < Math.Floor(period * dutyCycle / 100));  //do nothing
+
+            serialPortArroyoSend("LASer:OUTput 0");
+            serialPortArroyoSend("LASer:OUTput?");
+
+            while (stopwatch.ElapsedMilliseconds < period); //do nothing until period over
+
+            stopwatch.Reset();
+
+        }
+
+
 
         private void textBoxPeriodSet_TextChanged(object sender, TextChangedEventArgs e)
         {
