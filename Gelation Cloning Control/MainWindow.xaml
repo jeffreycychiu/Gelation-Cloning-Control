@@ -50,6 +50,8 @@
             HorizontalAlignment="Left" Height="25" Margin="283,295,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="54"/>
         <Button x:Name="btnSetDutyCycle" Content="Set" Click="btnSetDutyCycle_Click"  IsEnabled="False" Padding="0" HorizontalAlignment="Left" Margin="342,295,0,0" VerticalAlignment="Top" Width="43" Height="25"  
             Controls:ButtonHelper.PreserveTextCase="true" Style="{DynamicResource SquareButtonStyle}" />
+        <Button x:Name="btnFireCycleOnce" Content="Fire Cycle Once" Click="btnFireCycleOnce_Click"  IsEnabled="False" Padding="0" HorizontalAlignment="Left" Margin="283,326,0,0" VerticalAlignment="Top" Width="102" Height="25"  
+            Controls:ButtonHelper.PreserveTextCase="true" Style="{DynamicResource SquareButtonStyle}" />
 
 
 

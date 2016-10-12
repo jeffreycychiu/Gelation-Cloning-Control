@@ -229,6 +229,7 @@ namespace Gelation_Cloning_Control
             textBoxDutyCycleSet.IsEnabled = true;
             //btnSetPeriod.IsEnabled = true;
             //btnSetDutyCycle.IsEnabled = true;
+            btnFireCycleOnce.IsEnabled = true;
         }
 
         private void radioBtnPWM_Unchecked(object sender, RoutedEventArgs e)
@@ -238,6 +239,7 @@ namespace Gelation_Cloning_Control
             textBoxDutyCycleSet.IsEnabled = false;
             btnSetPeriod.IsEnabled = false;
             btnSetDutyCycle.IsEnabled = false;
+            btnFireCycleOnce.IsEnabled = false;
         }
 
         private void btnSetPeriod_Click(object sender, RoutedEventArgs e)
@@ -271,6 +273,11 @@ namespace Gelation_Cloning_Control
             btnSetDutyCycle.IsEnabled = false;
         }
 
+        private void btnFireCycleOnce_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
         private void textBoxPeriodSet_TextChanged(object sender, TextChangedEventArgs e)
         {
             btnSetPeriod.IsEnabled = true;
@@ -281,16 +288,17 @@ namespace Gelation_Cloning_Control
             btnSetDutyCycle.IsEnabled = true;
         }
 
+
+        //Only allow 0-9 input in textbox
         private void textBoxPeriodSet_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
             e.Handled = !IsTextAllowed(e.Text);
         }
-
+        //Only allow 0-9 input in textbox
         private void textBoxDutyCycleSet_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
             e.Handled = !IsTextAllowed(e.Text);
         }
-
 
         //---------------Helper Functions---------------
         //Send serial port data to the Arroyo. Automatically appends an endline "\n" character
