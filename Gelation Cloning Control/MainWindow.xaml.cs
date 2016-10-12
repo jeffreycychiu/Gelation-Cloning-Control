@@ -214,9 +214,10 @@ namespace Gelation_Cloning_Control
 
         private void radioBtnCW_Checked(object sender, RoutedEventArgs e)
         {
-            radioBtnPWM.IsEnabled = false;
+            radioBtnPWM.IsChecked = false;
         }
 
+        //DO I EVEN NEED THIS?
         private void radioBtnCW_Unchecked(object sender, RoutedEventArgs e)
         {
             radioBtnPWM.IsEnabled = true;
@@ -224,7 +225,7 @@ namespace Gelation_Cloning_Control
 
         private void radioBtnPWM_Checked(object sender, RoutedEventArgs e)
         {
-            radioBtnCW.IsEnabled = false;
+            radioBtnCW.IsChecked = false;
             textBoxPeriodSet.IsEnabled = true;
             textBoxDutyCycleSet.IsEnabled = true;
             //btnSetPeriod.IsEnabled = true;
