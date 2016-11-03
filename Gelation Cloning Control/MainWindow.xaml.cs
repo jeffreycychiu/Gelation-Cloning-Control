@@ -231,6 +231,9 @@ namespace Gelation_Cloning_Control
             textBoxDutyCycleSet.IsEnabled = true;
             //btnSetPeriod.IsEnabled = true;
             //btnSetDutyCycle.IsEnabled = true;
+            btnFireCycleOnce.IsEnabled = true;
+
+            //Create a stopwatch event
 
 
         }
@@ -246,8 +249,8 @@ namespace Gelation_Cloning_Control
 
         private void btnSetPeriod_Click(object sender, RoutedEventArgs e)
         {
-            int period;
-            if (int.TryParse(textBoxDutyCycleSet.Text, out period) && period >= 0 && period <= PERIODLIMIT)
+            int period = 0;
+            if (int.TryParse(textBoxPeriodSet.Text, out period) && period >= 0 && period <= PERIODLIMIT)
             {
                 //
             }
@@ -279,9 +282,10 @@ namespace Gelation_Cloning_Control
         private void btnFireCycleOnce_Click(object sender, RoutedEventArgs e)
         {
             //Create a new timer for this purpose:
-            int period = int.Parse(textBoxPeriodSet.Text.ToString());
-            double dutyCycle = double.Parse(textBoxDutyCycleSet.Text.ToString());
+            int period = int.Parse(textBoxPeriodSet.Text);
+            double dutyCycle = double.Parse(textBoxDutyCycleSet.Text);
             
+
 
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
