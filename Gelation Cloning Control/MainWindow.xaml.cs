@@ -37,6 +37,7 @@ namespace Gelation_Cloning_Control
         {
             InitializeComponent();
             setSerialPortArroyo();
+            setSerialPortArroyo();
             
         }
 
@@ -78,11 +79,9 @@ namespace Gelation_Cloning_Control
                     cmbBoxSerialPortLaser.IsEnabled = false;
 
                     //Attempt to send/recieve message - get the identification number of the driver
-                    //serialPortArroyo.Write("*IDN?\n");
                     serialPortArroyoSend("*IDN?");
 
-                    //Enable buttons & inputs
-
+                    //Enable buttons & inputs in UI
                     textBoxSerialSendCommand.IsEnabled = true;
                     btnSerialSendCommand.IsEnabled = true;
 
@@ -124,14 +123,16 @@ namespace Gelation_Cloning_Control
             {
                 try
                 {
-                    serialPortMicroscopeStage.PortName = cmbBoxSerialPortLaser.Text;
+                    serialPortMicroscopeStage.PortName = cmbBoxSerialPortMicroscopeStage.Text;
                     serialPortMicroscopeStage.Open();
                     btnConnectMicroscopeStage.Content = "Disconnect Stage";
-                    cmbBoxSerialPortLaser.IsEnabled = false;
+                    cmbBoxSerialPortMicroscopeStage.IsEnabled = false;
 
-                    //Attempt to send/recieve message - get the identification number of the driver
-                    //serialPortMicroscopeStage.Write("*IDN?\n");
+                    //Attempt to send/recieve message - this command recieves the peripherals connected to the controller
                     //serialPortMicroscopeStageSend("*IDN?");
+
+                    //TODO: Fix this - not getting response right now
+                    serialPortMicroscopeStage.Write("?<CR>");
 
                 }
                 catch (Exception ex)
@@ -167,6 +168,12 @@ namespace Gelation_Cloning_Control
 
         }
 
+        public void setSerialPortMicroscopeStage()
+        {
+            serialPortMicroscopeStage.BaudRate = 9600;
+           
+        }
+
         //---------------Event Handlers (Serial Data)---------------
 
         //Write the data recieved from the Arroyo instrument to the listbox. Helpful for debugging
@@ -189,6 +196,30 @@ namespace Gelation_Cloning_Control
                 //case: ""
             }
             
+            //Console.WriteLine("Data Received:");
+            //Console.Write(recievedData);
+        }
+
+        //Write the data recieved from the Mircoscope stage to the listbox. Helpful for debugging
+        private void SerialPortMicroscopeStage_DataReceived(object sender, SerialDataReceivedEventArgs e)
+        {
+            string recievedData = serialPortMicroscopeStage.ReadExisting();
+            this.Dispatcher.Invoke(() =>
+            {
+                listBoxSerialRecieved.Items.Add(recievedData);
+                listBoxSerialRecieved.SelectedIndex = listBoxSerialRecieved.Items.Count - 1;
+                listBoxSerialRecieved.ScrollIntoView(listBoxSerialRecieved.Items);
+
+                Console.WriteLine("sel index " + listBoxSerialRecieved.SelectedIndex);
+                Console.WriteLine("sel item " + listBoxSerialRecieved.SelectedItem);
+            });
+
+            //Handle the recieved data
+            switch (recievedData)
+            {
+                //case: ""
+            }
+
             //Console.WriteLine("Data Received:");
             //Console.Write(recievedData);
         }
