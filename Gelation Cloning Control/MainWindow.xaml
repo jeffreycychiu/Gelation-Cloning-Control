@@ -15,9 +15,15 @@
     </Controls:MetroWindow.Style>
     <Grid>
 
-        <ComboBox x:Name="cmbBoxSerialPort" DropDownOpened="cmbBoxSerialPort_DropDownOpened" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="120" Height="25"/>
-        <Button x:Name="btnConnect" Content="Connect" Click="btnConnect_Click" Padding="0" HorizontalAlignment="Left" Margin="144,10,0,0" VerticalAlignment="Top" Width="75" Height="25"  
+        <ComboBox x:Name="cmbBoxSerialPortLaser" DropDownOpened="cmbBoxSerialPortLaser_DropDownOpened" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="70" Height="25"/>
+        <ComboBox x:Name="cmbBoxSerialPortMicroscopeStage" DropDownOpened="cmbBoxSerialPortMicroscopeStage_DropDownOpened"  HorizontalAlignment="Left" Margin="160,10,0,0" VerticalAlignment="Top" Width="70" Height="25"/>
+
+
+        <Button x:Name="btnConnectLaser" Content="Connect Laser" Click="btnConnectLaser_Click" FontSize="9" Padding="0" HorizontalAlignment="Left" Margin="85,10,0,0" VerticalAlignment="Top" Width="70" Height="26"  
                 Controls:ButtonHelper.PreserveTextCase="true" Style="{DynamicResource SquareButtonStyle}" />
+        <Button x:Name="btnConnectMicroscopeStage" Content="Connect Stage" Click="btnConnectMicroscopeStage_Click" FontSize="9" Padding="0" HorizontalAlignment="Left" Margin="235,10,0,0" VerticalAlignment="Top" Width="70" Height="26"  
+            Controls:ButtonHelper.PreserveTextCase="true" Style="{DynamicResource SquareButtonStyle}" />
+
 
         <TextBlock x:Name="textBlockSerialSent" Text="Serial Sent" HorizontalAlignment="Left" Margin="10,297,0,0" TextWrapping="Wrap" VerticalAlignment="Top"/>
         <TextBlock x:Name="textBlockSerialSendSingleCommand" Text="Serial Send Command" HorizontalAlignment="Left" Margin="10,245,0,0" TextWrapping="Wrap" VerticalAlignment="Top"/>
@@ -52,6 +58,7 @@
             Controls:ButtonHelper.PreserveTextCase="true" Style="{DynamicResource SquareButtonStyle}" />
         <Button x:Name="btnFireCycleOnce" Content="Fire Cycle Once" Click="btnFireCycleOnce_Click" IsEnabled="False" Padding="0" HorizontalAlignment="Left" Margin="283,326,0,0" VerticalAlignment="Top" Width="102" Height="25"  
             Controls:ButtonHelper.PreserveTextCase="true" Style="{DynamicResource SquareButtonStyle}" />
+
 
 
 

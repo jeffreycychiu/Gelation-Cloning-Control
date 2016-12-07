@@ -28,8 +28,9 @@ namespace Gelation_Cloning_Control
     public partial class MainWindow : MetroWindow
     {
         SerialPort serialPortArroyo = new SerialPort();
+        SerialPort serialPortMicroscopeStage = new SerialPort();
 
-        static int CURRENTLIMIT = 6000;
+        static int CURRENTLIMIT = 6000; //Max current for the laser in milliamps
         static int PERIODLIMIT = 10000; //Max period in milliseconds
 
         public MainWindow()
@@ -40,10 +41,10 @@ namespace Gelation_Cloning_Control
         }
 
         //Fill the combo box with the names of the avaliable serial ports
-        private void cmbBoxSerialPort_DropDownOpened(object sender, EventArgs e)
+        private void cmbBoxSerialPortLaser_DropDownOpened(object sender, EventArgs e)
         {
             string[] ports = SerialPort.GetPortNames();
-            cmbBoxSerialPort.ItemsSource = SerialPort.GetPortNames();
+            cmbBoxSerialPortLaser.ItemsSource = SerialPort.GetPortNames();
             Console.WriteLine("font family: " + toggleLaser.FontFamily.ToString());
             Console.WriteLine("font size:  " + toggleLaser.FontSize.ToString());
             Console.WriteLine("font style:  " + toggleLaser.FontStyle.ToString());
@@ -52,17 +53,29 @@ namespace Gelation_Cloning_Control
             Console.WriteLine("font weight:  " + toggleLaser.FontWeight.ToString());
         }
 
-        //Connect to the serial port selected in the combo box
-        private void btnConnect_Click(object sender, RoutedEventArgs e)
+        private void cmbBoxSerialPortMicroscopeStage_DropDownOpened(object sender, EventArgs e)
         {
-            if (btnConnect.Content.ToString() == "Connect")
+            string[] ports = SerialPort.GetPortNames();
+            cmbBoxSerialPortMicroscopeStage.ItemsSource = SerialPort.GetPortNames();
+            Console.WriteLine("font family: " + toggleLaser.FontFamily.ToString());
+            Console.WriteLine("font size:  " + toggleLaser.FontSize.ToString());
+            Console.WriteLine("font style:  " + toggleLaser.FontStyle.ToString());
+            Console.WriteLine("font header font family: " + toggleLaser.HeaderFontFamily.ToString());
+            Console.WriteLine("font stretch:  " + toggleLaser.FontStretch.ToString());
+            Console.WriteLine("font weight:  " + toggleLaser.FontWeight.ToString());
+        }
+
+        //Connect to the laser serial port.
+        private void btnConnectLaser_Click(object sender, RoutedEventArgs e)
+        {
+            if (btnConnectLaser.Content.ToString() == "Connect Laser")
             {
                 try
                 {
-                    serialPortArroyo.PortName = cmbBoxSerialPort.Text;
+                    serialPortArroyo.PortName = cmbBoxSerialPortLaser.Text;
                     serialPortArroyo.Open();
-                    btnConnect.Content = "Disconnect";
-                    cmbBoxSerialPort.IsEnabled = false;
+                    btnConnectLaser.Content = "Disconnect Laser";
+                    cmbBoxSerialPortLaser.IsEnabled = false;
 
                     //Attempt to send/recieve message - get the identification number of the driver
                     //serialPortArroyo.Write("*IDN?\n");
@@ -83,19 +96,56 @@ namespace Gelation_Cloning_Control
                     MessageBox.Show("Error: " + ex);
                 }
             }
-            else if (btnConnect.Content.ToString() == "Disconnect")
+            else if (btnConnectLaser.Content.ToString() == "Disconnect Laser")
             {
                 try
                 {
                     serialPortArroyo.Close();
-                    btnConnect.Content = "Connect";
-                    cmbBoxSerialPort.IsEnabled = true;
+                    btnConnectLaser.Content = "Connect Laser";
+                    cmbBoxSerialPortLaser.IsEnabled = true;
 
                     //Disable Buttons & Inputs
                     toggleLaser.IsEnabled = false;
                     textBoxCurrentSet.IsEnabled = false;
                     textBoxSerialSendCommand.IsEnabled = false;
                     btnSerialSendCommand.IsEnabled = false;
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error: " + ex);
+                }
+            }
+        }
+
+        //Connect to microscope stage serial port
+        private void btnConnectMicroscopeStage_Click(object sender, RoutedEventArgs e)
+        {
+            if (btnConnectMicroscopeStage.Content.ToString() == "Connect Stage")
+            {
+                try
+                {
+                    serialPortMicroscopeStage.PortName = cmbBoxSerialPortLaser.Text;
+                    serialPortMicroscopeStage.Open();
+                    btnConnectMicroscopeStage.Content = "Disconnect Stage";
+                    cmbBoxSerialPortLaser.IsEnabled = false;
+
+                    //Attempt to send/recieve message - get the identification number of the driver
+                    //serialPortMicroscopeStage.Write("*IDN?\n");
+                    //serialPortMicroscopeStageSend("*IDN?");
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error: " + ex);
+                }
+            }
+            else if (btnConnectMicroscopeStage.Content.ToString() == "Disconnect Stage")
+            {
+                try
+                {
+                    serialPortMicroscopeStage.Close();
+                    btnConnectMicroscopeStage.Content = "Connect Stage";
+
                 }
                 catch (Exception ex)
                 {
