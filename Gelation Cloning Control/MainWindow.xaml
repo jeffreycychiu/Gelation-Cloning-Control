@@ -15,58 +15,59 @@
     </Controls:MetroWindow.Style>
     <Grid>
 
-        <ComboBox x:Name="cmbBoxSerialPortLaser" DropDownOpened="cmbBoxSerialPortLaser_DropDownOpened" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="70" Height="25"/>
-        <ComboBox x:Name="cmbBoxSerialPortMicroscopeStage" DropDownOpened="cmbBoxSerialPortMicroscopeStage_DropDownOpened"  HorizontalAlignment="Left" Margin="160,10,0,0" VerticalAlignment="Top" Width="70" Height="25"/>
+        <TabControl x:Name="tabControl" HorizontalAlignment="Left" Height="470" VerticalAlignment="Top" Width="792">
+            <TabItem Header="Main Control">
+                <Grid>
+
+                    <ComboBox x:Name="cmbBoxSerialPortLaser" DropDownOpened="cmbBoxSerialPortLaser_DropDownOpened" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="70" Height="25"/>
+                    <ComboBox x:Name="cmbBoxSerialPortMicroscopeStage" DropDownOpened="cmbBoxSerialPortMicroscopeStage_DropDownOpened"  HorizontalAlignment="Left" Margin="10,41,0,0" VerticalAlignment="Top" Width="70" Height="25"/>
 
 
-        <Button x:Name="btnConnectLaser" Content="Connect Laser" Click="btnConnectLaser_Click" FontSize="9" Padding="0" HorizontalAlignment="Left" Margin="85,10,0,0" VerticalAlignment="Top" Width="70" Height="26"  
-                Controls:ButtonHelper.PreserveTextCase="true" Style="{DynamicResource SquareButtonStyle}" />
-        <Button x:Name="btnConnectMicroscopeStage" Content="Connect Stage" Click="btnConnectMicroscopeStage_Click" FontSize="9" Padding="0" HorizontalAlignment="Left" Margin="235,10,0,0" VerticalAlignment="Top" Width="70" Height="26"  
-            Controls:ButtonHelper.PreserveTextCase="true" Style="{DynamicResource SquareButtonStyle}" />
+                    <Button x:Name="btnConnectLaser" Content="Connect Laser" Click="btnConnectLaser_Click" FontSize="9" Padding="0" HorizontalAlignment="Left" Margin="85,10,0,0" VerticalAlignment="Top" Width="70" Height="26"  
+                        Controls:ButtonHelper.PreserveTextCase="true" Style="{DynamicResource SquareButtonStyle}" />
+                    <Button x:Name="btnConnectMicroscopeStage" Content="Connect Stage" Click="btnConnectMicroscopeStage_Click" FontSize="9" Padding="0" HorizontalAlignment="Left" Margin="85,41,0,0" VerticalAlignment="Top" Width="70" Height="26"  
+                        Controls:ButtonHelper.PreserveTextCase="true" Style="{DynamicResource SquareButtonStyle}" />
+
+                    <TextBlock x:Name="textBlockLaserCurrent" Margin="10,144,0,0" FontSize="14" FontWeight="Bold" TextWrapping="Wrap" Text="Laser Current (mA)" VerticalAlignment="Top" HorizontalAlignment="Left"/>
+                    <Button x:Name="btnSetCurrent" Content="Set" Click="btnSetCurrent_Click" IsEnabled="False" Padding="0" HorizontalAlignment="Left" Margin="69,166,0,0" VerticalAlignment="Top" Width="43" Height="25"  
+                        Controls:ButtonHelper.PreserveTextCase="true" Style="{DynamicResource SquareButtonStyle}" />
+                    <TextBox x:Name="textBoxCurrentSet" IsEnabled="False" TextChanged="textBoxCurrentSet_TextChanged" PreviewTextInput="textBoxCurrent_PreviewTextInput" Text=""
+                        HorizontalAlignment="Left" Height="25" Margin="10,176,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="54"/>
+
+                    <RadioButton x:Name="radioBtnCW" Content="Continuous Wave" Checked="radioBtnCW_Checked" Unchecked="radioBtnCW_Unchecked" IsEnabled="False" FontFamily="Verdana" FontSize="12" FontWeight="Bold" HorizontalAlignment="Left" Margin="10,196,0,0" VerticalAlignment="Top"/>
+                    <Controls:ToggleSwitch Name="toggleLaser"  Click="toggleLaser_Click" Header="Laser Output" IsEnabled="False" Margin="10,79,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
 
 
-        <TextBlock x:Name="textBlockSerialSent" Text="Serial Sent" HorizontalAlignment="Left" Margin="10,297,0,0" TextWrapping="Wrap" VerticalAlignment="Top"/>
-        <TextBlock x:Name="textBlockSerialSendSingleCommand" Text="Serial Send Command" HorizontalAlignment="Left" Margin="10,245,0,0" TextWrapping="Wrap" VerticalAlignment="Top"/>
-        <TextBlock x:Name="textBlockSerialRecieved" Text="Serial Recieved" HorizontalAlignment="Left" Margin="10,59,0,0" TextWrapping="Wrap" VerticalAlignment="Top"/>
+                    <RadioButton x:Name="radioBtnPWM" Content="PWM" Checked="radioBtnPWM_Checked" Unchecked="radioBtnPWM_Unchecked" IsEnabled="False" FontFamily="Verdana" FontSize="12" FontWeight="Bold" HorizontalAlignment="Left" Margin="10,219,0,0" VerticalAlignment="Top"/>
+                    <TextBlock x:Name="textBlockFreq" HorizontalAlignment="Left" Margin="10,242,0,0" TextWrapping="Wrap" Text="Period (ms)" VerticalAlignment="Top"/>
+                    <TextBox x:Name="textBoxPeriodSet" IsEnabled="False" TextChanged="textBoxPeriodSet_TextChanged"  PreviewTextInput="textBoxPeriodSet_PreviewTextInput"  Text=""
+                        HorizontalAlignment="Left" Height="25" Margin="10,261,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="54"/>
+                    <Button x:Name="btnSetPeriod" Content="Set" Click="btnSetPeriod_Click" IsEnabled="False" Padding="0" HorizontalAlignment="Left" Margin="69,262,0,0" VerticalAlignment="Top" Width="43" Height="25"  
+                        Controls:ButtonHelper.PreserveTextCase="true" Style="{DynamicResource SquareButtonStyle}" />
+                    <TextBlock x:Name="textBlockDutyCycle" HorizontalAlignment="Left" Margin="10,292,0,0" TextWrapping="Wrap" Text="Duty Cycle (%)" VerticalAlignment="Top"/>
+                    <TextBox x:Name="textBoxDutyCycleSet" IsEnabled="False" TextChanged="textBoxDutyCycleSet_TextChanged"  PreviewTextInput="textBoxDutyCycleSet_PreviewTextInput"
+                        HorizontalAlignment="Left" Height="25" Margin="10,311,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="54"/>
+                    <Button x:Name="btnSetDutyCycle" Content="Set" Click="btnSetDutyCycle_Click"  IsEnabled="False" Padding="0" HorizontalAlignment="Left" Margin="69,311,0,0" VerticalAlignment="Top" Width="43" Height="25"  
+                        Controls:ButtonHelper.PreserveTextCase="true" Style="{DynamicResource SquareButtonStyle}" />
+                    <Button x:Name="btnFireCycleOnce" Content="Fire Cycle Once" Click="btnFireCycleOnce_Click" IsEnabled="False" Padding="0" HorizontalAlignment="Left" Margin="10,342,0,0" VerticalAlignment="Top" Width="102" Height="25"  
+                        Controls:ButtonHelper.PreserveTextCase="true" Style="{DynamicResource SquareButtonStyle}" />
+                </Grid>
+            </TabItem>
 
-        <ListBox x:Name="listBoxSerialRecieved" x:FieldModifier="public" FontSize="10" HorizontalAlignment="Left" Height="160" Margin="10,80,0,0" VerticalAlignment="Top" Width="209" BorderThickness="2"/>
-        <ListBox x:Name="listBoxSerialSent" HorizontalAlignment="Left" Height ="142" Margin="10,316,0,0" VerticalAlignment="Top" Width="209" BorderThickness="2"/>
-        <TextBox x:Name="textBoxSerialSendCommand" IsEnabled="False" HorizontalAlignment="Left" Height="25" Margin="10,266,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="161"/>
-        <Button x:Name="btnSerialSendCommand" Content="Send" Click="btnSerialSendCommand_Click"  IsEnabled="False" HorizontalAlignment="Left" Padding="0" Margin="176,267,0,0" 
+            <TabItem Header="Serial">
+                <Grid>
+                    <TextBlock x:Name="textBlockSerialRecieved" Text="Serial Recieved" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top"/>
+                    <TextBlock x:Name="textBlockSerialSent" Text="Serial Sent" HorizontalAlignment="Left" Margin="10,253,0,0" TextWrapping="Wrap" VerticalAlignment="Top"/>
+                    <TextBlock x:Name="textBlockSerialSendSingleCommand" Text="Serial Send Command" HorizontalAlignment="Left" Margin="10,194,0,0" TextWrapping="Wrap" VerticalAlignment="Top"/>
+
+                    <ListBox x:Name="listBoxSerialRecieved" x:FieldModifier="public" FontSize="10" HorizontalAlignment="Left" Height="160" Margin="10,29,0,0" VerticalAlignment="Top" Width="209" BorderThickness="2"/>
+                    <ListBox x:Name="listBoxSerialSent" HorizontalAlignment="Left" Height ="142" Margin="10,272,0,0" VerticalAlignment="Top" Width="209" BorderThickness="2"/>
+                    <TextBox x:Name="textBoxSerialSendCommand" IsEnabled="False" HorizontalAlignment="Left" Height="25" Margin="10,213,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="161"/>
+                    <Button x:Name="btnSerialSendCommand" Content="Send" Click="btnSerialSendCommand_Click"  IsEnabled="False" HorizontalAlignment="Left" Padding="0" Margin="176,213,0,0" 
                 VerticalAlignment="Top" Width="43" Height="25" Controls:ButtonHelper.PreserveTextCase="true" Style="{DynamicResource SquareButtonStyle}" />
-
-        <TextBlock x:Name="textBlockLaserCurrent" Margin="283,128,0,0" FontSize="14" FontWeight="Bold" TextWrapping="Wrap" Text="Laser Current (mA)" VerticalAlignment="Top" HorizontalAlignment="Left"/>
-        <Button x:Name="btnSetCurrent" Content="Set" Click="btnSetCurrent_Click" IsEnabled="False" Padding="0" HorizontalAlignment="Left" Margin="342,150,0,0" VerticalAlignment="Top" Width="43" Height="25"  
-                Controls:ButtonHelper.PreserveTextCase="true" Style="{DynamicResource SquareButtonStyle}" />
-        <TextBox x:Name="textBoxCurrentSet" IsEnabled="False" TextChanged="textBoxCurrentSet_TextChanged" PreviewTextInput="textBoxCurrent_PreviewTextInput" Text=""
-                 HorizontalAlignment="Left" Height="25" Margin="283,149,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="54"/>
-
-        <RadioButton x:Name="radioBtnCW" Content="Continuous Wave" Checked="radioBtnCW_Checked" Unchecked="radioBtnCW_Unchecked" IsEnabled="False" FontFamily="Verdana" FontSize="12" FontWeight="Bold" HorizontalAlignment="Left" Margin="283,180,0,0" VerticalAlignment="Top"/>
-        <Controls:ToggleSwitch Name="toggleLaser"  Click="toggleLaser_Click" Header="Laser Output" IsEnabled="False" Margin="283,63,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-
-
-        <RadioButton x:Name="radioBtnPWM" Content="PWM" Checked="radioBtnPWM_Checked" Unchecked="radioBtnPWM_Unchecked" IsEnabled="False" FontFamily="Verdana" FontSize="12" FontWeight="Bold" HorizontalAlignment="Left" Margin="283,203,0,0" VerticalAlignment="Top"/>
-        <TextBlock x:Name="textBlockFreq" HorizontalAlignment="Left" Margin="283,226,0,0" TextWrapping="Wrap" Text="Period (ms)" VerticalAlignment="Top"/>
-        <TextBox x:Name="textBoxPeriodSet" IsEnabled="False" TextChanged="textBoxPeriodSet_TextChanged"  PreviewTextInput="textBoxPeriodSet_PreviewTextInput"  Text=""
-            HorizontalAlignment="Left" Height="25" Margin="283,245,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="54"/>
-        <Button x:Name="btnSetPeriod" Content="Set" Click="btnSetPeriod_Click" IsEnabled="False" Padding="0" HorizontalAlignment="Left" Margin="342,246,0,0" VerticalAlignment="Top" Width="43" Height="25"  
-            Controls:ButtonHelper.PreserveTextCase="true" Style="{DynamicResource SquareButtonStyle}" />
-        <TextBlock x:Name="textBlockDutyCycle" HorizontalAlignment="Left" Margin="283,276,0,0" TextWrapping="Wrap" Text="Duty Cycle (%)" VerticalAlignment="Top"/>
-        <TextBox x:Name="textBoxDutyCycleSet" IsEnabled="False" TextChanged="textBoxDutyCycleSet_TextChanged"  PreviewTextInput="textBoxDutyCycleSet_PreviewTextInput"
-            HorizontalAlignment="Left" Height="25" Margin="283,295,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="54"/>
-        <Button x:Name="btnSetDutyCycle" Content="Set" Click="btnSetDutyCycle_Click"  IsEnabled="False" Padding="0" HorizontalAlignment="Left" Margin="342,295,0,0" VerticalAlignment="Top" Width="43" Height="25"  
-            Controls:ButtonHelper.PreserveTextCase="true" Style="{DynamicResource SquareButtonStyle}" />
-        <Button x:Name="btnFireCycleOnce" Content="Fire Cycle Once" Click="btnFireCycleOnce_Click" IsEnabled="False" Padding="0" HorizontalAlignment="Left" Margin="283,326,0,0" VerticalAlignment="Top" Width="102" Height="25"  
-            Controls:ButtonHelper.PreserveTextCase="true" Style="{DynamicResource SquareButtonStyle}" />
-
-
-
-
-
-
-
-
-
+                </Grid>
+            </TabItem>
+        </TabControl>
 
     </Grid>
 </Controls:MetroWindow>
