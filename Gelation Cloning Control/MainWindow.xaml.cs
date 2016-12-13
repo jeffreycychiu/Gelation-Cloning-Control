@@ -17,6 +17,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using MahApps.Metro.Controls;
+using PylonC.NET;
+using PylonC.NETSupportLibrary;
 
 
 
@@ -37,7 +39,7 @@ namespace Gelation_Cloning_Control
         {
             InitializeComponent();
             setSerialPortArroyo();
-            setSerialPortArroyo();
+            setSerialPortMicroscopeStage();
             
         }
 
@@ -46,24 +48,12 @@ namespace Gelation_Cloning_Control
         {
             string[] ports = SerialPort.GetPortNames();
             cmbBoxSerialPortLaser.ItemsSource = SerialPort.GetPortNames();
-            Console.WriteLine("font family: " + toggleLaser.FontFamily.ToString());
-            Console.WriteLine("font size:  " + toggleLaser.FontSize.ToString());
-            Console.WriteLine("font style:  " + toggleLaser.FontStyle.ToString());
-            Console.WriteLine("font header font family: " + toggleLaser.HeaderFontFamily.ToString());
-            Console.WriteLine("font stretch:  " + toggleLaser.FontStretch.ToString());
-            Console.WriteLine("font weight:  " + toggleLaser.FontWeight.ToString());
         }
 
         private void cmbBoxSerialPortMicroscopeStage_DropDownOpened(object sender, EventArgs e)
         {
             string[] ports = SerialPort.GetPortNames();
             cmbBoxSerialPortMicroscopeStage.ItemsSource = SerialPort.GetPortNames();
-            Console.WriteLine("font family: " + toggleLaser.FontFamily.ToString());
-            Console.WriteLine("font size:  " + toggleLaser.FontSize.ToString());
-            Console.WriteLine("font style:  " + toggleLaser.FontStyle.ToString());
-            Console.WriteLine("font header font family: " + toggleLaser.HeaderFontFamily.ToString());
-            Console.WriteLine("font stretch:  " + toggleLaser.FontStretch.ToString());
-            Console.WriteLine("font weight:  " + toggleLaser.FontWeight.ToString());
         }
 
         //Connect to the laser serial port.
@@ -132,7 +122,8 @@ namespace Gelation_Cloning_Control
                     //serialPortMicroscopeStageSend("*IDN?");
 
                     //TODO: Fix this - not getting response right now
-                    serialPortMicroscopeStage.Write("?<CR>");
+                    serialPortMicroscopeStage.Write("?");
+                    
 
                 }
                 catch (Exception ex)
@@ -206,12 +197,12 @@ namespace Gelation_Cloning_Control
             string recievedData = serialPortMicroscopeStage.ReadExisting();
             this.Dispatcher.Invoke(() =>
             {
-                listBoxSerialRecieved.Items.Add(recievedData);
-                listBoxSerialRecieved.SelectedIndex = listBoxSerialRecieved.Items.Count - 1;
-                listBoxSerialRecieved.ScrollIntoView(listBoxSerialRecieved.Items);
+                listBoxSerialRecievedMicroscopeStage.Items.Add(recievedData);
+                listBoxSerialRecievedMicroscopeStage.SelectedIndex = listBoxSerialRecievedMicroscopeStage.Items.Count - 1;
+                listBoxSerialRecievedMicroscopeStage.ScrollIntoView(listBoxSerialRecievedMicroscopeStage.Items);
 
-                Console.WriteLine("sel index " + listBoxSerialRecieved.SelectedIndex);
-                Console.WriteLine("sel item " + listBoxSerialRecieved.SelectedItem);
+                Console.WriteLine("sel index " + listBoxSerialRecievedMicroscopeStage.SelectedIndex);
+                Console.WriteLine("sel item " + listBoxSerialRecievedMicroscopeStage.SelectedItem);
             });
 
             //Handle the recieved data
@@ -220,13 +211,18 @@ namespace Gelation_Cloning_Control
                 //case: ""
             }
 
-            //Console.WriteLine("Data Received:");
-            //Console.Write(recievedData);
+            Console.WriteLine("Data Received from Microscope:");
+            Console.Write(recievedData);
         }
 
         private void btnSerialSendCommand_Click(object sender, RoutedEventArgs e)
         {
             serialPortArroyoSend(textBoxSerialSendCommand.Text);
+        }
+
+        private void btnSerialSendCommandMicroscopeStage_Click(object sender, RoutedEventArgs e)
+        {
+            serialPortMicroscopeStageSend(textBoxSerialSendCommandMicroscopeStage.Text);
         }
 
 
@@ -418,7 +414,18 @@ namespace Gelation_Cloning_Control
 
             Console.WriteLine(listBoxSerialSent.Items.Count - 1);
 
-            serialPortArroyo.Write(command + "\n"); //Requires carriage return to send c
+            serialPortArroyo.Write(command + "\n"); //Requires newline to send
+        }
+
+        private void serialPortMicroscopeStageSend(string command)
+        {
+            listBoxSerialSentMicroscopeStage.Items.Add(command);
+            listBoxSerialSentMicroscopeStage.SelectedIndex = listBoxSerialSentMicroscopeStage.Items.Count - 1;
+            listBoxSerialSentMicroscopeStage.ScrollIntoView(listBoxSerialSentMicroscopeStage.SelectedItem);
+
+            Console.WriteLine(listBoxSerialSentMicroscopeStage.Items.Count - 1);
+
+            serialPortMicroscopeStage.Write(command + "\r"); //Requires carriage return to send
         }
 
         //Only allow 0 to 9 to be entered in text boxes
