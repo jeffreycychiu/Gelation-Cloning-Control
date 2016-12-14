@@ -162,7 +162,8 @@ namespace Gelation_Cloning_Control
         public void setSerialPortMicroscopeStage()
         {
             serialPortMicroscopeStage.BaudRate = 9600;
-           
+            serialPortMicroscopeStage.NewLine = "\r";
+            serialPortMicroscopeStage.ReadTimeout = 2000;
         }
 
         //---------------Event Handlers (Serial Data)---------------
@@ -200,19 +201,9 @@ namespace Gelation_Cloning_Control
                 listBoxSerialRecievedMicroscopeStage.Items.Add(recievedData);
                 listBoxSerialRecievedMicroscopeStage.SelectedIndex = listBoxSerialRecievedMicroscopeStage.Items.Count - 1;
                 listBoxSerialRecievedMicroscopeStage.ScrollIntoView(listBoxSerialRecievedMicroscopeStage.Items);
-
-                Console.WriteLine("sel index " + listBoxSerialRecievedMicroscopeStage.SelectedIndex);
-                Console.WriteLine("sel item " + listBoxSerialRecievedMicroscopeStage.SelectedItem);
             });
-
-            //Handle the recieved data
-            switch (recievedData)
-            {
-                //case: ""
-            }
-
-            Console.WriteLine("Data Received from Microscope:");
-            Console.Write(recievedData);
+            
+            Console.WriteLine("Data Received from Microscope Stage: " + recievedData);
         }
 
         private void btnSerialSendCommand_Click(object sender, RoutedEventArgs e)
@@ -425,7 +416,7 @@ namespace Gelation_Cloning_Control
 
             Console.WriteLine(listBoxSerialSentMicroscopeStage.Items.Count - 1);
 
-            serialPortMicroscopeStage.Write(command + "\r"); //Requires carriage return to send
+            serialPortMicroscopeStage.WriteLine(command);
         }
 
         //Only allow 0 to 9 to be entered in text boxes
