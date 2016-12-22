@@ -18,7 +18,8 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using MahApps.Metro.Controls;
 using PylonC.NET;
-using PylonC.NETSupportLibrary;
+using Basler.Pylon;
+//using PylonC.NETSupportLibrary;
 
 
 
@@ -40,6 +41,7 @@ namespace Gelation_Cloning_Control
             InitializeComponent();
             setSerialPortArroyo();
             setSerialPortMicroscopeStage();
+            UpdateBaslerDeviceList();
             
         }
 
@@ -48,12 +50,19 @@ namespace Gelation_Cloning_Control
         {
             string[] ports = SerialPort.GetPortNames();
             cmbBoxSerialPortLaser.ItemsSource = SerialPort.GetPortNames();
+
         }
 
         private void cmbBoxSerialPortMicroscopeStage_DropDownOpened(object sender, EventArgs e)
         {
             string[] ports = SerialPort.GetPortNames();
             cmbBoxSerialPortMicroscopeStage.ItemsSource = SerialPort.GetPortNames();
+        }
+
+        //Fill combo box with list of cameras connected
+        private void cmbBoxCamera_DropDownOpened(object sender, EventArgs e)
+        {
+
         }
 
         //Connect to the laser serial port.
@@ -426,6 +435,92 @@ namespace Gelation_Cloning_Control
             return !regex.IsMatch(text);
         }
 
+        //Basler camera update device list
+        private void UpdateBaslerDeviceList()
+        {
+            try
+            {
+                // Ask the camera finder for a list of camera devices.
+                List<ICameraInfo> allCameras = CameraFinder.Enumerate();
+
+                //ListView.ListViewItemCollection items = listViewCamera.Items;
+
+                // Loop over all cameras found.
+                foreach (ICameraInfo cameraInfo in allCameras)
+                {
+                    // Loop over all cameras in the list of cameras.
+                    bool newitem = true;
+                    foreach (ListViewItem item in listViewCamera.Items)
+                    {
+                        ICameraInfo tag = item.Tag as ICameraInfo;
+
+                        // Is the camera found already in the list of cameras?
+                        if (tag[CameraInfoKey.FullName] == cameraInfo[CameraInfoKey.FullName])
+                        {
+                            tag = cameraInfo;
+                            newitem = false;
+                            break;
+                        }
+                    }
+
+                    // If the camera is not in the list, add it to the list.
+                    if (newitem)
+                    {
+                        // Create the item to display.
+                        //ListViewItem item = new ListViewItem(cameraInfo[CameraInfoKey.FriendlyName]);
+
+                        ListViewItem item = new ListViewItem();
+                        item.DataContext = cameraInfo[CameraInfoKey.FriendlyName];
+
+                        Console.WriteLine("camerainfo: " + cameraInfo[CameraInfoKey.FriendlyName]);
+                        Console.WriteLine(item);
+
+                        /*
+                        // Create the tool tip text.
+                        string toolTipText = "";
+                        foreach (KeyValuePair<string, string> kvp in cameraInfo)
+                        {
+                            toolTipText += kvp.Key + ": " + kvp.Value + "\n";
+                        }
+                        item.ToolTipText = toolTipText;
+                        */
+
+                        // Store the camera info in the displayed item.
+                        item.Tag = cameraInfo;
+
+                        // Attach the device data.
+                        listViewCamera.Items.Add(item);
+                    }
+                }
+
+
+
+                // Remove old camera devices that have been disconnected.
+                foreach (ListViewItem item in listViewCamera.Items)
+                {
+                    bool exists = false;
+
+                    // For each camera in the list, check whether it can be found by enumeration.
+                    foreach (ICameraInfo cameraInfo in allCameras)
+                    {
+                        if (((ICameraInfo)item.Tag)[CameraInfoKey.FullName] == cameraInfo[CameraInfoKey.FullName])
+                        {
+                            exists = true;
+                            break;
+                        }
+                    }
+                    // If the camera has not been found, remove it from the list view.
+                    if (!exists)
+                    {
+                        listViewCamera.Items.Remove(item);
+                    }
+                }
+            }
+            catch (Exception exception)
+            {
+                MessageBox.Show(exception.ToString());
+            }
+        }
 
     }
 
