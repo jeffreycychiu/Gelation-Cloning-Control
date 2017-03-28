@@ -19,7 +19,7 @@ using System.Windows.Shapes;
 using MahApps.Metro.Controls;
 using PylonC.NET;
 using Basler.Pylon;
-//using PylonC.NETSupportLibrary;
+using PylonC.NETSupportLibrary;
 
 
 
@@ -32,6 +32,9 @@ namespace Gelation_Cloning_Control
     {
         SerialPort serialPortArroyo = new SerialPort();
         SerialPort serialPortMicroscopeStage = new SerialPort();
+
+        //ImageProvider is for the Basler Camera class
+        private ImageProvider imageProvider = new ImageProvider();
 
         static int CURRENTLIMIT = 6000; //Max current for the laser in milliamps
         static int PERIODLIMIT = 10000; //Max period in milliseconds
@@ -487,9 +490,11 @@ namespace Gelation_Cloning_Control
 
                         // Store the camera info in the displayed item.
                         item.Tag = cameraInfo;
+                        
 
                         // Attach the device data.
                         listViewCamera.Items.Add(item);
+                        
                     }
                 }
 
