@@ -438,6 +438,7 @@ namespace Gelation_Cloning_Control
             return !regex.IsMatch(text);
         }
 
+
         //Basler camera update device list
         private void UpdateBaslerDeviceList()
         {
@@ -470,34 +471,32 @@ namespace Gelation_Cloning_Control
                     if (newitem)
                     {
                         // Create the item to display.
-                        //ListViewItem item = new ListViewItem(cameraInfo[CameraInfoKey.FriendlyName]);
 
                         ListViewItem item = new ListViewItem();
                         item.DataContext = cameraInfo[CameraInfoKey.FriendlyName];
 
                         Console.WriteLine("camerainfo: " + cameraInfo[CameraInfoKey.FriendlyName]);
-                        Console.WriteLine(item);
+                        Console.WriteLine("item: " + item.DataContext);
 
-                        /*
+                        
                         // Create the tool tip text.
                         string toolTipText = "";
                         foreach (KeyValuePair<string, string> kvp in cameraInfo)
                         {
                             toolTipText += kvp.Key + ": " + kvp.Value + "\n";
                         }
-                        item.ToolTipText = toolTipText;
-                        */
+                        item.ToolTip= toolTipText;
+                        
 
                         // Store the camera info in the displayed item.
                         item.Tag = cameraInfo;
-                        
 
                         // Attach the device data.
+                        // TODO: name is not updating in list for some reason
                         listViewCamera.Items.Add(item);
-                        
+                       
                     }
                 }
-
 
 
                 // Remove old camera devices that have been disconnected.
@@ -527,6 +526,15 @@ namespace Gelation_Cloning_Control
             }
         }
 
+        private void btnCameraContinuousShot_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+    }
+
+    public class Camera
+    {
+        public string Name { get; set; }
     }
 
 }
