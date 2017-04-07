@@ -13,7 +13,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
-using System.Windows.Forms;
+//using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -65,6 +65,8 @@ namespace Gelation_Cloning_Control
             UpdateBaslerDeviceListTimer.IsEnabled = true;
 
             UpdateBaslerDeviceList();
+            /* Enable the tool strip buttons according to the state of the image provider. */
+            EnableButtons(imageProvider.IsOpen, false);
         }
 
         #region Stage Commands and Connections
@@ -377,6 +379,36 @@ namespace Gelation_Cloning_Control
 
         #region Camera Commands and Connections
 
+        // Connect to the camera when it is selected in the listbox
+        private void listViewCamera_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            /* Close the currently open image provider. */
+            /* Stops the grabbing of images. */
+            Stop();
+            /* Close the image provider. */
+            CloseTheImageProvider();
+
+            /* Open the selected image provider. */
+            if (listViewCamera.SelectedItems.Count > 0)
+            {
+                /* Get the first selected item. */
+                //ListViewItem item = listViewCamera.SelectedItems[0];
+                ListViewItem item = (ListViewItem)listViewCamera.SelectedItem;
+                /* Get the attached device data. */
+                DeviceEnumerator.Device device = item.Tag as DeviceEnumerator.Device;
+                try
+                {
+                    /* Open the image provider using the index from the device data. */
+                    imageProvider.Open(device.Index);
+                    //imageProvider.Open(0);
+                }
+                catch (Exception exception)
+                {
+                    ShowException(exception, imageProvider.GetLastErrorMessage());
+                }
+            }
+        }
+
         /* Handles the click on the single frame button. */
         private void btnCameraSingleShot_Click(object sender, RoutedEventArgs e)
         {
@@ -556,16 +588,18 @@ namespace Gelation_Cloning_Control
                         BitmapFactory.UpdateBitmap(m_bitmap, image.Buffer, image.Width, image.Height, image.Color);
                         /* We have to dispose the bitmap after assigning the new one to the display control. */
                         //Bitmap bitmap = pictureBox.Image as Bitmap;
-                        Bitmap bitmap = imageDisplay.Source;
+                        //Bitmap bitmap = imageDisplay.Source;
 
                         /* Provide the display control with the new bitmap. This action automatically updates the display. */
 
                         imageDisplay.Source = BitmapToBitmapImage(m_bitmap);
-                        if (bitmap != null)
-                        {
-                            /* Dispose the bitmap. */
-                            bitmap.Dispose();
-                        }
+                         
+                        //if (bitmap != null)
+                        //{
+                        //    /* Dispose the bitmap. */
+                        //    bitmap.Dispose();
+                        //}
+                    
                     }
                     /* The processing of the image is done. Release the image buffer. */
                     imageProvider.ReleaseImage();
@@ -596,90 +630,92 @@ namespace Gelation_Cloning_Control
         }
 
         //Basler camera update device list
-        private void UpdateBaslerDeviceList()
-        {
-            try
-            {
-                // Ask the camera finder for a list of camera devices.
-                List<ICameraInfo> allCameras = CameraFinder.Enumerate();
+        //private void UpdateBaslerDeviceList()
+        //{
+        //    try
+        //    {
+        //        // Ask the camera finder for a list of camera devices.
+        //        List<ICameraInfo> allCameras = CameraFinder.Enumerate();
 
-                //ListView.ListViewItemCollection items = listViewCamera.Items;
+        //        //ListView.ListViewItemCollection items = listViewCamera.Items;
 
-                // Loop over all cameras found.
-                foreach (ICameraInfo cameraInfo in allCameras)
-                {
-                    // Loop over all cameras in the list of cameras.
-                    bool newitem = true;
-                    foreach (ListViewItem item in listViewCamera.Items)
-                    {
-                        ICameraInfo tag = item.Tag as ICameraInfo;
+        //        // Loop over all cameras found.
+        //        foreach (ICameraInfo cameraInfo in allCameras)
+        //        {
+        //            // Loop over all cameras in the list of cameras.
+        //            bool newitem = true;
+        //            foreach (ListViewItem item in listViewCamera.Items)
+        //            {
+        //                ICameraInfo tag = item.Tag as ICameraInfo;
 
-                        // Is the camera found already in the list of cameras?
-                        if (tag[CameraInfoKey.FullName] == cameraInfo[CameraInfoKey.FullName])
-                        {
-                            tag = cameraInfo;
-                            newitem = false;
-                            break;
-                        }
-                    }
+        //                // Is the camera found already in the list of cameras?
+        //                if (tag[CameraInfoKey.FullName] == cameraInfo[CameraInfoKey.FullName])
+        //                {
+        //                    tag = cameraInfo;
+        //                    newitem = false;
+        //                    break;
+        //                }
+        //            }
 
-                    // If the camera is not in the list, add it to the list.
-                    if (newitem)
-                    {
-                        // Create the item to display.
+        //            // If the camera is not in the list, add it to the list.
+        //            if (newitem)
+        //            {
+        //                // Create the item to display.
 
-                        ListViewItem item = new ListViewItem();
-                        item.DataContext = cameraInfo[CameraInfoKey.FriendlyName];
+        //                ListViewItem item = new ListViewItem();
+        //                item.DataContext = cameraInfo[CameraInfoKey.FriendlyName];
 
-                        Console.WriteLine("camerainfo: " + cameraInfo[CameraInfoKey.FriendlyName]);
-                        Console.WriteLine("item: " + item.DataContext);
-
-
-                        // Create the tool tip text.
-                        string toolTipText = "";
-                        foreach (KeyValuePair<string, string> kvp in cameraInfo)
-                        {
-                            toolTipText += kvp.Key + ": " + kvp.Value + "\n";
-                        }
-                        item.ToolTip = toolTipText;
+        //                Console.WriteLine("camerainfo: " + cameraInfo[CameraInfoKey.FriendlyName]);
+        //                Console.WriteLine("item: " + item.DataContext);
 
 
-                        // Store the camera info in the displayed item.
-                        item.Tag = cameraInfo;
+        //                // Create the tool tip text.
+        //                string toolTipText = "";
+        //                foreach (KeyValuePair<string, string> kvp in cameraInfo)
+        //                {
+        //                    toolTipText += kvp.Key + ": " + kvp.Value + "\n";
+        //                }
+        //                item.ToolTip = toolTipText;
 
-                        // Attach the device data.
-                        // TODO: name is not updating in list for some reason
-                        listViewCamera.Items.Add(item);
 
-                    }
-                }
+        //                // Store the camera info in the displayed item.
+        //                item.Tag = cameraInfo;
 
-                // Remove old camera devices that have been disconnected.
-                foreach (ListViewItem item in listViewCamera.Items)
-                {
-                    bool exists = false;
+        //                // Attach the device data.
+        //                // TODO: name is not updating in list for some reason
+        //                listViewCamera.Items.Add(item);
 
-                    // For each camera in the list, check whether it can be found by enumeration.
-                    foreach (ICameraInfo cameraInfo in allCameras)
-                    {
-                        if (((ICameraInfo)item.Tag)[CameraInfoKey.FullName] == cameraInfo[CameraInfoKey.FullName])
-                        {
-                            exists = true;
-                            break;
-                        }
-                    }
-                    // If the camera has not been found, remove it from the list view.
-                    if (!exists)
-                    {
-                        listViewCamera.Items.Remove(item);
-                    }
-                }
-            }
-            catch (Exception exception)
-            {
-                MessageBox.Show(exception.ToString());
-            }
-        }
+        //            }
+        //        }
+
+
+
+        //        // Remove old camera devices that have been disconnected.
+        //        foreach (ListViewItem item in listViewCamera.Items)
+        //        {
+        //            bool exists = false;
+
+        //            // For each camera in the list, check whether it can be found by enumeration.
+        //            foreach (ICameraInfo cameraInfo in allCameras)
+        //            {
+        //                if (((ICameraInfo)item.Tag)[CameraInfoKey.FullName] == cameraInfo[CameraInfoKey.FullName])
+        //                {
+        //                    exists = true;
+        //                    break;
+        //                }
+        //            }
+        //            // If the camera has not been found, remove it from the list view.
+        //            if (!exists)
+        //            {
+        //                listViewCamera.Items.Remove(item);
+        //            }
+        //        }
+        //    }
+        //    catch (Exception exception)
+        //    {
+        //        MessageBox.Show(exception.ToString());
+        //    }
+        //}
 
         /* Helps to set the states of Camera buttons. */
         private void EnableButtons(bool canGrab, bool canStop)
@@ -689,6 +725,79 @@ namespace Gelation_Cloning_Control
             btnCameraStop.IsEnabled = canStop;
         }
 
+        /* Updates the list of available devices in the upper left area. */
+        private void UpdateBaslerDeviceList()
+        {
+            try
+            {
+                
+                /* Ask the device enumerator for a list of devices. */
+                List<DeviceEnumerator.Device> list = DeviceEnumerator.EnumerateDevices();
+
+                ItemCollection items = listViewCamera.Items;
+
+                /* Add each new device to the list. */
+                foreach (DeviceEnumerator.Device device in list)
+                {
+                    bool newitem = true;
+                    /* For each enumerated device check whether it is in the list view. */
+                    foreach (ListViewItem item in items)
+                    {
+                        /* Retrieve the device data from the list view item. */
+                        DeviceEnumerator.Device tag = item.Tag as DeviceEnumerator.Device;
+
+                        if (tag.FullName == device.FullName)
+                        {
+                            /* Update the device index. The index is used for opening the camera. It may change when enumerating devices. */
+                            tag.Index = device.Index;
+                            /* No new item needs to be added to the list view */
+                            newitem = false;
+                            break;
+                        }
+                    }
+
+                    /* If the device is not in the list view yet the add it to the list view. */
+                    if (newitem)
+                    {
+                        //ListViewItem item = new ListViewItem(device.Name);
+                        ListViewItem item = new ListViewItem();
+                        if (device.Tooltip.Length > 0)
+                        {
+                            item.ToolTip = device.Tooltip;
+                        }
+                        item.Tag = device;
+
+                        /* Attach the device data. */
+                        listViewCamera.Items.Add(item);
+                    }
+                }
+
+                /* Delete old devices which are removed. */
+                foreach (ListViewItem item in items)
+                {
+                    bool exists = false;
+
+                    /* For each device in the list view check whether it has not been found by device enumeration. */
+                    foreach (DeviceEnumerator.Device device in list)
+                    {
+                        if (((DeviceEnumerator.Device)item.Tag).FullName == device.FullName)
+                        {
+                            exists = true;
+                            break;
+                        }
+                    }
+                    /* If the device has not been found by enumeration then remove from the list view. */
+                    if (!exists)
+                    {
+                        listViewCamera.Items.Remove(item);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                ShowException(e, imageProvider.GetLastErrorMessage());
+            }
+        }
 
         //Updates the device list on each timer tick
         private void updateBaslerDeviceListTimer_Tick(object sender, EventArgs e)
@@ -804,6 +913,7 @@ namespace Gelation_Cloning_Control
                 return bitmapimage;
             }
         }
+
 
         #endregion
 
