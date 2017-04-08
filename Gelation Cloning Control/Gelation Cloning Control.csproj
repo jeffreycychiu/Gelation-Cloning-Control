@@ -74,9 +74,8 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Basler\PylonC.NET.dll</HintPath>
     </Reference>
-    <Reference Include="PylonC.NETSupportLibrary, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\1 - Local Gel Hybridoma\Basler Camera Documentation\Sample C# code\C#\PylonC.NET\bin\PylonC.NETSupportLibrary.dll</HintPath>
+    <Reference Include="PylonC.NETSupportLibrary">
+      <HintPath>..\bin\PylonC.NETSupportLibrary.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />

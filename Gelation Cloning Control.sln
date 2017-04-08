@@ -5,7 +5,7 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gelation Cloning Control", "Gelation Cloning Control\Gelation Cloning Control.csproj", "{DB2CFE44-47E2-4679-AE59-21E5B81225DD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pylon.NETSupportLibrary", "..\..\1 - Local Gel Hybridoma\Basler Camera Documentation\Sample C# code\C#\PylonC.NET\Pylon.NETSupportLibrary\Pylon.NETSupportLibrary.csproj", "{3EAFC9F5-D49F-4F9F-86C8-FBD231B07D2E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pylon.NETSupportLibrary", "Pylon.NETSupportLibrary\Pylon.NETSupportLibrary.csproj", "{3EAFC9F5-D49F-4F9F-86C8-FBD231B07D2E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

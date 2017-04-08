@@ -50,7 +50,14 @@ namespace Gelation_Cloning_Control
             InitializeComponent();
             setSerialPortArroyo();
             setSerialPortMicroscopeStage();
+#if DEBUG
+            /* This is a special debug setting needed only for GigE cameras.
+                See 'Building Applications with pylon' in the Programmer's Guide. */
+            Environment.SetEnvironmentVariable("PYLON_GIGE_HEARTBEAT", "300000" /*ms*/);
+#endif
+            PylonC.NET.Pylon.Initialize();
 
+            //PylonC.NET.Pylon.Terminate();
             /* Register for the events of the image provider needed for proper operation. */
             imageProvider.GrabErrorEvent += new ImageProvider.GrabErrorEventHandler(OnGrabErrorEventCallback);
             imageProvider.DeviceRemovedEvent += new ImageProvider.DeviceRemovedEventHandler(OnDeviceRemovedEventCallback);
@@ -60,9 +67,9 @@ namespace Gelation_Cloning_Control
             imageProvider.ImageReadyEvent += new ImageProvider.ImageReadyEventHandler(OnImageReadyEventCallback);
             imageProvider.GrabbingStoppedEvent += new ImageProvider.GrabbingStoppedEventHandler(OnGrabbingStoppedEventCallback);
 
-            UpdateBaslerDeviceListTimer.Tick += new EventHandler(updateBaslerDeviceListTimer_Tick);
-            UpdateBaslerDeviceListTimer.Interval = new TimeSpan(0, 0, 0, 0, 500);//Not sure how fas this has to be yet
-            UpdateBaslerDeviceListTimer.IsEnabled = true;
+            //UpdateBaslerDeviceListTimer.Tick += new EventHandler(updateBaslerDeviceListTimer_Tick);
+            //UpdateBaslerDeviceListTimer.Interval = new TimeSpan(0, 0, 0, 0, 500);//Not sure how fas this has to be yet
+            //UpdateBaslerDeviceListTimer.IsEnabled = true;
 
             UpdateBaslerDeviceList();
             /* Enable the tool strip buttons according to the state of the image provider. */
@@ -517,6 +524,7 @@ namespace Gelation_Cloning_Control
         private void OnDeviceOpenedEventCallback()
         {
             if (Dispatcher.CheckAccess())
+            //if(false)
             {
                 /* If called from a different thread, we must use the Invoke method to marshal the call to the proper thread. */
                 Dispatcher.BeginInvoke(new ImageProvider.DeviceOpenedEventHandler(OnDeviceOpenedEventCallback));
@@ -766,8 +774,8 @@ namespace Gelation_Cloning_Control
                             item.ToolTip = device.Tooltip;
                         }
                         item.Tag = device;
-
                         /* Attach the device data. */
+
                         listViewCamera.Items.Add(item);
                     }
                 }
