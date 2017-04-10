@@ -491,7 +491,7 @@ namespace Gelation_Cloning_Control
         /* Handles the event related to the occurrence of an error while grabbing proceeds. */
         private void OnGrabErrorEventCallback(Exception grabException, string additionalErrorMessage)
         {
-            if (Dispatcher.CheckAccess())
+            if (!Dispatcher.CheckAccess())
             {
                 /* If called from a different thread, we must use the Invoke method to marshal the call to the proper thread. */
                 Dispatcher.BeginInvoke(new ImageProvider.GrabErrorEventHandler(OnGrabErrorEventCallback), grabException, additionalErrorMessage);
@@ -503,7 +503,7 @@ namespace Gelation_Cloning_Control
         /* Handles the event related to the removal of a currently open device. */
         private void OnDeviceRemovedEventCallback()
         {
-            if (Dispatcher.CheckAccess())
+            if (!Dispatcher.CheckAccess())
             {
                 /* If called from a different thread, we must use the Invoke method to marshal the call to the proper thread. */
                 Dispatcher.BeginInvoke(new ImageProvider.DeviceRemovedEventHandler(OnDeviceRemovedEventCallback));
@@ -523,8 +523,7 @@ namespace Gelation_Cloning_Control
         /* Handles the event related to a device being open. */
         private void OnDeviceOpenedEventCallback()
         {
-            if (Dispatcher.CheckAccess())
-            //if(false)
+            if (!Dispatcher.CheckAccess())
             {
                 /* If called from a different thread, we must use the Invoke method to marshal the call to the proper thread. */
                 Dispatcher.BeginInvoke(new ImageProvider.DeviceOpenedEventHandler(OnDeviceOpenedEventCallback));
@@ -537,7 +536,7 @@ namespace Gelation_Cloning_Control
         /* Handles the event related to a device being closed. */
         private void OnDeviceClosedEventCallback()
         {
-            if (Dispatcher.CheckAccess())
+            if (!Dispatcher.CheckAccess())
             {
                 /* If called from a different thread, we must use the Invoke method to marshal the call to the proper thread. */
                 Dispatcher.BeginInvoke(new ImageProvider.DeviceClosedEventHandler(OnDeviceClosedEventCallback));
@@ -550,7 +549,7 @@ namespace Gelation_Cloning_Control
         /* Handles the event related to the image provider executing grabbing. */
         private void OnGrabbingStartedEventCallback()
         {
-            if (Dispatcher.CheckAccess())
+            if (!Dispatcher.CheckAccess())
             {
                 /* If called from a different thread, we must use the Invoke method to marshal the call to the proper thread. */
                 Dispatcher.BeginInvoke(new ImageProvider.GrabbingStartedEventHandler(OnGrabbingStartedEventCallback));
@@ -567,7 +566,7 @@ namespace Gelation_Cloning_Control
         /* Handles the event related to an image having been taken and waiting for processing. */
         private void OnImageReadyEventCallback()
         {
-            if (Dispatcher.CheckAccess())
+            if (!Dispatcher.CheckAccess())
             {
                 /* If called from a different thread, we must use the Invoke method to marshal the call to the proper thread. */
                 Dispatcher.BeginInvoke(new ImageProvider.ImageReadyEventHandler(OnImageReadyEventCallback));
@@ -623,7 +622,7 @@ namespace Gelation_Cloning_Control
         /* Handles the event related to the image provider having stopped grabbing. */
         private void OnGrabbingStoppedEventCallback()
         {
-            if (Dispatcher.CheckAccess())
+            if (!Dispatcher.CheckAccess())
             {
                 /* If called from a different thread, we must use the Invoke method to marshal the call to the proper thread. */
                 Dispatcher.BeginInvoke(new ImageProvider.GrabbingStoppedEventHandler(OnGrabbingStoppedEventCallback));
