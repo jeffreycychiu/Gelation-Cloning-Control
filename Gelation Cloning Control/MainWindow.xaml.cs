@@ -587,6 +587,7 @@ namespace Gelation_Cloning_Control
                         /* Update the bitmap with the image data. */
                         BitmapFactory.UpdateBitmap(m_bitmap, image.Buffer, image.Width, image.Height, image.Color);
                         /* To show the new image, request the display control to update itself. */
+                        imageDisplay.Source = BitmapToBitmapImage(m_bitmap);
                         //pictureBox.Refresh();
                     }
                     else /* A new bitmap is required. */
@@ -636,94 +637,6 @@ namespace Gelation_Cloning_Control
             EnableButtons(imageProvider.IsOpen, false);
         }
 
-        //Basler camera update device list
-        //private void UpdateBaslerDeviceList()
-        //{
-        //    try
-        //    {
-        //        // Ask the camera finder for a list of camera devices.
-        //        List<ICameraInfo> allCameras = CameraFinder.Enumerate();
-
-        //        //ListView.ListViewItemCollection items = listViewCamera.Items;
-
-        //        // Loop over all cameras found.
-        //        foreach (ICameraInfo cameraInfo in allCameras)
-        //        {
-        //            // Loop over all cameras in the list of cameras.
-        //            bool newitem = true;
-        //            foreach (ListViewItem item in listViewCamera.Items)
-        //            {
-        //                ICameraInfo tag = item.Tag as ICameraInfo;
-
-        //                // Is the camera found already in the list of cameras?
-        //                if (tag[CameraInfoKey.FullName] == cameraInfo[CameraInfoKey.FullName])
-        //                {
-        //                    tag = cameraInfo;
-        //                    newitem = false;
-        //                    break;
-        //                }
-        //            }
-
-        //            // If the camera is not in the list, add it to the list.
-        //            if (newitem)
-        //            {
-        //                // Create the item to display.
-
-        //                ListViewItem item = new ListViewItem();
-        //                item.DataContext = cameraInfo[CameraInfoKey.FriendlyName];
-
-        //                Console.WriteLine("camerainfo: " + cameraInfo[CameraInfoKey.FriendlyName]);
-        //                Console.WriteLine("item: " + item.DataContext);
-
-
-        //                // Create the tool tip text.
-        //                string toolTipText = "";
-        //                foreach (KeyValuePair<string, string> kvp in cameraInfo)
-        //                {
-        //                    toolTipText += kvp.Key + ": " + kvp.Value + "\n";
-        //                }
-        //                item.ToolTip = toolTipText;
-
-
-        //                // Store the camera info in the displayed item.
-        //                item.Tag = cameraInfo;
-
-        //                // Attach the device data.
-        //                // TODO: name is not updating in list for some reason
-        //                listViewCamera.Items.Add(item);
-
-        //            }
-        //        }
-
-
-
-        //        // Remove old camera devices that have been disconnected.
-        //        foreach (ListViewItem item in listViewCamera.Items)
-        //        {
-        //            bool exists = false;
-
-        //            // For each camera in the list, check whether it can be found by enumeration.
-        //            foreach (ICameraInfo cameraInfo in allCameras)
-        //            {
-        //                if (((ICameraInfo)item.Tag)[CameraInfoKey.FullName] == cameraInfo[CameraInfoKey.FullName])
-        //                {
-        //                    exists = true;
-        //                    break;
-        //                }
-        //            }
-        //            // If the camera has not been found, remove it from the list view.
-        //            if (!exists)
-        //            {
-        //                listViewCamera.Items.Remove(item);
-        //            }
-        //        }
-        //    }
-        //    catch (Exception exception)
-        //    {
-        //        MessageBox.Show(exception.ToString());
-        //    }
-        //}
-
         /* Helps to set the states of Camera buttons. */
         private void EnableButtons(bool canGrab, bool canStop)
         {
@@ -740,9 +653,9 @@ namespace Gelation_Cloning_Control
                 
                 /* Ask the device enumerator for a list of devices. */
                 List<DeviceEnumerator.Device> list = DeviceEnumerator.EnumerateDevices();
-
+                
                 ItemCollection items = listViewCamera.Items;
-
+               
                 /* Add each new device to the list. */
                 foreach (DeviceEnumerator.Device device in list)
                 {
@@ -773,12 +686,16 @@ namespace Gelation_Cloning_Control
                             item.ToolTip = device.Tooltip;
                         }
                         item.Tag = device;
+                        item.DataContext = device.Name;
                         /* Attach the device data. */
-
+                       
                         listViewCamera.Items.Add(item);
-                    }
-                }
 
+                    }
+
+                    
+                }
+                
                 /* Delete old devices which are removed. */
                 foreach (ListViewItem item in items)
                 {
@@ -865,6 +782,15 @@ namespace Gelation_Cloning_Control
 
         #endregion
 
+        #region Other Event Handlers
+
+        //Release the driver so that you can reconnect to the camera again when you re-open the program
+        private void MetroWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            PylonC.NET.Pylon.Terminate();
+        }
+        #endregion
+
         #region Helper Functions (serial send, text checking, etc.)
 
         //Send serial port data to the Arroyo. Automatically appends an endline "\n" character
@@ -920,6 +846,7 @@ namespace Gelation_Cloning_Control
                 return bitmapimage;
             }
         }
+
 
 
         #endregion

@@ -8,6 +8,7 @@
         xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         WindowState="Maximized"
         WindowStyle="None"
+        Closing="MetroWindow_Closing"
         Title="Gelation Control" Height="797" Width="1093">
     <Controls:MetroWindow.Style>
         <Style TargetType="{x:Type Controls:MetroWindow}">
@@ -63,7 +64,7 @@
                     <ListView x:Name="listViewCamera" SelectionChanged="listViewCamera_SelectionChanged" HorizontalAlignment="Left" Height="80" Margin="10,446,0,0" VerticalAlignment="Top" Width="141" BorderThickness="2">
                         <ListView.View>
                             <GridView>
-                                <GridViewColumn Header="Camera:" DisplayMemberBinding="{Binding Name}"/>
+                                <GridViewColumn  Header="Camera:" DisplayMemberBinding="{Binding DataContext}" />
                             </GridView>
                         </ListView.View>
                     </ListView>
