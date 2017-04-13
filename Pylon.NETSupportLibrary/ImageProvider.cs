@@ -315,7 +315,8 @@ namespace PylonC.NETSupportLibrary
                 if (Pylon.DeviceFeatureIsWritable(m_hDevice, "GevSCPSPacketSize"))
                 {
                     /* ... The device supports the packet size feature. Set a value. */
-                    Pylon.DeviceSetIntegerFeature(m_hDevice, "GevSCPSPacketSize", 1500);
+                    //Pylon.DeviceSetIntegerFeature(m_hDevice, "GevSCPSPacketSize", 1500);
+                    Pylon.DeviceSetIntegerFeature(m_hDevice, "GevSCPSPacketSize", 9000);
                 }
 
                 /* The sample does not work in chunk mode. It must be disabled. */

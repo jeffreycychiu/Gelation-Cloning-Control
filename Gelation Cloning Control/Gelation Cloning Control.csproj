@@ -148,6 +148,21 @@
     </EmbeddedResource>
     <None Include="OpenTK.dll.config" />
     <None Include="packages.config" />
+    <None Include="Properties\DataSources\PylonC.NETSupportLibrary.BitmapFactory.datasource" />
+    <None Include="Properties\DataSources\PylonC.NETSupportLibrary.DeviceEnumerator+Device.datasource" />
+    <None Include="Properties\DataSources\PylonC.NETSupportLibrary.DeviceEnumerator.datasource" />
+    <None Include="Properties\DataSources\PylonC.NETSupportLibrary.EnumerationComboBoxUserControl.datasource" />
+    <None Include="Properties\DataSources\PylonC.NETSupportLibrary.ImageProvider+DeviceClosedEventHandler.datasource" />
+    <None Include="Properties\DataSources\PylonC.NETSupportLibrary.ImageProvider+DeviceClosingEventHandler.datasource" />
+    <None Include="Properties\DataSources\PylonC.NETSupportLibrary.ImageProvider+DeviceOpenedEventHandler.datasource" />
+    <None Include="Properties\DataSources\PylonC.NETSupportLibrary.ImageProvider+DeviceRemovedEventHandler.datasource" />
+    <None Include="Properties\DataSources\PylonC.NETSupportLibrary.ImageProvider+GrabbingStartedEventHandler.datasource" />
+    <None Include="Properties\DataSources\PylonC.NETSupportLibrary.ImageProvider+GrabbingStoppedEventHandler.datasource" />
+    <None Include="Properties\DataSources\PylonC.NETSupportLibrary.ImageProvider+GrabErrorEventHandler.datasource" />
+    <None Include="Properties\DataSources\PylonC.NETSupportLibrary.ImageProvider+Image.datasource" />
+    <None Include="Properties\DataSources\PylonC.NETSupportLibrary.ImageProvider+ImageReadyEventHandler.datasource" />
+    <None Include="Properties\DataSources\PylonC.NETSupportLibrary.ImageProvider.datasource" />
+    <None Include="Properties\DataSources\PylonC.NETSupportLibrary.SliderUserControl.datasource" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

@@ -67,6 +67,8 @@ namespace Gelation_Cloning_Control
             imageProvider.ImageReadyEvent += new ImageProvider.ImageReadyEventHandler(OnImageReadyEventCallback);
             imageProvider.GrabbingStoppedEvent += new ImageProvider.GrabbingStoppedEventHandler(OnGrabbingStoppedEventCallback);
 
+            //SliderUserControl sliderUserControlExposure = new SliderUserControl();
+
             //UpdateBaslerDeviceListTimer.Tick += new EventHandler(updateBaslerDeviceListTimer_Tick);
             //UpdateBaslerDeviceListTimer.Interval = new TimeSpan(0, 0, 0, 0, 500);//Not sure how fas this has to be yet
             //UpdateBaslerDeviceListTimer.IsEnabled = true;
@@ -729,6 +731,12 @@ namespace Gelation_Cloning_Control
             UpdateBaslerDeviceList();
         }
 
+        //Controls the exposure of the camera
+        private void sliderExposure_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+
+        }
+
         #endregion
 
         #region Serial Event Handlers
@@ -846,6 +854,7 @@ namespace Gelation_Cloning_Control
                 return bitmapimage;
             }
         }
+
 
 
 
