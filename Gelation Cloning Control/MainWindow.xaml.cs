@@ -23,7 +23,6 @@ using System.Windows.Threading;
 using MahApps.Metro.Controls;
 using PylonC.NET;
 using Basler.Pylon;
-using PylonC.NETSupportLibrary;
 
 
 namespace Gelation_Cloning_Control
@@ -36,11 +35,14 @@ namespace Gelation_Cloning_Control
         SerialPort serialPortArroyo = new SerialPort();
         SerialPort serialPortMicroscopeStage = new SerialPort();
 
-        //ImageProvider is for the Basler Camera class
-        private ImageProvider imageProvider = new ImageProvider();
+        //Create camera class from basler api
+        private Camera camera = null;
+        private PixelDataConverter converter = new PixelDataConverter();
+        private Stopwatch stopWatch = new Stopwatch();
+
         private Bitmap m_bitmap = null; /* The bitmap is used for displaying the image. */
 
-        DispatcherTimer UpdateBaslerDeviceListTimer = new DispatcherTimer();
+        DispatcherTimer updateBaslerDeviceListTimer = new DispatcherTimer();
 
         static int CURRENTLIMIT = 6000; //Max current for the laser in milliamps
         static int PERIODLIMIT = 10000; //Max period in milliseconds
@@ -50,22 +52,6 @@ namespace Gelation_Cloning_Control
             InitializeComponent();
             setSerialPortArroyo();
             setSerialPortMicroscopeStage();
-#if DEBUG
-            /* This is a special debug setting needed only for GigE cameras.
-                See 'Building Applications with pylon' in the Programmer's Guide. */
-            Environment.SetEnvironmentVariable("PYLON_GIGE_HEARTBEAT", "300000" /*ms*/);
-#endif
-            PylonC.NET.Pylon.Initialize();
-
-            //PylonC.NET.Pylon.Terminate();
-            /* Register for the events of the image provider needed for proper operation. */
-            imageProvider.GrabErrorEvent += new ImageProvider.GrabErrorEventHandler(OnGrabErrorEventCallback);
-            imageProvider.DeviceRemovedEvent += new ImageProvider.DeviceRemovedEventHandler(OnDeviceRemovedEventCallback);
-            imageProvider.DeviceOpenedEvent += new ImageProvider.DeviceOpenedEventHandler(OnDeviceOpenedEventCallback);
-            imageProvider.DeviceClosedEvent += new ImageProvider.DeviceClosedEventHandler(OnDeviceClosedEventCallback);
-            imageProvider.GrabbingStartedEvent += new ImageProvider.GrabbingStartedEventHandler(OnGrabbingStartedEventCallback);
-            imageProvider.ImageReadyEvent += new ImageProvider.ImageReadyEventHandler(OnImageReadyEventCallback);
-            imageProvider.GrabbingStoppedEvent += new ImageProvider.GrabbingStoppedEventHandler(OnGrabbingStoppedEventCallback);
 
             //SliderUserControl sliderUserControlExposure = new SliderUserControl();
 
@@ -74,8 +60,8 @@ namespace Gelation_Cloning_Control
             //UpdateBaslerDeviceListTimer.IsEnabled = true;
 
             UpdateBaslerDeviceList();
-            /* Enable the tool strip buttons according to the state of the image provider. */
-            EnableButtons(imageProvider.IsOpen, false);
+            //Disable all buttons
+            EnableButtons(false, false);
         }
 
         #region Stage Commands and Connections
@@ -436,6 +422,129 @@ namespace Gelation_Cloning_Control
             Stop();
         }
 
+        // Occurs when a device with an opened connection is removed.
+        private void OnConnectionLost(Object sender, EventArgs e)
+        {
+            if (!Dispatcher.CheckAccess())
+            {
+                // If called from a different thread, we must use the Invoke method to marshal the call to the proper thread.
+                Dispatcher.BeginInvoke(new EventHandler<EventArgs>(OnConnectionLost), sender, e);
+                return;
+            }
+
+            // Close the camera object.
+            DestroyCamera();
+            // Because one device is gone, the list needs to be updated.
+            UpdateBaslerDeviceList();
+        }
+
+        // Occurs when the connection to a camera device is opened.
+        private void OnCameraOpened(Object sender, EventArgs e)
+        {
+            if (!Dispatcher.CheckAccess())
+            {
+                // If called from a different thread, we must use the Invoke method to marshal the call to the proper thread.
+                Dispatcher.BeginInvoke(new EventHandler<EventArgs>(OnCameraOpened), sender, e);
+                return;
+            }
+
+            // The image provider is ready to grab. Enable the grab buttons.
+            EnableButtons(true, false);
+        }
+
+        // Occurs when the connection to a camera device is closed.
+        private void OnCameraClosed(Object sender, EventArgs e)
+        {
+            if (!Dispatcher.CheckAccess())
+            {
+                // If called from a different thread, we must use the Invoke method to marshal the call to the proper thread.
+                Dispatcher.BeginInvoke(new EventHandler<EventArgs>(OnCameraClosed), sender, e);
+                return;
+            }
+
+            // The camera connection is closed. Disable all buttons.
+            EnableButtons(false, false);
+        }
+
+        // Occurs when a camera starts grabbing.
+        private void OnGrabStarted(Object sender, EventArgs e)
+        {
+            if (!Dispatcher.CheckAccess())
+            {
+                // If called from a different thread, we must use the Invoke method to marshal the call to the proper thread.
+                Dispatcher.BeginInvoke(new EventHandler<EventArgs>(OnGrabStarted), sender, e);
+                return;
+            }
+
+            // Reset the stopwatch used to reduce the amount of displayed images. The camera may acquire images faster than the images can be displayed.
+
+            stopWatch.Reset();
+
+            // Do not update the device list while grabbing to reduce jitter. Jitter may occur because the GUI thread is blocked for a short time when enumerating.
+            updateBaslerDeviceListTimer.Stop();
+
+            // The camera is grabbing. Disable the grab buttons. Enable the stop button.
+            EnableButtons(false, true);
+        }
+
+        // Occurs when an image has been acquired and is ready to be processed.
+        private void OnImageGrabbed(Object sender, ImageGrabbedEventArgs e)
+        {
+            if (!Dispatcher.CheckAccess())
+            {
+                // If called from a different thread, we must use the Invoke method to marshal the call to the proper GUI thread.
+                // The grab result will be disposed after the event call. Clone the event arguments for marshaling to the GUI thread.
+                Dispatcher.BeginInvoke(new EventHandler<ImageGrabbedEventArgs>(OnImageGrabbed), sender, e.Clone());
+                return;
+            }
+
+            try
+            {
+                // Acquire the image from the camera. Only show the latest image. The camera may acquire images faster than the images can be displayed.
+
+                // Get the grab result.
+                IGrabResult grabResult = e.GrabResult;
+
+                // Check if the image can be displayed.
+                if (grabResult.IsValid)
+                {
+                    // Reduce the number of displayed images to a reasonable amount if the camera is acquiring images very fast.
+                    if (!stopWatch.IsRunning || stopWatch.ElapsedMilliseconds > 33)
+                    {
+                        stopWatch.Restart();
+
+                        Bitmap bitmap = new Bitmap(grabResult.Width, grabResult.Height, PixelFormat.Format32bppRgb);
+                        // Lock the bits of the bitmap.
+                        BitmapData bmpData = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadWrite, bitmap.PixelFormat);
+                        // Place the pointer to the buffer of the bitmap.
+                        converter.OutputPixelFormat = PixelType.BGRA8packed;
+                        IntPtr ptrBmp = bmpData.Scan0;
+                        converter.Convert(ptrBmp, bmpData.Stride * bitmap.Height, grabResult); //Exception handling TODO
+                        bitmap.UnlockBits(bmpData);
+
+                        // Assign a temporary variable to dispose the bitmap after assigning the new bitmap to the display control.
+                        Bitmap bitmapOld = pictureBox.Image as Bitmap;
+                        // Provide the display control with the new bitmap. This action automatically updates the display.
+                        pictureBox.Image = bitmap;
+                        if (bitmapOld != null)
+                        {
+                            // Dispose the bitmap.
+                            bitmapOld.Dispose();
+                        }
+                    }
+                }
+            }
+            catch (Exception exception)
+            {
+                ShowException(exception);
+            }
+            finally
+            {
+                // Dispose the grab result if needed for returning it to the grab loop.
+                e.DisposeGrabResultIfClone();
+            }
+        }
+
         /* Stops the image provider and handles exceptions. */
         private void Stop()
         {
@@ -490,155 +599,6 @@ namespace Gelation_Cloning_Control
             }
         }
 
-        /* Handles the event related to the occurrence of an error while grabbing proceeds. */
-        private void OnGrabErrorEventCallback(Exception grabException, string additionalErrorMessage)
-        {
-            if (!Dispatcher.CheckAccess())
-            {
-                /* If called from a different thread, we must use the Invoke method to marshal the call to the proper thread. */
-                Dispatcher.BeginInvoke(new ImageProvider.GrabErrorEventHandler(OnGrabErrorEventCallback), grabException, additionalErrorMessage);
-                return;
-            }
-            ShowException(grabException, additionalErrorMessage);
-        }
-
-        /* Handles the event related to the removal of a currently open device. */
-        private void OnDeviceRemovedEventCallback()
-        {
-            if (!Dispatcher.CheckAccess())
-            {
-                /* If called from a different thread, we must use the Invoke method to marshal the call to the proper thread. */
-                Dispatcher.BeginInvoke(new ImageProvider.DeviceRemovedEventHandler(OnDeviceRemovedEventCallback));
-                return;
-            }
-            /* Disable the buttons. */
-            EnableButtons(false, false);
-            /* Stops the grabbing of images. */
-            Stop();
-            /* Close the image provider. */
-            CloseTheImageProvider();
-            /* Since one device is gone, the list needs to be updated. */
-            UpdateBaslerDeviceList();
-
-        }
-
-        /* Handles the event related to a device being open. */
-        private void OnDeviceOpenedEventCallback()
-        {
-            if (!Dispatcher.CheckAccess())
-            {
-                /* If called from a different thread, we must use the Invoke method to marshal the call to the proper thread. */
-                Dispatcher.BeginInvoke(new ImageProvider.DeviceOpenedEventHandler(OnDeviceOpenedEventCallback));
-                return;
-            }
-            /* The image provider is ready to grab. Enable the grab buttons. */
-            EnableButtons(true, false);
-        }
-
-        /* Handles the event related to a device being closed. */
-        private void OnDeviceClosedEventCallback()
-        {
-            if (!Dispatcher.CheckAccess())
-            {
-                /* If called from a different thread, we must use the Invoke method to marshal the call to the proper thread. */
-                Dispatcher.BeginInvoke(new ImageProvider.DeviceClosedEventHandler(OnDeviceClosedEventCallback));
-                return;
-            }
-            /* The image provider is closed. Disable all buttons. */
-            EnableButtons(false, false);
-        }
-
-        /* Handles the event related to the image provider executing grabbing. */
-        private void OnGrabbingStartedEventCallback()
-        {
-            if (!Dispatcher.CheckAccess())
-            {
-                /* If called from a different thread, we must use the Invoke method to marshal the call to the proper thread. */
-                Dispatcher.BeginInvoke(new ImageProvider.GrabbingStartedEventHandler(OnGrabbingStartedEventCallback));
-                return;
-            }
-
-            /* Do not update device list while grabbing to avoid jitter because the GUI-Thread is blocked for a short time when enumerating. */
-            UpdateBaslerDeviceListTimer.Stop();
-
-            /* The image provider is grabbing. Disable the grab buttons. Enable the stop button. */
-            EnableButtons(false, true);
-        }
-
-        /* Handles the event related to an image having been taken and waiting for processing. */
-        private void OnImageReadyEventCallback()
-        {
-            if (!Dispatcher.CheckAccess())
-            {
-                /* If called from a different thread, we must use the Invoke method to marshal the call to the proper thread. */
-                Dispatcher.BeginInvoke(new ImageProvider.ImageReadyEventHandler(OnImageReadyEventCallback));
-                return;
-            }
-
-            try
-            {
-                /* Acquire the image from the image provider. Only show the latest image. The camera may acquire images faster than images can be displayed*/
-                ImageProvider.Image image = imageProvider.GetLatestImage();
-
-                /* Check if the image has been removed in the meantime. */
-                if (image != null)
-                {
-                    /* Check if the image is compatible with the currently used bitmap. */
-                    if (BitmapFactory.IsCompatible(m_bitmap, image.Width, image.Height, image.Color))
-                    {
-                        /* Update the bitmap with the image data. */
-                        BitmapFactory.UpdateBitmap(m_bitmap, image.Buffer, image.Width, image.Height, image.Color);
-                        /* To show the new image, request the display control to update itself. */
-                        imageDisplay.Source = BitmapToBitmapImage(m_bitmap);
-                        //pictureBox.Refresh();
-                    }
-                    else /* A new bitmap is required. */
-                    {
-                        BitmapFactory.CreateBitmap(out m_bitmap, image.Width, image.Height, image.Color);
-                        BitmapFactory.UpdateBitmap(m_bitmap, image.Buffer, image.Width, image.Height, image.Color);
-                        /* We have to dispose the bitmap after assigning the new one to the display control. */
-                        //Bitmap bitmap = pictureBox.Image as Bitmap;
-                        //Bitmap bitmap = imageDisplay.Source;
-
-                        /* Provide the display control with the new bitmap. This action automatically updates the display. */
-
-                        imageDisplay.Source = BitmapToBitmapImage(m_bitmap);
-                         
-                        //if (bitmap != null)
-                        //{
-                        //    /* Dispose the bitmap. */
-                        //    bitmap.Dispose();
-                        //}
-                    
-                    }
-                    /* The processing of the image is done. Release the image buffer. */
-                    imageProvider.ReleaseImage();
-                    /* The buffer can be used for the next image grabs. */
-                }
-            }
-            catch (Exception e)
-            {
-                ShowException(e, imageProvider.GetLastErrorMessage());
-            }
-        }
-
-        /* Handles the event related to the image provider having stopped grabbing. */
-        private void OnGrabbingStoppedEventCallback()
-        {
-            if (!Dispatcher.CheckAccess())
-            {
-                /* If called from a different thread, we must use the Invoke method to marshal the call to the proper thread. */
-                Dispatcher.BeginInvoke(new ImageProvider.GrabbingStoppedEventHandler(OnGrabbingStoppedEventCallback));
-                return;
-            }
-
-            /* Enable device list update again */
-            UpdateBaslerDeviceListTimer.Start();
-
-            /* The image provider stopped grabbing. Enable the grab buttons. Disable the stop button. */
-            EnableButtons(imageProvider.IsOpen, false);
-        }
-
         /* Helps to set the states of Camera buttons. */
         private void EnableButtons(bool canGrab, bool canStop)
         {
@@ -647,83 +607,87 @@ namespace Gelation_Cloning_Control
             btnCameraStop.IsEnabled = canStop;
         }
 
-        /* Updates the list of available devices in the upper left area. */
+        // Updates the list of available camera devices.
         private void UpdateBaslerDeviceList()
         {
             try
             {
-                
-                /* Ask the device enumerator for a list of devices. */
-                List<DeviceEnumerator.Device> list = DeviceEnumerator.EnumerateDevices();
-                
+                // Ask the camera finder for a list of camera devices.
+                List<ICameraInfo> allCameras = CameraFinder.Enumerate();
+
+                //ListView.ListViewItemCollection items = deviceListView.Items;
                 ItemCollection items = listViewCamera.Items;
-               
-                /* Add each new device to the list. */
-                foreach (DeviceEnumerator.Device device in list)
+
+                // Loop over all cameras found.
+                foreach (ICameraInfo cameraInfo in allCameras)
                 {
+                    // Loop over all cameras in the list of cameras.
                     bool newitem = true;
-                    /* For each enumerated device check whether it is in the list view. */
                     foreach (ListViewItem item in items)
                     {
-                        /* Retrieve the device data from the list view item. */
-                        DeviceEnumerator.Device tag = item.Tag as DeviceEnumerator.Device;
+                        ICameraInfo tag = item.Tag as ICameraInfo;
 
-                        if (tag.FullName == device.FullName)
+                        // Is the camera found already in the list of cameras?
+                        if (tag[CameraInfoKey.FullName] == cameraInfo[CameraInfoKey.FullName])
                         {
-                            /* Update the device index. The index is used for opening the camera. It may change when enumerating devices. */
-                            tag.Index = device.Index;
-                            /* No new item needs to be added to the list view */
+                            tag = cameraInfo;
                             newitem = false;
                             break;
                         }
                     }
 
-                    /* If the device is not in the list view yet the add it to the list view. */
+                    // If the camera is not in the list, add it to the list.
                     if (newitem)
                     {
-                        //ListViewItem item = new ListViewItem(device.Name);
+                        // Create the item to display.
+                        //ListViewItem item = new ListViewItem(cameraInfo[CameraInfoKey.FriendlyName]);
                         ListViewItem item = new ListViewItem();
-                        if (device.Tooltip.Length > 0)
+
+                        // Create the tool tip text.
+                        string toolTipText = "";
+                        foreach (KeyValuePair<string, string> kvp in cameraInfo)
                         {
-                            item.ToolTip = device.Tooltip;
+                            toolTipText += kvp.Key + ": " + kvp.Value + "\n";
                         }
-                        item.Tag = device;
-                        item.DataContext = device.Name;
-                        /* Attach the device data. */
-                       
+                        item.ToolTip = toolTipText;
+
+                        // Store the camera info in the displayed item.
+                        item.Tag = cameraInfo;
+
+                        // Attach the device data.
                         listViewCamera.Items.Add(item);
-
                     }
-
-                    
                 }
-                
-                /* Delete old devices which are removed. */
+
+
+
+                // Remove old camera devices that have been disconnected.
                 foreach (ListViewItem item in items)
                 {
                     bool exists = false;
 
-                    /* For each device in the list view check whether it has not been found by device enumeration. */
-                    foreach (DeviceEnumerator.Device device in list)
+                    // For each camera in the list, check whether it can be found by enumeration.
+                    foreach (ICameraInfo cameraInfo in allCameras)
                     {
-                        if (((DeviceEnumerator.Device)item.Tag).FullName == device.FullName)
+                        if (((ICameraInfo)item.Tag)[CameraInfoKey.FullName] == cameraInfo[CameraInfoKey.FullName])
                         {
                             exists = true;
                             break;
                         }
                     }
-                    /* If the device has not been found by enumeration then remove from the list view. */
+                    // If the camera has not been found, remove it from the list view.
                     if (!exists)
                     {
                         listViewCamera.Items.Remove(item);
                     }
                 }
             }
-            catch (Exception e)
+            catch (Exception exception)
             {
-                ShowException(e, imageProvider.GetLastErrorMessage());
+                ShowException(exception);
             }
         }
+
 
         //Updates the device list on each timer tick
         private void updateBaslerDeviceListTimer_Tick(object sender, EventArgs e)
@@ -832,10 +796,9 @@ namespace Gelation_Cloning_Control
         }
 
         //Show Exception function from Basler Sample Code
-        private void ShowException(Exception e, string additionalErrorMessage)
+        private void ShowException(Exception exception)
         {
-            string more = "\n\nLast error message (may not belong to the exception):\n" + additionalErrorMessage;
-            MessageBox.Show("Exception caught:\n" + e.Message + (additionalErrorMessage.Length > 0 ? more : ""), "Error");
+            MessageBox.Show("Exception caught:\n" + exception.Message, "Error");
         }
 
         //Convert from bitmap to imagesource
