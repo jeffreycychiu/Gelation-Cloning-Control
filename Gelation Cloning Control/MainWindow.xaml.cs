@@ -63,9 +63,9 @@ namespace Gelation_Cloning_Control
 
             //SliderUserControl sliderUserControlExposure = new SliderUserControl();
 
-            //UpdateBaslerDeviceListTimer.Tick += new EventHandler(updateBaslerDeviceListTimer_Tick);
-            //UpdateBaslerDeviceListTimer.Interval = new TimeSpan(0, 0, 0, 0, 500);//Not sure how fas this has to be yet
-            //UpdateBaslerDeviceListTimer.IsEnabled = true;
+            updateBaslerDeviceListTimer.Tick += new EventHandler(updateBaslerDeviceListTimer_Tick);
+            updateBaslerDeviceListTimer.Interval = new TimeSpan(0, 0, 0, 0, 5000);//Not sure how fast this has to be yet
+            updateBaslerDeviceListTimer.IsEnabled = true;
 
             UpdateBaslerDeviceList();
             //Disable all buttons
