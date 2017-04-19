@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Ports;
@@ -40,8 +41,6 @@ namespace Gelation_Cloning_Control
         private PixelDataConverter converter = new PixelDataConverter();
         private Stopwatch stopWatch = new Stopwatch();
 
-        private Bitmap m_bitmap = null; /* The bitmap is used for displaying the image. */
-
         DispatcherTimer updateBaslerDeviceListTimer = new DispatcherTimer();
 
         static int CURRENTLIMIT = 6000; //Max current for the laser in milliamps
@@ -52,6 +51,15 @@ namespace Gelation_Cloning_Control
             InitializeComponent();
             setSerialPortArroyo();
             setSerialPortMicroscopeStage();
+
+            // Set the default names for the controls.
+
+            //testImageControl.DefaultName = "Test Image Selector";
+            //pixelFormatControl.DefaultName = "Pixel Format";
+            //widthSliderControl.DefaultName = "Width";
+            //heightSliderControl.DefaultName = "Height";
+            //gainSliderControl.DefaultName = "Gain";
+            //exposureTimeSliderControl.DefaultName = "Exposure Time";
 
             //SliderUserControl sliderUserControlExposure = new SliderUserControl();
 
@@ -377,29 +385,63 @@ namespace Gelation_Cloning_Control
         // Connect to the camera when it is selected in the listbox
         private void listViewCamera_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            /* Close the currently open image provider. */
-            /* Stops the grabbing of images. */
-            Stop();
-            /* Close the image provider. */
-            CloseTheImageProvider();
+            // Destroy the old camera object.
+            if (camera != null)
+            {
+                DestroyCamera();
+            }
 
-            /* Open the selected image provider. */
+
+            // Open the connection to the selected camera device.
             if (listViewCamera.SelectedItems.Count > 0)
             {
-                /* Get the first selected item. */
-                //ListViewItem item = listViewCamera.SelectedItems[0];
+                // Get the first selected item.
                 ListViewItem item = (ListViewItem)listViewCamera.SelectedItem;
-                /* Get the attached device data. */
-                DeviceEnumerator.Device device = item.Tag as DeviceEnumerator.Device;
+                // Get the attached device data.
+                ICameraInfo selectedCamera = item.Tag as ICameraInfo;
                 try
                 {
-                    /* Open the image provider using the index from the device data. */
-                    imageProvider.Open(device.Index);
-                    //imageProvider.Open(0);
+                    // Create a new camera object.
+                    camera = new Camera(selectedCamera);
+
+                    camera.CameraOpened += Configuration.AcquireContinuous;
+
+                    // Register for the events of the image provider needed for proper operation.
+                    camera.ConnectionLost += OnConnectionLost;
+                    camera.CameraOpened += OnCameraOpened;
+                    camera.CameraClosed += OnCameraClosed;
+                    camera.StreamGrabber.GrabStarted += OnGrabStarted;
+                    camera.StreamGrabber.ImageGrabbed += OnImageGrabbed;
+                    camera.StreamGrabber.GrabStopped += OnGrabStopped;
+
+                    // Open the connection to the camera device.
+                    camera.Open();
+
+                    // Set the parameter for the controls.
+                    //testImageControl.Parameter = camera.Parameters[PLCamera.TestImageSelector];
+                    //pixelFormatControl.Parameter = camera.Parameters[PLCamera.PixelFormat];
+                    //widthSliderControl.Parameter = camera.Parameters[PLCamera.Width];
+                    //heightSliderControl.Parameter = camera.Parameters[PLCamera.Height];
+                    //if (camera.Parameters.Contains(PLCamera.GainAbs))
+                    //{
+                    //    gainSliderControl.Parameter = camera.Parameters[PLCamera.GainAbs];
+                    //}
+                    //else
+                    //{
+                    //    gainSliderControl.Parameter = camera.Parameters[PLCamera.Gain];
+                    //}
+                    //if (camera.Parameters.Contains(PLCamera.ExposureTimeAbs))
+                    //{
+                    //    exposureTimeSliderControl.Parameter = camera.Parameters[PLCamera.ExposureTimeAbs];
+                    //}
+                    //else
+                    //{
+                    //    exposureTimeSliderControl.Parameter = camera.Parameters[PLCamera.ExposureTime];
+                    //}
                 }
                 catch (Exception exception)
                 {
-                    ShowException(exception, imageProvider.GetLastErrorMessage());
+                    ShowException(exception);
                 }
             }
         }
@@ -513,9 +555,9 @@ namespace Gelation_Cloning_Control
                     {
                         stopWatch.Restart();
 
-                        Bitmap bitmap = new Bitmap(grabResult.Width, grabResult.Height, PixelFormat.Format32bppRgb);
+                        Bitmap bitmap = new Bitmap(grabResult.Width, grabResult.Height, System.Drawing.Imaging.PixelFormat.Format32bppRgb);
                         // Lock the bits of the bitmap.
-                        BitmapData bmpData = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadWrite, bitmap.PixelFormat);
+                        BitmapData bmpData = bitmap.LockBits(new System.Drawing.Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadWrite, bitmap.PixelFormat);
                         // Place the pointer to the buffer of the bitmap.
                         converter.OutputPixelFormat = PixelType.BGRA8packed;
                         IntPtr ptrBmp = bmpData.Scan0;
@@ -523,14 +565,20 @@ namespace Gelation_Cloning_Control
                         bitmap.UnlockBits(bmpData);
 
                         // Assign a temporary variable to dispose the bitmap after assigning the new bitmap to the display control.
-                        Bitmap bitmapOld = pictureBox.Image as Bitmap;
+                        //Bitmap bitmapOld = pictureBox.Image as Bitmap;
+
                         // Provide the display control with the new bitmap. This action automatically updates the display.
-                        pictureBox.Image = bitmap;
+                        //pictureBox.Image = bitmap;
+
+                        imageDisplay.Source = BitmapToBitmapImage(bitmap);
+
+                        /*
                         if (bitmapOld != null)
                         {
                             // Dispose the bitmap.
                             bitmapOld.Dispose();
                         }
+                        */
                     }
                 }
             }
@@ -545,57 +593,112 @@ namespace Gelation_Cloning_Control
             }
         }
 
-        /* Stops the image provider and handles exceptions. */
+        // Occurs when a camera has stopped grabbing.
+        private void OnGrabStopped(Object sender, GrabStopEventArgs e)
+        {
+            if (!Dispatcher.CheckAccess())
+            {
+                // If called from a different thread, we must use the Invoke method to marshal the call to the proper thread.
+                Dispatcher.BeginInvoke(new EventHandler<GrabStopEventArgs>(OnGrabStopped), sender, e);
+                return;
+            }
+
+            // Reset the stopwatch.
+            stopWatch.Reset();
+
+            // Re-enable the updating of the device list.
+            updateBaslerDeviceListTimer.Start();
+
+            // The camera stopped grabbing. Enable the grab buttons. Disable the stop button.
+            EnableButtons(true, false);
+
+            // If the grabbed stop due to an error, display the error message.
+            if (e.Reason != GrabStopReason.UserRequest)
+            {
+                MessageBox.Show("A grab error occured:\n" + e.ErrorMessage, "Error");
+            }
+        }
+
+        // Stops the grabbing of images and handles exceptions.
         private void Stop()
         {
-            /* Stop the grabbing. */
+            // Stop the grabbing.
             try
             {
-                imageProvider.Stop();
+                camera.StreamGrabber.Stop();
             }
-            catch (Exception e)
+            catch (Exception exception)
             {
-                ShowException(e, imageProvider.GetLastErrorMessage());
+                ShowException(exception);
             }
         }
 
-        /* Closes the image provider and handles exceptions. */
-        private void CloseTheImageProvider()
+
+        // Closes the camera object and handles exceptions.
+        private void DestroyCamera()
         {
-            /* Close the image provider. */
+            // Disable all parameter controls.
             try
             {
-                imageProvider.Close();
+                if (camera != null)
+                {
+                    
+                    //testImageControl.Parameter = null;
+                    //pixelFormatControl.Parameter = null;
+                    //widthSliderControl.Parameter = null;
+                    //heightSliderControl.Parameter = null;
+                    //gainSliderControl.Parameter = null;
+                    //exposureTimeSliderControl.Parameter = null;
+                }
             }
-            catch (Exception e)
+            catch (Exception exception)
             {
-                ShowException(e, imageProvider.GetLastErrorMessage());
+                ShowException(exception);
+            }
+
+            // Destroy the camera object.
+            try
+            {
+                if (camera != null)
+                {
+                    camera.Close();
+                    camera.Dispose();
+                    camera = null;
+                }
+            }
+            catch (Exception exception)
+            {
+                ShowException(exception);
             }
         }
 
-        /* Starts the grabbing of one image and handles exceptions. */
+        // Starts the grabbing of a single image and handles exceptions.
         private void OneShot()
         {
             try
             {
-                imageProvider.OneShot(); /* Starts the grabbing of one image. */
+                // Starts the grabbing of one image.
+                camera.Parameters[PLCamera.AcquisitionMode].SetValue(PLCamera.AcquisitionMode.SingleFrame);
+                camera.StreamGrabber.Start(1, GrabStrategy.OneByOne, GrabLoop.ProvidedByStreamGrabber);
             }
-            catch (Exception e)
+            catch (Exception exception)
             {
-                ShowException(e, imageProvider.GetLastErrorMessage());
+                ShowException(exception);
             }
         }
 
-        /* Starts the grabbing of images until the grabbing is stopped and handles exceptions. */
+        // Starts the continuous grabbing of images and handles exceptions.
         private void ContinuousShot()
         {
             try
             {
-                imageProvider.ContinuousShot(); /* Start the grabbing of images until grabbing is stopped. */
+                // Start the grabbing of images until grabbing is stopped.
+                camera.Parameters[PLCamera.AcquisitionMode].SetValue(PLCamera.AcquisitionMode.Continuous);
+                camera.StreamGrabber.Start(GrabStrategy.OneByOne, GrabLoop.ProvidedByStreamGrabber);
             }
-            catch (Exception e)
+            catch (Exception exception)
             {
-                ShowException(e, imageProvider.GetLastErrorMessage());
+                ShowException(exception);
             }
         }
 
@@ -759,7 +862,8 @@ namespace Gelation_Cloning_Control
         //Release the driver so that you can reconnect to the camera again when you re-open the program
         private void MetroWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            PylonC.NET.Pylon.Terminate();
+            //PylonC.NET.Pylon.Terminate();
+            DestroyCamera();
         }
         #endregion
 
