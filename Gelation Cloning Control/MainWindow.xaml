@@ -18,8 +18,12 @@
         </Style>
     </Controls:MetroWindow.Style>
     <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="23*"/>
+            <ColumnDefinition Width="520*"/>
+        </Grid.ColumnDefinitions>
 
-        <TabControl x:Name="tabControl">
+        <TabControl x:Name="tabControl" Grid.ColumnSpan="2">
             <TabItem Header="Main Control">
                 <Grid Name="controlGrid">
 
