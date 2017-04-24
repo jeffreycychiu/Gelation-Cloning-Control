@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:wf="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
         xmlns:local="clr-namespace:Gelation_Cloning_Control"
         mc:Ignorable="d"
         xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
@@ -57,7 +58,12 @@
                         Controls:ButtonHelper.PreserveTextCase="true" Style="{DynamicResource SquareButtonStyle}" />
 
                     <Border BorderThickness="2" BorderBrush="Black" Margin="160,10,10,10">
-                        <Image x:Name="imageDisplay"/>
+                        <!--<Image x:Name="imageDisplay"/>-->
+                        <WindowsFormsHost Name="windowsFormsHost">
+                            <WindowsFormsHost.Child>
+                                <wf:PictureBox Name="pictureBoxCamera"/>
+                            </WindowsFormsHost.Child>
+                        </WindowsFormsHost>
                     </Border>
 
                     <Label x:Name="labelCameraControl" Content="Camera Control" FontSize="20" FontWeight="Bold"  HorizontalAlignment="Left" Margin="3,407,0,0" VerticalAlignment="Top"/>

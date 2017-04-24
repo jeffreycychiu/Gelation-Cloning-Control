@@ -41,6 +41,11 @@ namespace Gelation_Cloning_Control
         private PixelDataConverter converter = new PixelDataConverter();
         private Stopwatch stopWatch = new Stopwatch();
 
+        //Create the controls for the camera controls
+
+
+
+
         DispatcherTimer updateBaslerDeviceListTimer = new DispatcherTimer();
 
         static int CURRENTLIMIT = 6000; //Max current for the laser in milliamps
@@ -68,6 +73,7 @@ namespace Gelation_Cloning_Control
             updateBaslerDeviceListTimer.IsEnabled = true;
 
             UpdateBaslerDeviceList();
+
             //Disable all buttons
             EnableButtons(false, false);
         }
@@ -565,20 +571,22 @@ namespace Gelation_Cloning_Control
                         bitmap.UnlockBits(bmpData);
 
                         // Assign a temporary variable to dispose the bitmap after assigning the new bitmap to the display control.
-                        //Bitmap bitmapOld = pictureBox.Image as Bitmap;
-                        BitmapImage bitmapImageOld = (BitmapImage)imageDisplay.Source;
-                        
+                        Bitmap bitmapOld = (windowsFormsHost.Child as System.Windows.Forms.PictureBox).Image as Bitmap;
+
+                        //BitmapImage bitmapImageOld = (BitmapImage)imageDisplay.Source;
+
 
                         // Provide the display control with the new bitmap. This action automatically updates the display.
                         //pictureBox.Image = bitmap;
-
-                        imageDisplay.Source = BitmapToBitmapImage(bitmap);
+                        (windowsFormsHost.Child as System.Windows.Forms.PictureBox).Image = bitmap;
+                        //imageDisplay.Source = BitmapToBitmapImage(bitmap);
 
                         
-                        if (bitmapImageOld != null)
+                        //if (bitmapImageOld != null)
+                        if(bitmapOld != null)
                         {
                             // Dispose the bitmap.
-                            Bitmap bitmapOld = BitmapImage2Bitmap(bitmapImageOld);
+                            //Bitmap bitmapOld = BitmapImage2Bitmap(bitmapImageOld);
                             bitmapOld.Dispose();
                         }
                         
@@ -924,7 +932,7 @@ namespace Gelation_Cloning_Control
                 return bitmapimage;
             }
         }
-        //Convert BitmapImage to Bitmap
+        //Convert BitmapImage to Bitmap PROBLEM WITH THIS NEED TO FIX
         private Bitmap BitmapImage2Bitmap(BitmapImage bitmapImage)
         {
             // BitmapImage bitmapImage = new BitmapImage(new Uri("../Images/test.png", UriKind.Relative));
@@ -932,11 +940,12 @@ namespace Gelation_Cloning_Control
             using (MemoryStream outStream = new MemoryStream())
             {
                 BitmapEncoder enc = new BmpBitmapEncoder();
-                enc.Frames.Add(BitmapFrame.Create(bitmapImage));
+                enc.Frames.Add(BitmapFrame.Create(bitmapImage, null, null, null));  //added nulls
                 enc.Save(outStream);
                 System.Drawing.Bitmap bitmap = new System.Drawing.Bitmap(outStream);
 
-                return new Bitmap(bitmap);
+                return bitmap;
+                //return new Bitmap(bitmap);
             }
         }
 
