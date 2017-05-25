@@ -42,6 +42,7 @@ namespace Gelation_Cloning_Control
 
         //Create the controls for the camera controls
         IFloatParameter exposure = null;
+        IFloatParameter gain = null;
 
         DispatcherTimer updateBaslerDeviceListTimer = new DispatcherTimer();
 
@@ -420,26 +421,13 @@ namespace Gelation_Cloning_Control
                     // Open the connection to the camera device.
                     camera.Open();
 
-                    // Set the parameter for the controls.
-                    //testImageControl.Parameter = camera.Parameters[PLCamera.TestImageSelector];
-                    //pixelFormatControl.Parameter = camera.Parameters[PLCamera.PixelFormat];
-                    //widthSliderControl.Parameter = camera.Parameters[PLCamera.Width];
-                    //heightSliderControl.Parameter = camera.Parameters[PLCamera.Height];
                     //if (camera.Parameters.Contains(PLCamera.GainAbs))
                     //{
-                    //    gainSliderControl.Parameter = camera.Parameters[PLCamera.GainAbs];
+                    //    gain = camera.Parameters[PLCamera.GainAbs];
                     //}
                     //else
                     //{
-                    //    gainSliderControl.Parameter = camera.Parameters[PLCamera.Gain];
-                    //}
-                    //if (camera.Parameters.Contains(PLCamera.ExposureTimeAbs))
-                    //{
-                    //    exposureTimeSliderControl.Parameter = camera.Parameters[PLCamera.ExposureTimeAbs];
-                    //}
-                    //else
-                    //{
-                    //    exposureTimeSliderControl.Parameter = camera.Parameters[PLCamera.ExposureTime];
+                    //    gain = camera.Parameters[PLCamera.Gain];
                     //}
 
                     if (camera.Parameters.Contains(PLCamera.ExposureTimeAbs))
@@ -450,6 +438,10 @@ namespace Gelation_Cloning_Control
                     {
                         exposure = camera.Parameters[PLCamera.ExposureTime];
                     }
+
+                    //Set the textboxes of exposure/gain etc of the default setting
+                    textBoxExposure.Text = exposure.GetValue().ToString();
+                    //textBoxGain.Text = gain.GetValue().ToString();
                 }
                 catch (Exception exception)
                 {
@@ -725,6 +717,9 @@ namespace Gelation_Cloning_Control
             btnCameraSingleShot.IsEnabled = canGrab;
             btnCameraContinuousShot.IsEnabled = canGrab;
             btnCameraStop.IsEnabled = canStop;
+            
+            textBoxExposure.IsEnabled = canStop;
+            //textBoxGain.IsEnabled = canStop;
         }
 
         // Updates the list of available camera devices.
@@ -818,16 +813,18 @@ namespace Gelation_Cloning_Control
         //Controls the exposure of the camera
         private void textBoxExposure_KeyDown(object sender, KeyEventArgs e)
         {
-            if(e.Key == Key.Enter)
+            if (e.Key == Key.Enter)
             {
                 exposure.ParseAndSetValue(textBoxExposure.Text);
             }
-
         }
 
-        private void sliderExposure_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        private void textBoxGain_KeyDown(object sender, KeyEventArgs e)
         {
-
+            if (e.Key == Key.Enter)
+            {
+                gain.ParseAndSetValue(textBoxGain.Text);
+            }
         }
 
         #endregion
@@ -963,6 +960,8 @@ namespace Gelation_Cloning_Control
                 //return new Bitmap(bitmap);
             }
         }
+
+
 
 
 
