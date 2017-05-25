@@ -14,7 +14,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
-//using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -42,9 +41,7 @@ namespace Gelation_Cloning_Control
         private Stopwatch stopWatch = new Stopwatch();
 
         //Create the controls for the camera controls
-
-
-
+        IFloatParameter exposure = null;
 
         DispatcherTimer updateBaslerDeviceListTimer = new DispatcherTimer();
 
@@ -444,6 +441,15 @@ namespace Gelation_Cloning_Control
                     //{
                     //    exposureTimeSliderControl.Parameter = camera.Parameters[PLCamera.ExposureTime];
                     //}
+
+                    if (camera.Parameters.Contains(PLCamera.ExposureTimeAbs))
+                    {
+                        exposure = camera.Parameters[PLCamera.ExposureTimeAbs];
+                    }
+                    else
+                    {
+                        exposure = camera.Parameters[PLCamera.ExposureTime];
+                    }
                 }
                 catch (Exception exception)
                 {
@@ -810,6 +816,15 @@ namespace Gelation_Cloning_Control
         }
 
         //Controls the exposure of the camera
+        private void textBoxExposure_KeyDown(object sender, KeyEventArgs e)
+        {
+            if(e.Key == Key.Enter)
+            {
+                exposure.ParseAndSetValue(textBoxExposure.Text);
+            }
+
+        }
+
         private void sliderExposure_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
 
@@ -948,6 +963,8 @@ namespace Gelation_Cloning_Control
                 //return new Bitmap(bitmap);
             }
         }
+
+
 
 
 

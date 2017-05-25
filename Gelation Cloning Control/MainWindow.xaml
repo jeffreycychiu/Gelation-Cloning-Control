@@ -85,9 +85,11 @@
                     <Button x:Name="btnCameraStop" Content="Stop Camera" Click="btnCameraStop_Click"  Padding="0" IsEnabled="False" HorizontalAlignment="Left" Margin="10,591,0,0" VerticalAlignment="Top" Width="140" Height="25"  
                         Controls:ButtonHelper.PreserveTextCase="true" Style="{DynamicResource SquareButtonStyle}" />
                     <Label x:Name="labelExposure" Content="Exposure" FontWeight="Bold" Height="25" HorizontalAlignment="Left" Margin="10,624,0,0" VerticalAlignment="Top"/>
+                    <Slider x:Name="sliderExposure" HorizontalAlignment="Left" Margin="10,644,0,0" VerticalAlignment="Top" Width="77" Height="20"/>
+                    <TextBox x:Name="textBoxExposure" IsEnabled="True" KeyDown="textBoxExposure_KeyDown" PreviewTextInput="textBoxCurrent_PreviewTextInput" Text=""
+                        HorizontalAlignment="Left" Height="20" Margin="100,638,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="50"/>
                     <!--<TextBox x:Name="textBoxExposure" Text="{Binding ElementName=sliderExposure, Path=Value, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="25" Margin="85,623,0,0" TextWrapping="Wrap" TextAlignment="Right" VerticalAlignment="Top" Width="65"/>-->
                     <!--<Slider x:Name="sliderExposure" Maximum="500000" ValueChanged="sliderExposure_ValueChanged" HorizontalAlignment="Left" Margin="10,654,0,0" VerticalAlignment="Top" Height="25" Width="140"/>-->
-
 
                 </Grid>
             </TabItem>
