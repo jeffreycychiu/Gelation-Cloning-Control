@@ -44,7 +44,8 @@ namespace Gelation_Cloning_Control
         IFloatParameter exposure = null;
         IFloatParameter gain = null;
 
-        DispatcherTimer updateBaslerDeviceListTimer = new DispatcherTimer();
+        DispatcherTimer timerUpdateBaslerDeviceList = new DispatcherTimer();
+        DispatcherTimer timerUpdateStagePosition = new DispatcherTimer();
 
         static int CURRENTLIMIT = 6000; //Max current for the laser in milliamps
         static int PERIODLIMIT = 10000; //Max period in milliseconds
@@ -55,9 +56,13 @@ namespace Gelation_Cloning_Control
             setSerialPortArroyo();
             setSerialPortMicroscopeStage();
 
-            updateBaslerDeviceListTimer.Tick += new EventHandler(updateBaslerDeviceListTimer_Tick);
-            updateBaslerDeviceListTimer.Interval = new TimeSpan(0, 0, 0, 0, 5000);//Not sure how fast this has to be yet
-            updateBaslerDeviceListTimer.IsEnabled = true;
+            timerUpdateBaslerDeviceList.Tick += new EventHandler(timerUpdateBaslerDeviceList_Tick);
+            timerUpdateBaslerDeviceList.Interval = new TimeSpan(0, 0, 0, 0, 5000);//Not sure how fast this has to be yet
+            timerUpdateBaslerDeviceList.IsEnabled = true;
+
+            timerUpdateStagePosition.Tick += new EventHandler(timerUpdateStagePosition_Tick);
+            timerUpdateStagePosition.Interval = new TimeSpan(0, 0, 0, 0, 5000);//Not sure how fast this has to be yet
+            timerUpdateStagePosition.IsEnabled = false;
 
             UpdateBaslerDeviceList();
 
@@ -86,11 +91,9 @@ namespace Gelation_Cloning_Control
                     //cmbBoxSerialPortMicroscopeStage.IsEnabled = false;
 
                     //Attempt to send/recieve message - this command recieves the peripherals connected to the controller
-                    //serialPortMicroscopeStageSend("*IDN?");
+                    serialPortMicroscopeStageSend("?");
 
-                    //TODO: Fix this - not getting response right now
-                    //serialPortMicroscopeStage.Write("?");
-
+                    timerUpdateStagePosition.IsEnabled = true;
 
                 }
                 catch (Exception ex)
@@ -125,7 +128,12 @@ namespace Gelation_Cloning_Control
             serialPortMicroscopeStage.ReadTimeout = 2000;
 
             serialPortMicroscopeStage.DataReceived += SerialPortMicroscopeStage_DataReceived;
-        
+
+        }
+
+        //Update stage position in XYZ by querying the stage and updating the textboxes
+        private void timerUpdateStagePosition_Tick(object sender, EventArgs e)
+        {
 
         }
         #endregion
@@ -524,7 +532,7 @@ namespace Gelation_Cloning_Control
             stopWatch.Reset();
 
             // Do not update the device list while grabbing to reduce jitter. Jitter may occur because the GUI thread is blocked for a short time when enumerating.
-            updateBaslerDeviceListTimer.Stop();
+            timerUpdateBaslerDeviceList.Stop();
 
             // The camera is grabbing. Disable the grab buttons. Enable the stop button.
             EnableButtons(false, true);
@@ -613,7 +621,7 @@ namespace Gelation_Cloning_Control
             stopWatch.Reset();
 
             // Re-enable the updating of the device list.
-            updateBaslerDeviceListTimer.Start();
+            timerUpdateBaslerDeviceList.Start();
 
             // The camera stopped grabbing. Enable the grab buttons. Disable the stop button.
             EnableButtons(true, false);
@@ -801,7 +809,7 @@ namespace Gelation_Cloning_Control
 
 
         //Updates the device list on each timer tick
-        private void updateBaslerDeviceListTimer_Tick(object sender, EventArgs e)
+        private void timerUpdateBaslerDeviceList_Tick(object sender, EventArgs e)
         {
             UpdateBaslerDeviceList();
         }
@@ -874,7 +882,12 @@ namespace Gelation_Cloning_Control
                 listBoxSerialRecievedMicroscopeStage.ScrollIntoView(listBoxSerialRecievedMicroscopeStage.Items);
             });
 
-            Console.WriteLine("Data Received from Microscope Stage: " + recievedData);
+            switch(recievedData)
+            {
+                //Implement this to update the stage position
+            }
+
+            //Console.WriteLine("Data Received from Microscope Stage: " + recievedData);
         }
 
         private void btnSerialSendCommandLaser_Click(object sender, RoutedEventArgs e)
