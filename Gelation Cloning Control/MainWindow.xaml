@@ -99,10 +99,31 @@
 
             <TabItem Header="Stage">
                 <Grid>
-                    
+                    <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="150" VerticalAlignment="Top" Width="150">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="3*"/>
+                            </Grid.ColumnDefinitions>
+                            <Label x:Name="labelPosition" Content="Position" FontWeight="Bold" FontSize="20" Height="30" HorizontalAlignment="Center" VerticalAlignment="Top" Grid.Row="0" Grid.ColumnSpan="2"/>
+                            <Label x:Name="labelXPosition" Content="X:" FontWeight="Bold" FontSize="20" Height="30" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="1"/>
+                            <Label x:Name="labelYPosition" Content="Y:" FontWeight="Bold" FontSize="20" Height="30" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="2"/>
+                            <Label x:Name="labelZPosition" Content="Z:" FontWeight="Bold" FontSize="20" Height="30" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="3"/>
+                            <TextBox x:Name="textBoxXPosition"  VerticalAlignment="Center" FontSize="20" HorizontalAlignment="Stretch" TextWrapping="Wrap" Text="?"  Grid.Column="1" Grid.Row="1"/>
+                            <TextBox x:Name="textBoxYPosition"  VerticalAlignment="Center" FontSize="20" HorizontalAlignment="Stretch" TextWrapping="Wrap" Text="?"  Grid.Column="1" Grid.Row="2"/>
+                            <TextBox x:Name="textBoxZPosition"  VerticalAlignment="Center" FontSize="20" HorizontalAlignment="Stretch" TextWrapping="Wrap" Text="?"  Grid.Column="1" Grid.Row="3"/>
+                        </Grid>
+                    </Border>
+
                 </Grid>
             </TabItem>
-            
+
             <TabItem Header="Serial">
                 <Grid>
                     <TextBlock x:Name="textBlockSerialRecieved" Text="Serial Recieved" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top"/>
