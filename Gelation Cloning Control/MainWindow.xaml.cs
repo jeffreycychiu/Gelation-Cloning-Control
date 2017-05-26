@@ -83,13 +83,13 @@ namespace Gelation_Cloning_Control
                     serialPortMicroscopeStage.PortName = cmbBoxSerialPortMicroscopeStage.Text;
                     serialPortMicroscopeStage.Open();
                     btnConnectMicroscopeStage.Content = "Disconnect Stage";
-                    cmbBoxSerialPortMicroscopeStage.IsEnabled = false;
+                    //cmbBoxSerialPortMicroscopeStage.IsEnabled = false;
 
                     //Attempt to send/recieve message - this command recieves the peripherals connected to the controller
                     //serialPortMicroscopeStageSend("*IDN?");
 
                     //TODO: Fix this - not getting response right now
-                    serialPortMicroscopeStage.Write("?");
+                    //serialPortMicroscopeStage.Write("?");
 
 
                 }
@@ -111,6 +111,10 @@ namespace Gelation_Cloning_Control
                     MessageBox.Show("Error: " + ex);
                 }
             }
+
+            //Fill the stage position textboxes with the current position
+
+
         }
 
         //Set serial setting for default of Prior Microscope Stage
@@ -119,6 +123,10 @@ namespace Gelation_Cloning_Control
             serialPortMicroscopeStage.BaudRate = 9600;
             serialPortMicroscopeStage.NewLine = "\r";
             serialPortMicroscopeStage.ReadTimeout = 2000;
+
+            serialPortMicroscopeStage.DataReceived += SerialPortMicroscopeStage_DataReceived;
+        
+
         }
         #endregion
 
@@ -147,8 +155,8 @@ namespace Gelation_Cloning_Control
                     serialPortArroyoSend("*IDN?");
 
                     //Enable buttons & inputs in UI
-                    textBoxSerialSendCommand.IsEnabled = true;
-                    btnSerialSendCommand.IsEnabled = true;
+                    textBoxSerialSendCommandLaser.IsEnabled = true;
+                    btnSerialSendCommandLaser.IsEnabled = true;
 
                     toggleLaser.IsEnabled = true;
                     textBoxCurrentSet.IsEnabled = true;
@@ -171,8 +179,8 @@ namespace Gelation_Cloning_Control
                     //Disable Buttons & Inputs
                     toggleLaser.IsEnabled = false;
                     textBoxCurrentSet.IsEnabled = false;
-                    textBoxSerialSendCommand.IsEnabled = false;
-                    btnSerialSendCommand.IsEnabled = false;
+                    textBoxSerialSendCommandLaser.IsEnabled = false;
+                    btnSerialSendCommandLaser.IsEnabled = false;
                 }
                 catch (Exception ex)
                 {
@@ -837,19 +845,19 @@ namespace Gelation_Cloning_Control
             string recievedData = serialPortArroyo.ReadExisting();
             this.Dispatcher.Invoke(() =>
             {
-                listBoxSerialRecieved.Items.Add(recievedData);
-                listBoxSerialRecieved.SelectedIndex = listBoxSerialRecieved.Items.Count - 1;
-                listBoxSerialRecieved.ScrollIntoView(listBoxSerialRecieved.Items);
+                listBoxSerialRecievedLaser.Items.Add(recievedData);
+                listBoxSerialRecievedLaser.SelectedIndex = listBoxSerialRecievedLaser.Items.Count - 1;
+                listBoxSerialRecievedLaser.ScrollIntoView(listBoxSerialRecievedLaser.Items);
 
-                Console.WriteLine("sel index " + listBoxSerialRecieved.SelectedIndex);
-                Console.WriteLine("sel item " + listBoxSerialRecieved.SelectedItem);
+                Console.WriteLine("sel index " + listBoxSerialRecievedLaser.SelectedIndex);
+                Console.WriteLine("sel item " + listBoxSerialRecievedLaser.SelectedItem);
             });
 
             //Handle the recieved data
-            switch (recievedData)
-            {
-                //case: ""
-            }
+            //switch (recievedData)
+            //{
+            //    //case: ""
+            //}
 
             //Console.WriteLine("Data Received:");
             //Console.Write(recievedData);
@@ -869,9 +877,9 @@ namespace Gelation_Cloning_Control
             Console.WriteLine("Data Received from Microscope Stage: " + recievedData);
         }
 
-        private void btnSerialSendCommand_Click(object sender, RoutedEventArgs e)
+        private void btnSerialSendCommandLaser_Click(object sender, RoutedEventArgs e)
         {
-            serialPortArroyoSend(textBoxSerialSendCommand.Text);
+            serialPortArroyoSend(textBoxSerialSendCommandLaser.Text);
         }
 
         private void btnSerialSendCommandMicroscopeStage_Click(object sender, RoutedEventArgs e)
@@ -896,11 +904,11 @@ namespace Gelation_Cloning_Control
         //Send serial port data to the Arroyo. Automatically appends an endline "\n" character
         private void serialPortArroyoSend(string command)
         {
-            listBoxSerialSent.Items.Add(command);
-            listBoxSerialSent.SelectedIndex = listBoxSerialSent.Items.Count - 1;
-            listBoxSerialSent.ScrollIntoView(listBoxSerialSent.SelectedItem);
+            listBoxSerialSentLaser.Items.Add(command);
+            listBoxSerialSentLaser.SelectedIndex = listBoxSerialSentLaser.Items.Count - 1;
+            listBoxSerialSentLaser.ScrollIntoView(listBoxSerialSentLaser.SelectedItem);
 
-            Console.WriteLine(listBoxSerialSent.Items.Count - 1);
+            Console.WriteLine(listBoxSerialSentLaser.Items.Count - 1);
 
             serialPortArroyo.Write(command + "\n"); //Requires newline to send
         }

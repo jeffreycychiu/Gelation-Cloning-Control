@@ -126,18 +126,22 @@
 
             <TabItem Header="Serial">
                 <Grid>
-                    <TextBlock x:Name="textBlockSerialRecieved" Text="Serial Recieved" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top"/>
-                    <TextBlock x:Name="textBlockSerialSent" Text="Serial Sent" HorizontalAlignment="Left" Margin="10,253,0,0" TextWrapping="Wrap" VerticalAlignment="Top"/>
+                    <TextBlock x:Name="textBlockSerialRecievedLaser" Text="Serial Recieved Laser" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top"/>
+                    <TextBlock x:Name="textBlockSerialSentLaser" Text="Serial Sent Laser" HorizontalAlignment="Left" Margin="10,253,0,0" TextWrapping="Wrap" VerticalAlignment="Top"/>
                     <TextBlock x:Name="textBlockSerialSendSingleCommand" Text="Serial Send Command Laser" HorizontalAlignment="Left" Margin="10,194,0,0" TextWrapping="Wrap" VerticalAlignment="Top"/>
 
-                    <ListBox x:Name="listBoxSerialRecieved" x:FieldModifier="public" FontSize="10" HorizontalAlignment="Left" Height="160" Margin="10,29,0,0" VerticalAlignment="Top" Width="209" BorderThickness="2"/>
+                    <TextBlock x:Name="textBlockSerialRecievedStage" Text="Serial Recieved Stage" HorizontalAlignment="Left" Margin="224,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top"/>
+                    <TextBlock x:Name="textBlockSerialSentStage" Text="Serial Sent Stage" HorizontalAlignment="Left" Margin="224,253,0,0" TextWrapping="Wrap" VerticalAlignment="Top"/>
+                    <TextBlock x:Name="textBlockSerialSendSingleStage" Text="Serial Send Command Stage" HorizontalAlignment="Left" Margin="224,194,0,0" TextWrapping="Wrap" VerticalAlignment="Top"/>
+
+                    <ListBox x:Name="listBoxSerialRecievedLaser" x:FieldModifier="public" FontSize="10" HorizontalAlignment="Left" Height="160" Margin="10,29,0,0" VerticalAlignment="Top" Width="209" BorderThickness="2"/>
                     <ListBox x:Name="listBoxSerialRecievedMicroscopeStage" x:FieldModifier="public" FontSize="10" HorizontalAlignment="Left" Height="160" Margin="224,29,0,0" VerticalAlignment="Top" Width="209" BorderThickness="2"/>
-                    <ListBox x:Name="listBoxSerialSent" HorizontalAlignment="Left" Height ="142" Margin="10,272,0,0" VerticalAlignment="Top" Width="209" BorderThickness="2"/>
-                    <TextBox x:Name="textBoxSerialSendCommand" IsEnabled="False" HorizontalAlignment="Left" Height="25" Margin="10,213,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="161"/>
+                    <ListBox x:Name="listBoxSerialSentLaser" HorizontalAlignment="Left" Height ="142" Margin="10,272,0,0" VerticalAlignment="Top" Width="209" BorderThickness="2"/>
+                    <TextBox x:Name="textBoxSerialSendCommandLaser" IsEnabled="False" HorizontalAlignment="Left" Height="25" Margin="10,213,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="161"/>
                     <TextBox x:Name="textBoxSerialSendCommandMicroscopeStage" IsEnabled="True" HorizontalAlignment="Left" Height="25" Margin="224,213,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="161"/>
                     <ListBox x:Name="listBoxSerialSentMicroscopeStage" HorizontalAlignment="Left" Height ="142" Margin="224,272,0,0" VerticalAlignment="Top" Width="209" BorderThickness="2"/>
 
-                    <Button x:Name="btnSerialSendCommand" Content="Send" Click="btnSerialSendCommand_Click"  IsEnabled="False" HorizontalAlignment="Left" Padding="0" Margin="176,213,0,0" 
+                    <Button x:Name="btnSerialSendCommandLaser" Content="Send" Click="btnSerialSendCommandLaser_Click"  IsEnabled="False" HorizontalAlignment="Left" Padding="0" Margin="176,213,0,0" 
                         VerticalAlignment="Top" Width="43" Height="25" Controls:ButtonHelper.PreserveTextCase="true" Style="{DynamicResource SquareButtonStyle}" />
                     <Button x:Name="btnSerialSendCommandMicroscopeStage" Content="Send" Click="btnSerialSendCommandMicroscopeStage_Click"  IsEnabled="True" HorizontalAlignment="Left" Padding="0" Margin="390,213,0,0" 
                         VerticalAlignment="Top" Width="43" Height="25" Controls:ButtonHelper.PreserveTextCase="true" Style="{DynamicResource SquareButtonStyle}" />
