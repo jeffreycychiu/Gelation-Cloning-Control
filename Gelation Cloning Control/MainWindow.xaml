@@ -90,11 +90,19 @@
                     <Label x:Name="labelGain" Content="Gain" FontWeight="Bold" Height="25" HorizontalAlignment="Left" Margin="10,652,0,0" VerticalAlignment="Top"/>
                     <TextBox x:Name="textBoxGain" IsEnabled="False" KeyDown="textBoxGain_KeyDown"  PreviewTextInput="textBoxCurrent_PreviewTextInput" Text=""
                         HorizontalAlignment="Left" Height="20" Margin="85,652,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="65"/>
+                    <Button x:Name="btnSaveImage"  Content="Save Image" Click="btnSaveImage_Click"  Padding="0" HorizontalAlignment="Left" Margin="10,683,0,0" VerticalAlignment="Top" Width="140" Height="25"  
+                        Controls:ButtonHelper.PreserveTextCase="true" Style="{DynamicResource SquareButtonStyle}" />
 
 
                 </Grid>
             </TabItem>
 
+            <TabItem Header="Stage">
+                <Grid>
+                    
+                </Grid>
+            </TabItem>
+            
             <TabItem Header="Serial">
                 <Grid>
                     <TextBlock x:Name="textBlockSerialRecieved" Text="Serial Recieved" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top"/>

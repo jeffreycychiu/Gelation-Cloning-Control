@@ -23,7 +23,7 @@ using System.Windows.Threading;
 using MahApps.Metro.Controls;
 using PylonC.NET;
 using Basler.Pylon;
-
+using Microsoft.Win32;
 
 namespace Gelation_Cloning_Control
 {
@@ -54,17 +54,6 @@ namespace Gelation_Cloning_Control
             InitializeComponent();
             setSerialPortArroyo();
             setSerialPortMicroscopeStage();
-
-            // Set the default names for the controls.
-
-            //testImageControl.DefaultName = "Test Image Selector";
-            //pixelFormatControl.DefaultName = "Pixel Format";
-            //widthSliderControl.DefaultName = "Width";
-            //heightSliderControl.DefaultName = "Height";
-            //gainSliderControl.DefaultName = "Gain";
-            //exposureTimeSliderControl.DefaultName = "Exposure Time";
-
-            //SliderUserControl sliderUserControlExposure = new SliderUserControl();
 
             updateBaslerDeviceListTimer.Tick += new EventHandler(updateBaslerDeviceListTimer_Tick);
             updateBaslerDeviceListTimer.Interval = new TimeSpan(0, 0, 0, 0, 5000);//Not sure how fast this has to be yet
@@ -642,7 +631,6 @@ namespace Gelation_Cloning_Control
             }
         }
 
-
         // Closes the camera object and handles exceptions.
         private void DestroyCamera()
         {
@@ -827,6 +815,19 @@ namespace Gelation_Cloning_Control
             }
         }
 
+        //Save image to disk
+        private void btnSaveImage_Click(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = "bmp (*.bmp)|*.bmp";
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                (windowsFormsHost.Child as System.Windows.Forms.PictureBox).Image.Save(saveFileDialog.FileName, ImageFormat.Bmp);
+            }
+                
+
+        }
+
         #endregion
 
         #region Serial Event Handlers
@@ -960,6 +961,7 @@ namespace Gelation_Cloning_Control
                 //return new Bitmap(bitmap);
             }
         }
+
 
 
 
