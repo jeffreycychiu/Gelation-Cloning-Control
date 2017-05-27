@@ -885,6 +885,7 @@ namespace Gelation_Cloning_Control
             switch(recievedData)
             {
                 //Implement this to update the stage position
+                //new shit
             }
 
             //Console.WriteLine("Data Received from Microscope Stage: " + recievedData);
