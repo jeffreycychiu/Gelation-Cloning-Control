@@ -839,9 +839,7 @@ namespace Gelation_Cloning_Control
             if (saveFileDialog.ShowDialog() == true)
             {
                 (windowsFormsHost.Child as System.Windows.Forms.PictureBox).Image.Save(saveFileDialog.FileName, ImageFormat.Bmp);
-            }
-                
-
+            } 
         }
 
         #endregion
