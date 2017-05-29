@@ -118,10 +118,6 @@ namespace Gelation_Cloning_Control
                     MessageBox.Show("Error: " + ex);
                 }
             }
-
-            //Fill the stage position textboxes with the current position
-
-
         }
 
         //Set serial setting for default of Prior Microscope Stage
@@ -132,7 +128,6 @@ namespace Gelation_Cloning_Control
             serialPortMicroscopeStage.ReadTimeout = 2000;
 
             serialPortMicroscopeStage.DataReceived += SerialPortMicroscopeStage_DataReceived;
-
         }
 
         //Update stage position in XYZ by querying the stage and updating the textboxes
@@ -155,6 +150,12 @@ namespace Gelation_Cloning_Control
             zeroY = zeroY + yTemp;
             zeroZ = zeroZ + zTemp;
         }
+
+        private void btnGoTo_Click(object sender, RoutedEventArgs e)
+        {
+            serialPortMicroscopeStageSend("GR," + textBoxXGoTo.Text + "," + textBoxYGoto.Text + "," + textBoxZGoTo.Text);
+        }
+
         #endregion
 
         #region Laser Commands and Connections
@@ -877,15 +878,6 @@ namespace Gelation_Cloning_Control
                 Console.WriteLine("sel index " + listBoxSerialRecievedLaser.SelectedIndex);
                 Console.WriteLine("sel item " + listBoxSerialRecievedLaser.SelectedItem);
             });
-
-            //Handle the recieved data
-            //switch (recievedData)
-            //{
-            //    //case: ""
-            //}
-
-            //Console.WriteLine("Data Received:");
-            //Console.Write(recievedData);
         }
 
         //Write the data recieved from the Mircoscope stage to the listbox. Helpful for debugging
@@ -964,12 +956,11 @@ namespace Gelation_Cloning_Control
 
         private void serialPortMicroscopeStageSend(string command)
         {
+
             listBoxSerialSentMicroscopeStage.Items.Add(command);
             listBoxSerialSentMicroscopeStage.SelectedIndex = listBoxSerialSentMicroscopeStage.Items.Count - 1;
             listBoxSerialSentMicroscopeStage.ScrollIntoView(listBoxSerialSentMicroscopeStage.SelectedItem);
-
-            Console.WriteLine(listBoxSerialSentMicroscopeStage.Items.Count - 1);
-
+            
             serialPortMicroscopeStage.WriteLine(command);
         }
 
@@ -1027,8 +1018,8 @@ namespace Gelation_Cloning_Control
 
 
 
-        #endregion
 
+        #endregion
 
     }
 }

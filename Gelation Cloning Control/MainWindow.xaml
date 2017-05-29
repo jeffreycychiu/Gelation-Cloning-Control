@@ -123,6 +123,30 @@
                         </Grid>
                     </Border>
 
+                    <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="150" VerticalAlignment="Top" Width="150" Margin="0,150,0,0">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="3*"/>
+                            </Grid.ColumnDefinitions>
+                            <Label x:Name="labelGoTo" Content="Go To Relative" FontWeight="Bold" FontSize="20" Height="30" HorizontalAlignment="Center" VerticalAlignment="Top" Grid.Row="0" Grid.ColumnSpan="2"/>
+                            <Label x:Name="labelXGoTo" Content="X:" FontWeight="Bold" FontSize="20" Height="30" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="1"/>
+                            <Label x:Name="labelYGoTo" Content="Y:" FontWeight="Bold" FontSize="20" Height="30" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="2"/>
+                            <Label x:Name="labelZGoto" Content="Z:" FontWeight="Bold" FontSize="20" Height="30" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="3"/>
+                            <TextBox x:Name="textBoxXGoTo"  VerticalAlignment="Center" FontSize="20" HorizontalAlignment="Stretch" TextWrapping="Wrap" Text="0"  Grid.Column="1" Grid.Row="1"/>
+                            <TextBox x:Name="textBoxYGoto"  VerticalAlignment="Center" FontSize="20" HorizontalAlignment="Stretch" TextWrapping="Wrap" Text="0"  Grid.Column="1" Grid.Row="2"/>
+                            <TextBox x:Name="textBoxZGoTo"  VerticalAlignment="Center" FontSize="20" HorizontalAlignment="Stretch" TextWrapping="Wrap" Text="0"  Grid.Column="1" Grid.Row="3"/>
+                            <Button x:Name="btnGoTo" FontWeight="Bold" FontSize="20"  Content="Go" Click="btnGoTo_Click"  Grid.ColumnSpan="2" Grid.Row="4"/>
+                        </Grid>
+                    </Border>
+
                 </Grid>
             </TabItem>
 
