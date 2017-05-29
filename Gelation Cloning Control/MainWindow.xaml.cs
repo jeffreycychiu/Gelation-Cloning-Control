@@ -50,6 +50,10 @@ namespace Gelation_Cloning_Control
         static int CURRENTLIMIT = 6000; //Max current for the laser in milliamps
         static int PERIODLIMIT = 10000; //Max period in milliseconds
 
+        public int zeroX = 0;
+        public int zeroY = 0;
+        public int zeroZ = 0;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -61,7 +65,7 @@ namespace Gelation_Cloning_Control
             timerUpdateBaslerDeviceList.IsEnabled = true;
 
             timerUpdateStagePosition.Tick += new EventHandler(timerUpdateStagePosition_Tick);
-            timerUpdateStagePosition.Interval = new TimeSpan(0, 0, 0, 0, 25);//Not sure how fast this has to be yet
+            timerUpdateStagePosition.Interval = new TimeSpan(0, 0, 0, 0, 20);//Not sure how fast this has to be yet
             timerUpdateStagePosition.IsEnabled = false;
 
             UpdateBaslerDeviceList();
@@ -135,6 +139,21 @@ namespace Gelation_Cloning_Control
         private void timerUpdateStagePosition_Tick(object sender, EventArgs e)
         {
             serialPortMicroscopeStageSend("P");
+        }
+
+        //Zero xyz position to current position
+        private void btnZeroPosition_Click(object sender, RoutedEventArgs e)
+        {
+            int xTemp;
+            int yTemp;
+            int zTemp;
+            int.TryParse(textBoxXPosition.Text, out xTemp);
+            int.TryParse(textBoxYPosition.Text, out yTemp);
+            int.TryParse(textBoxZPosition.Text, out zTemp);
+
+            zeroX = zeroX + xTemp;
+            zeroY = zeroY + yTemp;
+            zeroZ = zeroZ + zTemp;
         }
         #endregion
 
@@ -895,9 +914,13 @@ namespace Gelation_Cloning_Control
             {
                 this.Dispatcher.Invoke(() =>
                 {
-                    textBoxXPosition.Text = positions[0].ToString();
-                    textBoxYPosition.Text = positions[1].ToString();
-                    textBoxZPosition.Text = positions[2].ToString();
+                    int xPosition = positions[0] - zeroX;
+                    int yPosition = positions[1] - zeroY;
+                    int zPosition = positions[2] - zeroZ;
+
+                    textBoxXPosition.Text = xPosition.ToString();
+                    textBoxYPosition.Text = yPosition.ToString();
+                    textBoxZPosition.Text = zPosition.ToString();
                 });
             }
             //Console.WriteLine("Data Received from Microscope Stage: " + recievedData);
@@ -995,6 +1018,7 @@ namespace Gelation_Cloning_Control
                 //return new Bitmap(bitmap);
             }
         }
+
 
 
 
