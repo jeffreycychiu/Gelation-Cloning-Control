@@ -61,7 +61,7 @@ namespace Gelation_Cloning_Control
             timerUpdateBaslerDeviceList.IsEnabled = true;
 
             timerUpdateStagePosition.Tick += new EventHandler(timerUpdateStagePosition_Tick);
-            timerUpdateStagePosition.Interval = new TimeSpan(0, 0, 0, 0, 5000);//Not sure how fast this has to be yet
+            timerUpdateStagePosition.Interval = new TimeSpan(0, 0, 0, 0, 25);//Not sure how fast this has to be yet
             timerUpdateStagePosition.IsEnabled = false;
 
             UpdateBaslerDeviceList();
@@ -134,7 +134,7 @@ namespace Gelation_Cloning_Control
         //Update stage position in XYZ by querying the stage and updating the textboxes
         private void timerUpdateStagePosition_Tick(object sender, EventArgs e)
         {
-
+            serialPortMicroscopeStageSend("P");
         }
         #endregion
 
@@ -873,6 +873,8 @@ namespace Gelation_Cloning_Control
         private void SerialPortMicroscopeStage_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
             string recievedData = serialPortMicroscopeStage.ReadExisting();
+
+            //Put recieved data string into list box in the serial page
             this.Dispatcher.Invoke(() =>
             {
                 listBoxSerialRecievedMicroscopeStage.Items.Add(recievedData);
@@ -880,12 +882,24 @@ namespace Gelation_Cloning_Control
                 listBoxSerialRecievedMicroscopeStage.ScrollIntoView(listBoxSerialRecievedMicroscopeStage.Items);
             });
 
-            switch(recievedData)
+            //Parse the recieved data from string into int
+            int numValues = 0;
+            int[] positions = new int[3];
+            foreach(var positionString in recievedData.Split(','))
             {
-                //Implement this to update the stage position
-                //new shit
+                int.TryParse(positionString, out positions[numValues]);
+                numValues++;
             }
 
+            if (numValues == 3)
+            {
+                this.Dispatcher.Invoke(() =>
+                {
+                    textBoxXPosition.Text = positions[0].ToString();
+                    textBoxYPosition.Text = positions[1].ToString();
+                    textBoxZPosition.Text = positions[2].ToString();
+                });
+            }
             //Console.WriteLine("Data Received from Microscope Stage: " + recievedData);
         }
 
