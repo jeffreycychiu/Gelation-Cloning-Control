@@ -65,7 +65,7 @@
                         <!--<Image x:Name="imageDisplay"/>-->
                         <WindowsFormsHost Name="windowsFormsHost">
                             <WindowsFormsHost.Child>
-                                <wf:PictureBox Name="pictureBoxCamera"/>
+                                <wf:PictureBox Name="pictureBoxCamera" SizeMode="StretchImage"/>
                             </WindowsFormsHost.Child>
                         </WindowsFormsHost>
                     </Border>
