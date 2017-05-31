@@ -156,6 +156,38 @@ namespace Gelation_Cloning_Control
             serialPortMicroscopeStageSend("GR," + textBoxXGoTo.Text + "," + textBoxYGoto.Text + "," + textBoxZGoTo.Text);
         }
 
+        //Stage scanning function
+        private void btnScan_Click(object sender, RoutedEventArgs e)
+        {
+            int xFields = 0;
+            int yFields = 0;
+
+            int.TryParse(textBoxFieldsX.Text, out xFields);
+            int.TryParse(textBoxFieldsY.Text, out yFields);
+
+            string lens;
+            int moveStageX;
+            int moveStageY;
+            lens = comboBoxScanLens.Text;
+
+            switch (lens)
+            {
+                case "4X Nikon":
+                    break;
+                case "10X Nikon":
+                    break;
+                case "20X Nikon":
+                    break;
+                case "40X Nikon":
+                    break;
+                case "1550 Aspheric":
+                    break;
+                case "1064 Microspot Focus Thorlabs":
+                    break;
+            }
+
+        }
+
         #endregion
 
         #region Laser Commands and Connections
@@ -1009,16 +1041,7 @@ namespace Gelation_Cloning_Control
                 //return new Bitmap(bitmap);
             }
         }
-
-
-
-
-
-
-
-
-
-
+       
         #endregion
 
     }

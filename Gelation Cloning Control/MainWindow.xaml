@@ -10,7 +10,7 @@
         WindowState="Maximized"
         WindowStyle="None"
         Closing="MetroWindow_Closing"
-        Title="Gelation Control" Height="797" Width="1093">
+        Title="Gelation Control" Height="900" Width="1200">
     <Controls:MetroWindow.Style>
         <Style TargetType="{x:Type Controls:MetroWindow}">
             <Setter Property="FontFamily" Value="Veranda" />
@@ -20,7 +20,7 @@
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="4*"/>
+            <ColumnDefinition Width="3*"/>
         </Grid.ColumnDefinitions>
 
         <Border BorderThickness="2" BorderBrush="Black" Grid.Column="1" Margin="10,10,10,10">
@@ -100,7 +100,17 @@
 
             <TabItem Header="Stage">
                 <Grid>
-                    <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="150" VerticalAlignment="Top" Width="150">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Border BorderBrush="Black" BorderThickness="1" Grid.Row="0" >
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="*"/>
@@ -124,7 +134,7 @@
                         </Grid>
                     </Border>
 
-                    <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="150" VerticalAlignment="Top" Width="150" Margin="0,150,0,0">
+                    <Border BorderBrush="Black" BorderThickness="1" Grid.Row="0" Grid.Column="1">
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="*"/>
@@ -147,6 +157,38 @@
                             <Button x:Name="btnGoTo" FontWeight="Bold" FontSize="20"  Content="Go" Click="btnGoTo_Click"  Grid.ColumnSpan="2" Grid.Row="4"/>
                         </Grid>
                     </Border>
+                    
+                    <Border BorderBrush="Black" BorderThickness="1" Grid.Row="1" Grid.ColumnSpan="2">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="2*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Label x:Name="labelScanXY" Content="Scan" FontSize="20" FontWeight="Bold" HorizontalAlignment="Center" Grid.ColumnSpan="3"/>
+                            <Label x:Name="labelFieldsX" Content="X Fields:" FontSize="20" FontWeight="Bold" VerticalAlignment="Center" Grid.Row="1" Grid.ColumnSpan="2"/>
+                            <Label x:Name="labelFieldsY" Content="Y Fields:" FontSize="20" FontWeight="Bold" VerticalAlignment="Center" Grid.Row="2" Grid.ColumnSpan="2"/>
+                            <TextBox x:Name="textBoxFieldsX" FontSize="20" HorizontalAlignment="Stretch" Text="0" Grid.Row="1" Grid.Column="2"/>
+                            <TextBox x:Name="textBoxFieldsY" FontSize="20" HorizontalAlignment="Stretch" Text="0" Grid.Row="2" Grid.Column="2"/>
+
+                            <ComboBox x:Name="comboBoxScanLens" FontSize="20" FontWeight="Bold" Grid.Row="3" Grid.ColumnSpan="2">
+                                <ComboBoxItem>4X Nikon</ComboBoxItem>
+                                <ComboBoxItem>10X Nikon</ComboBoxItem>
+                                <ComboBoxItem>20X Nikon</ComboBoxItem>
+                                <ComboBoxItem>40X Nikon</ComboBoxItem>
+                                <ComboBoxItem>1550 Aspheric</ComboBoxItem>
+                                <ComboBoxItem>1064 Microspot Focus Thorlabs</ComboBoxItem>
+                            </ComboBox>
+                            <Button x:Name="btnScan" Content="Scan" FontSize="20" FontWeight="Bold" Click="btnScan_Click" Grid.Row="4" Grid.ColumnSpan="3"/>
+                        </Grid>
+                    </Border>
+                    
 
                 </Grid>
             </TabItem>
