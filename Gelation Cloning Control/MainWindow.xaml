@@ -214,6 +214,9 @@
                         VerticalAlignment="Top" Width="43" Height="25" Controls:ButtonHelper.PreserveTextCase="true" Style="{DynamicResource SquareButtonStyle}" />
                     <Button x:Name="btnSerialSendCommandMicroscopeStage" Content="Send" Click="btnSerialSendCommandMicroscopeStage_Click"  IsEnabled="True" HorizontalAlignment="Left" Padding="0" Margin="167,513,0,0" 
                         VerticalAlignment="Top" Width="43" Height="25" Controls:ButtonHelper.PreserveTextCase="true" Style="{DynamicResource SquareButtonStyle}" />
+                    <CheckBox x:Name="checkBoxQueryStagePosition" Content="Query Stage Position" HorizontalAlignment="Left" Margin="10,687,0,0" IsChecked="true" VerticalAlignment="Top"/>
+
+
 
                 </Grid>
             </TabItem>

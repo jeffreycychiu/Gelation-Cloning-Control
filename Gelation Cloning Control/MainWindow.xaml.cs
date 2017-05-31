@@ -133,7 +133,8 @@ namespace Gelation_Cloning_Control
         //Update stage position in XYZ by querying the stage and updating the textboxes
         private void timerUpdateStagePosition_Tick(object sender, EventArgs e)
         {
-            serialPortMicroscopeStageSend("P");
+            if(checkBoxQueryStagePosition.IsChecked == true)
+                serialPortMicroscopeStageSend("P");
         }
 
         //Zero xyz position to current position
@@ -166,13 +167,15 @@ namespace Gelation_Cloning_Control
             int.TryParse(textBoxFieldsY.Text, out yFields);
 
             string lens;
-            int moveStageX;
-            int moveStageY;
+            int moveStageX = 0;
+            int moveStageY = 0;
             lens = comboBoxScanLens.Text;
 
             switch (lens)
             {
                 case "4X Nikon":
+                    moveStageX = 70000;
+                    moveStageY = 70000;
                     break;
                 case "10X Nikon":
                     break;
@@ -185,6 +188,15 @@ namespace Gelation_Cloning_Control
                 case "1064 Microspot Focus Thorlabs":
                     break;
             }
+
+            for (int row = 0; row < xFields; row++)
+            {
+                for (int column = 0; column < yFields; column++)
+                {
+                    serialPortMicroscopeStageSend("GR," + moveStageX.ToString() + moveStageY.ToString());
+                }
+            }
+            
 
         }
 
