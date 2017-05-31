@@ -98,6 +98,7 @@ namespace Gelation_Cloning_Control
                     serialPortMicroscopeStageSend("?");
 
                     timerUpdateStagePosition.IsEnabled = true;
+                    tabStage.IsEnabled = true;
 
                 }
                 catch (Exception ex)
@@ -174,14 +175,20 @@ namespace Gelation_Cloning_Control
             switch (lens)
             {
                 case "4X Nikon":
-                    moveStageX = 70000;
-                    moveStageY = 70000;
+                    moveStageX = -60000;
+                    moveStageY = -60000;
                     break;
                 case "10X Nikon":
+                    moveStageX = -24000;
+                    moveStageY = -24000;
                     break;
                 case "20X Nikon":
+                    moveStageX = -12000;
+                    moveStageY = -12000;
                     break;
                 case "40X Nikon":
+                    moveStageX = -6000;
+                    moveStageY = -6000;
                     break;
                 case "1550 Aspheric":
                     break;
@@ -189,13 +196,23 @@ namespace Gelation_Cloning_Control
                     break;
             }
 
-            for (int row = 0; row < xFields; row++)
+            serialPortMicroscopeStageSend("MACRO");
+            for (int row = 0; row < yFields; row++)
             {
-                for (int column = 0; column < yFields; column++)
+                for (int column = 0; column < xFields; column++)
                 {
-                    serialPortMicroscopeStageSend("GR," + moveStageX.ToString() + moveStageY.ToString());
+                    serialPortMicroscopeStageSend("GR," + moveStageX.ToString() + ", 0");
+                    serialPortMicroscopeStageSend("WAIT 1000");
+                    //take picture
+                }
+                if (row < yFields - 1)
+                {
+                    moveStageX = -moveStageX;
+                    serialPortMicroscopeStageSend("GR, 0, " + moveStageY.ToString());
+                    serialPortMicroscopeStageSend("WAIT 1000");
                 }
             }
+            serialPortMicroscopeStageSend("MACRO");
             
 
         }
@@ -942,8 +959,8 @@ namespace Gelation_Cloning_Control
             int[] positions = new int[3];
             foreach(var positionString in recievedData.Split(','))
             {
-                int.TryParse(positionString, out positions[numValues]);
-                numValues++;
+                if (int.TryParse(positionString, out positions[numValues]) == true)
+                    numValues++;
             }
 
             if (numValues == 3)
@@ -1050,7 +1067,6 @@ namespace Gelation_Cloning_Control
                 System.Drawing.Bitmap bitmap = new System.Drawing.Bitmap(outStream);
 
                 return bitmap;
-                //return new Bitmap(bitmap);
             }
         }
        
