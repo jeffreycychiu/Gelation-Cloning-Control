@@ -158,6 +158,18 @@ namespace Gelation_Cloning_Control
             serialPortMicroscopeStageSend("GR," + textBoxXGoTo.Text + "," + textBoxYGoto.Text + "," + textBoxZGoTo.Text);
         }
 
+        //Select folder for the images to be saved during a scanning
+        private void btnSaveScanImageFolderPath_Click(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = "bmp (*.bmp)|*.bmp";
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                textBoxSaveScanImageFolderPath.Text = saveFileDialog.FileName;
+                //(windowsFormsHost.Child as System.Windows.Forms.PictureBox).Image.Save(saveFileDialog.FileName, ImageFormat.Bmp);
+            }
+        }
+
         //Stage scanning function
         private void btnScan_Click(object sender, RoutedEventArgs e)
         {
@@ -203,7 +215,13 @@ namespace Gelation_Cloning_Control
                 {
                     serialPortMicroscopeStageSend("GR," + moveStageX.ToString() + ", 0");
                     serialPortMicroscopeStageSend("WAIT 1000");
-                    //take picture
+                    //if (checkBoxSaveScanImages.IsChecked == true)
+                    //{
+                    //    string[] filePath = new string[2];
+                    //    filePath = textBoxSaveScanImageFolderPath.Text.Split(',');
+                    //    (windowsFormsHost.Child as System.Windows.Forms.PictureBox).Image.Save(filePath[0] + "-" + row.ToString() + "-" + column.ToString(), ImageFormat.Bmp);
+                    //}
+                    
                 }
                 if (row < yFields - 1)
                 {
@@ -1069,8 +1087,9 @@ namespace Gelation_Cloning_Control
                 return bitmap;
             }
         }
-       
+
         #endregion
+
 
     }
 }

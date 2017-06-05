@@ -166,10 +166,12 @@
                                 <RowDefinition Height="*"/>
                                 <RowDefinition Height="*"/>
                                 <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="2*"/>
+                                <ColumnDefinition Width="4*"/>
                                 <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="3*"/>
                             </Grid.ColumnDefinitions>
                             <Label x:Name="labelScanXY" Content="Scan" FontSize="20" FontWeight="Bold" HorizontalAlignment="Center" Grid.ColumnSpan="3"/>
                             <Label x:Name="labelFieldsX" Content="X Fields:" FontSize="20" FontWeight="Bold" VerticalAlignment="Center" Grid.Row="1" Grid.ColumnSpan="2"/>
@@ -177,7 +179,7 @@
                             <TextBox x:Name="textBoxFieldsX" FontSize="20" HorizontalAlignment="Stretch" Text="0" Grid.Row="1" Grid.Column="2"/>
                             <TextBox x:Name="textBoxFieldsY" FontSize="20" HorizontalAlignment="Stretch" Text="0" Grid.Row="2" Grid.Column="2"/>
 
-                            <ComboBox x:Name="comboBoxScanLens" FontSize="20" FontWeight="Bold" Grid.Row="3" Grid.ColumnSpan="2">
+                            <ComboBox x:Name="comboBoxScanLens" Text="Choose Lens" FontSize="20" FontWeight="Bold" Grid.Row="3" Grid.ColumnSpan="3">
                                 <ComboBoxItem>4X Nikon</ComboBoxItem>
                                 <ComboBoxItem>10X Nikon</ComboBoxItem>
                                 <ComboBoxItem>20X Nikon</ComboBoxItem>
@@ -185,7 +187,10 @@
                                 <ComboBoxItem>1550 Aspheric</ComboBoxItem>
                                 <ComboBoxItem>1064 Microspot Focus Thorlabs</ComboBoxItem>
                             </ComboBox>
-                            <Button x:Name="btnScan" Content="Scan" FontSize="20" FontWeight="Bold" Click="btnScan_Click" Grid.Row="4" Grid.ColumnSpan="3"/>
+                            <TextBox x:Name="textBoxSaveScanImageFolderPath" FontSize="20" HorizontalAlignment="Stretch" Grid.Row="4" Grid.Column="0" />
+                            <Button x:Name="btnSaveScanImageFolderPath" Content="..." Click="btnSaveScanImageFolderPath_Click"  FontSize="20" FontWeight="Bold" Grid.Row="4" Grid.Column="1" />
+                            <CheckBox x:Name="checkBoxSaveScanImages" Content="Save?" FontSize="20" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Row="4" Grid.Column="2" IsChecked="False" />
+                            <Button x:Name="btnScan" Content="Scan" FontSize="20" FontWeight="Bold" Click="btnScan_Click" Grid.Row="5" Grid.ColumnSpan="3"/>
                         </Grid>
                     </Border>
                     
