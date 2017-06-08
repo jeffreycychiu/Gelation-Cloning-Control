@@ -171,7 +171,7 @@ namespace Gelation_Cloning_Control
         }
 
         //Stage scanning function
-        private void btnScan_Click(object sender, RoutedEventArgs e)
+        private async void btnScan_Click(object sender, RoutedEventArgs e)
         {
             int xFields = 0;
             int yFields = 0;
@@ -208,31 +208,57 @@ namespace Gelation_Cloning_Control
                     break;
             }
 
+            //Task wait = Task.Delay(1000);
             serialPortMicroscopeStageSend("MACRO");
             for (int row = 0; row < yFields; row++)
             {
-                for (int column = 0; column < xFields; column++)
+                for (int column = 0; column < xFields - 1; column++)
                 {
-                    serialPortMicroscopeStageSend("GR," + moveStageX.ToString() + ", 0");
-                    serialPortMicroscopeStageSend("WAIT 1000");
                     //if (checkBoxSaveScanImages.IsChecked == true)
                     //{
-                    //    string[] filePath = new string[2];
-                    //    filePath = textBoxSaveScanImageFolderPath.Text.Split(',');
-                    //    (windowsFormsHost.Child as System.Windows.Forms.PictureBox).Image.Save(filePath[0] + "-" + row.ToString() + "-" + column.ToString(), ImageFormat.Bmp);
+                    //    if (row == 0 && column == 0)
+                    //    {
+                    //        string[] filePath = new string[2];
+                    //        filePath = textBoxSaveScanImageFolderPath.Text.Split('.');
+                    //        (windowsFormsHost.Child as System.Windows.Forms.PictureBox).Image.Save(filePath[0] + "-" + row.ToString() + "-" + column.ToString() + "." + filePath[1], ImageFormat.Bmp);
+                    //    }
+                    //    else
+                    //    {
+                    //        await takePictureWhileScanning(row, column, moveStageX, moveStageY);
+                    //    }
                     //}
-                    
+                    serialPortMicroscopeStageSend("GR," + moveStageX.ToString() + ",0");
+                    serialPortMicroscopeStageSend("WAIT 1000");
                 }
                 if (row < yFields - 1)
                 {
                     moveStageX = -moveStageX;
-                    serialPortMicroscopeStageSend("GR, 0, " + moveStageY.ToString());
+                    serialPortMicroscopeStageSend("GR,0," + moveStageY.ToString());
                     serialPortMicroscopeStageSend("WAIT 1000");
                 }
             }
-            serialPortMicroscopeStageSend("MACRO");
-            
 
+            string[] filePath = new string[2];
+            filePath = textBoxSaveScanImageFolderPath.Text.Split('.');
+            (windowsFormsHost.Child as System.Windows.Forms.PictureBox).Image.Save(filePath[0] + "-0." + filePath[1], ImageFormat.Bmp);
+
+            serialPortMicroscopeStageSend("MACRO");
+            if (checkBoxSaveScanImages.IsChecked == true)
+            {
+                for (int picNum = 1; picNum < xFields * yFields; picNum++)
+                {
+                    await takePictureWhileScanning(picNum);
+                }
+            }
+
+        }
+
+        public async Task takePictureWhileScanning(int picNum)
+        {
+            await Task.Delay(1200);
+            string[] filePath = new string[2];
+            filePath = textBoxSaveScanImageFolderPath.Text.Split('.');
+            (windowsFormsHost.Child as System.Windows.Forms.PictureBox).Image.Save(filePath[0] + "-" + picNum.ToString() + "." + filePath[1], ImageFormat.Bmp);
         }
 
         #endregion
