@@ -186,6 +186,9 @@ namespace Gelation_Cloning_Control
 
             switch (lens)
             {
+                default:
+                    MessageBox.Show("No Lens Selected");
+                    break;
                 case "4X Nikon":
                     moveStageX = -60000;
                     moveStageY = -60000;
@@ -208,57 +211,38 @@ namespace Gelation_Cloning_Control
                     break;
             }
 
-            //Task wait = Task.Delay(1000);
-            serialPortMicroscopeStageSend("MACRO");
+            await takePictureWhileScanning(xFields, yFields, moveStageX, moveStageY);
+        }
+
+        //Async for the timing of the picture taking with the serial commands. The delay time can probably be shortened but this is a safe time
+        public async Task takePictureWhileScanning(int xFields, int yFields, int moveStageX, int moveStageY)
+        {
+            int picNum = 0;
+            
             for (int row = 0; row < yFields; row++)
             {
-                for (int column = 0; column < xFields - 1; column++)
+                for (int column = 0; column < xFields; column++)
                 {
-                    //if (checkBoxSaveScanImages.IsChecked == true)
-                    //{
-                    //    if (row == 0 && column == 0)
-                    //    {
-                    //        string[] filePath = new string[2];
-                    //        filePath = textBoxSaveScanImageFolderPath.Text.Split('.');
-                    //        (windowsFormsHost.Child as System.Windows.Forms.PictureBox).Image.Save(filePath[0] + "-" + row.ToString() + "-" + column.ToString() + "." + filePath[1], ImageFormat.Bmp);
-                    //    }
-                    //    else
-                    //    {
-                    //        await takePictureWhileScanning(row, column, moveStageX, moveStageY);
-                    //    }
-                    //}
-                    serialPortMicroscopeStageSend("GR," + moveStageX.ToString() + ",0");
-                    serialPortMicroscopeStageSend("WAIT 1000");
+                    await Task.Delay(1500);
+                    if (checkBoxSaveScanImages.IsChecked == true)
+                    {
+                        string[] filePath = new string[2];
+                        filePath = textBoxSaveScanImageFolderPath.Text.Split('.');
+                        (windowsFormsHost.Child as System.Windows.Forms.PictureBox).Image.Save(filePath[0] + "-" + picNum.ToString() + "." + filePath[1], ImageFormat.Bmp);
+                        picNum++;
+                    }
+                    if (column < xFields - 1)
+                    { 
+                        serialPortMicroscopeStageSend("GR," + moveStageX.ToString() + ",0");
+                    }
                 }
                 if (row < yFields - 1)
                 {
                     moveStageX = -moveStageX;
                     serialPortMicroscopeStageSend("GR,0," + moveStageY.ToString());
-                    serialPortMicroscopeStageSend("WAIT 1000");
                 }
             }
-
-            string[] filePath = new string[2];
-            filePath = textBoxSaveScanImageFolderPath.Text.Split('.');
-            (windowsFormsHost.Child as System.Windows.Forms.PictureBox).Image.Save(filePath[0] + "-0." + filePath[1], ImageFormat.Bmp);
-
-            serialPortMicroscopeStageSend("MACRO");
-            if (checkBoxSaveScanImages.IsChecked == true)
-            {
-                for (int picNum = 1; picNum < xFields * yFields; picNum++)
-                {
-                    await takePictureWhileScanning(picNum);
-                }
-            }
-
-        }
-
-        public async Task takePictureWhileScanning(int picNum)
-        {
-            await Task.Delay(1200);
-            string[] filePath = new string[2];
-            filePath = textBoxSaveScanImageFolderPath.Text.Split('.');
-            (windowsFormsHost.Child as System.Windows.Forms.PictureBox).Image.Save(filePath[0] + "-" + picNum.ToString() + "." + filePath[1], ImageFormat.Bmp);
+            
         }
 
         #endregion
