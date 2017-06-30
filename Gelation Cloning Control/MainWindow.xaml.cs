@@ -218,12 +218,13 @@ namespace Gelation_Cloning_Control
         public async Task takePictureWhileScanning(int xFields, int yFields, int moveStageX, int moveStageY)
         {
             int picNum = 0;
+            int delayTime = 1500; //time in milliseconds for camera to stay on target
             
             for (int row = 0; row < yFields; row++)
             {
                 for (int column = 0; column < xFields; column++)
                 {
-                    await Task.Delay(1500);
+                    await Task.Delay(delayTime);
                     if (checkBoxSaveScanImages.IsChecked == true)
                     {
                         string[] filePath = new string[2];
@@ -242,7 +243,14 @@ namespace Gelation_Cloning_Control
                     serialPortMicroscopeStageSend("GR,0," + moveStageY.ToString());
                 }
             }
-            
+            //return to origin location. If yFields is even then there is no need to move in x direction
+            await Task.Delay(delayTime);
+            if (yFields % 2 == 0)
+                serialPortMicroscopeStageSend("GR,0," + (-moveStageY * (yFields-1)).ToString());
+            else   
+                serialPortMicroscopeStageSend("GR," + (-moveStageX * (xFields-1)).ToString() + "," + (-moveStageY * (yFields-1)).ToString());
+
+
         }
 
         #endregion
