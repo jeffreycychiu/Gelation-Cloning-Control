@@ -169,9 +169,9 @@
                                 <RowDefinition Height="*"/>
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="4*"/>
-                                <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="3*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="5*"/>
                             </Grid.ColumnDefinitions>
                             <Label x:Name="labelScanXY" Content="Scan" FontSize="20" FontWeight="Bold" HorizontalAlignment="Center" Grid.ColumnSpan="3"/>
                             <Label x:Name="labelFieldsX" Content="X Fields:" FontSize="20" FontWeight="Bold" VerticalAlignment="Center" Grid.Row="1" Grid.ColumnSpan="2"/>
@@ -189,7 +189,7 @@
                             </ComboBox>
                             <TextBox x:Name="textBoxSaveScanImageFolderPath" FontSize="20" HorizontalAlignment="Stretch" Grid.Row="4" Grid.Column="0" />
                             <Button x:Name="btnSaveScanImageFolderPath" Content="..." Click="btnSaveScanImageFolderPath_Click"  FontSize="20" FontWeight="Bold" Grid.Row="4" Grid.Column="1" />
-                            <CheckBox x:Name="checkBoxSaveScanImages" Content="Save?" FontSize="20" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Row="4" Grid.Column="2" IsChecked="False" />
+                            <CheckBox x:Name="checkBoxSaveScanImages" Content="Save Separate Images" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Row="4" Grid.Column="2" IsChecked="False" />
                             <Button x:Name="btnScan" Content="Scan" FontSize="20" FontWeight="Bold" Click="btnScan_Click" Grid.Row="5" Grid.ColumnSpan="3"/>
                         </Grid>
                     </Border>

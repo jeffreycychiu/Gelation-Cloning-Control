@@ -24,6 +24,10 @@ using MahApps.Metro.Controls;
 using PylonC.NET;
 using Basler.Pylon;
 using Microsoft.Win32;
+using Emgu.CV;
+using Emgu.CV.Structure;
+using Emgu.CV.Stitching;
+using Emgu.CV.Util;
 
 namespace Gelation_Cloning_Control
 {
@@ -219,19 +223,32 @@ namespace Gelation_Cloning_Control
         {
             int picNum = 0;
             int delayTime = 1500; //time in milliseconds for camera to stay on target
-            
+
+            //Create 2d array of images
+            Image<Bgr, Byte>[] imageArray = new Image<Bgr, Byte>[xFields * yFields];
+            //Mat imageMatrix = new Mat()[xFields*yFields];
+
             for (int row = 0; row < yFields; row++)
             {
                 for (int column = 0; column < xFields; column++)
                 {
                     await Task.Delay(delayTime);
+                    //Save separate bmp images to selected folder
                     if (checkBoxSaveScanImages.IsChecked == true)
                     {
                         string[] filePath = new string[2];
                         filePath = textBoxSaveScanImageFolderPath.Text.Split('.');
-                        (windowsFormsHost.Child as System.Windows.Forms.PictureBox).Image.Save(filePath[0] + "-" + picNum.ToString() + "." + filePath[1], ImageFormat.Bmp);
+                        Bitmap individualImage = (Bitmap)(windowsFormsHost.Child as System.Windows.Forms.PictureBox).Image;
+                        individualImage.Save(filePath[0] + "-" + picNum.ToString() + "." + filePath[1], ImageFormat.Bmp);
+                        Console.WriteLine(filePath[0] + "-" + picNum.ToString() + "." + filePath[1]);
+                        //(windowsFormsHost.Child as System.Windows.Forms.PictureBox).Image.Save(filePath[0] + "-" + picNum.ToString() + "." + filePath[1], ImageFormat.Bmp);
+
+                        //Save images to vector of mat then stitch after scanning is complete
+                        imageArray[picNum] = new Image<Bgr, Byte>(individualImage);
+                        
                         picNum++;
                     }
+
                     if (column < xFields - 1)
                     { 
                         serialPortMicroscopeStageSend("GR," + moveStageX.ToString() + ",0");
@@ -251,7 +268,22 @@ namespace Gelation_Cloning_Control
                 serialPortMicroscopeStageSend("GR," + (-moveStageX * (xFields-1)).ToString() + "," + (-moveStageY * (yFields-1)).ToString());
 
 
+            /*
+            //Stitch images using EmguCV stitcher.
+            if (checkBoxSaveScanImages.IsChecked == true)
+            {
+                //Make a vector of Mat from the image array
+                VectorOfMat vectorOfMat = new VectorOfMat(imageArray);
+
+                using (Stitcher stitcher = new Stitcher(false))
+                {
+                    Image<Bgr, Byte> imageStitched = stitcher.Stitch()
+                }
+            }
+            */
+
         }
+
 
         #endregion
 
@@ -517,7 +549,6 @@ namespace Gelation_Cloning_Control
                 DestroyCamera();
             }
 
-
             // Open the connection to the selected camera device.
             if (listViewCamera.SelectedItems.Count > 0)
             {
@@ -693,20 +724,12 @@ namespace Gelation_Cloning_Control
                         // Assign a temporary variable to dispose the bitmap after assigning the new bitmap to the display control.
                         Bitmap bitmapOld = (windowsFormsHost.Child as System.Windows.Forms.PictureBox).Image as Bitmap;
 
-                        //BitmapImage bitmapImageOld = (BitmapImage)imageDisplay.Source;
-
-
                         // Provide the display control with the new bitmap. This action automatically updates the display.
-                        //pictureBox.Image = bitmap;
                         (windowsFormsHost.Child as System.Windows.Forms.PictureBox).Image = bitmap;
-                        //imageDisplay.Source = BitmapToBitmapImage(bitmap);
-
                         
-                        //if (bitmapImageOld != null)
                         if(bitmapOld != null)
                         {
                             // Dispose the bitmap.
-                            //Bitmap bitmapOld = BitmapImage2Bitmap(bitmapImageOld);
                             bitmapOld.Dispose();
                         }
                         
