@@ -28,6 +28,7 @@ using Emgu.CV;
 using Emgu.CV.Structure;
 using Emgu.CV.Stitching;
 using Emgu.CV.Util;
+using Emgu.CV.UI;
 
 namespace Gelation_Cloning_Control
 {
@@ -226,6 +227,8 @@ namespace Gelation_Cloning_Control
 
             //Create 2d array of images
             Image<Bgr, Byte>[] imageArray = new Image<Bgr, Byte>[xFields * yFields];
+            Mat[] mat = new Mat[xFields*yFields];
+
             //Mat imageMatrix = new Mat()[xFields*yFields];
 
             for (int row = 0; row < yFields; row++)
@@ -245,6 +248,7 @@ namespace Gelation_Cloning_Control
 
                         //Save images to vector of mat then stitch after scanning is complete
                         imageArray[picNum] = new Image<Bgr, Byte>(individualImage);
+                        mat[picNum] = imageArray[picNum].Mat;
                         
                         picNum++;
                     }
@@ -268,19 +272,25 @@ namespace Gelation_Cloning_Control
                 serialPortMicroscopeStageSend("GR," + (-moveStageX * (xFields-1)).ToString() + "," + (-moveStageY * (yFields-1)).ToString());
 
 
-            /*
+            
             //Stitch images using EmguCV stitcher.
             if (checkBoxSaveScanImages.IsChecked == true)
             {
                 //Make a vector of Mat from the image array
-                VectorOfMat vectorOfMat = new VectorOfMat(imageArray);
+                VectorOfMat vectorOfMat = new VectorOfMat();
+                foreach (Mat matrix in  mat) 
+                {
+                    vectorOfMat.Push(matrix);
+                }
 
                 using (Stitcher stitcher = new Stitcher(false))
                 {
-                    Image<Bgr, Byte> imageStitched = stitcher.Stitch()
+                    Mat stitchedImage = new Mat();
+                    stitcher.Stitch(vectorOfMat, stitchedImage);
+                    ImageViewer.Show(stitchedImage);
                 }
             }
-            */
+            
 
         }
 
