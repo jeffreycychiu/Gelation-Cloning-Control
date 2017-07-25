@@ -167,7 +167,8 @@ namespace Gelation_Cloning_Control
         private void btnSaveScanImageFolderPath_Click(object sender, RoutedEventArgs e)
         {
             SaveFileDialog saveFileDialog = new SaveFileDialog();
-            saveFileDialog.Filter = "bmp (*.bmp)|*.bmp";
+            //saveFileDialog.Filter = "bmp (*.bmp)|*.bmp";
+            saveFileDialog.Filter = "tiff (*.tiff)|*.tiff";
             if (saveFileDialog.ShowDialog() == true)
             {
                 textBoxSaveScanImageFolderPath.Text = saveFileDialog.FileName;
@@ -242,13 +243,19 @@ namespace Gelation_Cloning_Control
                         string[] filePath = new string[2];
                         filePath = textBoxSaveScanImageFolderPath.Text.Split('.');
                         Bitmap individualImage = (Bitmap)(windowsFormsHost.Child as System.Windows.Forms.PictureBox).Image;
-                        individualImage.Save(filePath[0] + "-" + picNum.ToString() + "." + filePath[1], ImageFormat.Bmp);
+                        //individualImage.Save(filePath[0] + "-" + picNum.ToString() + "." + filePath[1], ImageFormat.Tiff);
                         Console.WriteLine(filePath[0] + "-" + picNum.ToString() + "." + filePath[1]);
                         //(windowsFormsHost.Child as System.Windows.Forms.PictureBox).Image.Save(filePath[0] + "-" + picNum.ToString() + "." + filePath[1], ImageFormat.Bmp);
 
                         //Save images to vector of mat then stitch after scanning is complete
                         imageArray[picNum] = new Image<Bgr, Byte>(individualImage);
-                        mat[picNum] = imageArray[picNum].Mat;
+                        //mat[picNum] = imageArray[picNum].Mat;
+
+                        Mat[] split = imageArray[picNum].Mat.Split();
+                        mat[picNum] = split[0];
+
+                        mat[picNum].Save(filePath[0] + "-" + picNum.ToString() + "." + filePath[1]);
+                        //mat[picNum] = new Mat(individualImage);
                         
                         picNum++;
                     }
@@ -271,26 +278,45 @@ namespace Gelation_Cloning_Control
             else   
                 serialPortMicroscopeStageSend("GR," + (-moveStageX * (xFields-1)).ToString() + "," + (-moveStageY * (yFields-1)).ToString());
 
-
-            
-            //Stitch images using EmguCV stitcher.
+            //stitch using imageJ
             if (checkBoxSaveScanImages.IsChecked == true)
             {
-                //Make a vector of Mat from the image array
-                VectorOfMat vectorOfMat = new VectorOfMat();
-                foreach (Mat matrix in  mat) 
-                {
-                    vectorOfMat.Push(matrix);
-                }
-
-                using (Stitcher stitcher = new Stitcher(false))
-                {
-                    Mat stitchedImage = new Mat();
-                    stitcher.Stitch(vectorOfMat, stitchedImage);
-                    ImageViewer.Show(stitchedImage);
-                }
+                Process process = new Process();
+                process.StartInfo.FileName = "C:\\Users\\mdl_user\\Documents\\Jeff\\ImageJ Fiji\\Fiji.app\\ImageJ-win64.exe";
+                process.StartInfo.Arguments = "-macro MicroscopeStitch.ijm";
+                process.Start();
             }
-            
+
+            //Load image back from the folder
+
+
+            //Stitch images using EmguCV stitcher.
+
+            //if (checkBoxSaveScanImages.IsChecked == true)
+            //{
+            //    //Make a vector of Mat from the image array
+            //    VectorOfMat vectorOfMat = new VectorOfMat();
+            //    foreach (Mat matrix in mat)
+            //    {
+            //        vectorOfMat.Push(matrix);
+            //    }
+
+                //    using (Stitcher stitcher = new Stitcher(false))
+                //    {
+                //        Mat stitchedImage = new Mat();
+                //        try
+                //        {
+                //            stitcher.Stitch(vectorOfMat, stitchedImage);
+                //        }
+                //        catch (Exception ex)
+                //        {
+                //            Console.WriteLine(ex);
+                //        }
+
+                //        ImageViewer.Show(stitchedImage);
+                //    }
+                //}
+
 
         }
 
