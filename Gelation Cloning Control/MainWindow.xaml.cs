@@ -283,7 +283,8 @@ namespace Gelation_Cloning_Control
             {
                 Process process = new Process();
                 process.StartInfo.FileName = "C:\\Users\\mdl_user\\Documents\\Jeff\\ImageJ Fiji\\Fiji.app\\ImageJ-win64.exe";
-                process.StartInfo.Arguments = "-macro MicroscopeStitch.ijm";
+                process.StartInfo.Arguments = "-macro MicroscopeStitch.ijm " + textBoxSaveScanImageFolderPath.Text.ToString();
+                Console.WriteLine(process.StartInfo.ToString());
                 process.Start();
             }
 
