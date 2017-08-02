@@ -221,7 +221,7 @@ namespace Gelation_Cloning_Control
         }
 
         //Async for the timing of the picture taking with the serial commands. The delay time can probably be shortened but this is a safe time
-        public async Task takePictureWhileScanning(int xFields, int yFields, int moveStageX, int moveStageY)
+        public async Task takePictureWhileScanning(int xFields, int yFields, int moveStageX, int moveStageY)                                                                                                                                                                                                                 
         {
             int picNum = 0;
             int exposureTime;
@@ -230,6 +230,8 @@ namespace Gelation_Cloning_Control
             if (Int32.TryParse(textBoxExposure.Text, out exposureTime))
             {
                 delayTime = (exposureTime * exposureTimeBase / 1000);
+                if (delayTime < 1500)
+                    delayTime = 1500;
                 Console.WriteLine("delayTime: " + delayTime);
             }
             else
@@ -295,8 +297,8 @@ namespace Gelation_Cloning_Control
             {
                 Process process = new Process();
                 process.StartInfo.FileName = "C:\\Users\\mdl_user\\Documents\\Jeff\\ImageJ Fiji\\Fiji.app\\ImageJ-win64.exe";
-                process.StartInfo.Arguments = "-macro MicroscopeStitch.ijm " + textBoxSaveScanImageFolderPath.Text.ToString();
-                Console.WriteLine(process.StartInfo.ToString());
+                process.StartInfo.Arguments = "-macro MicroscopeStitch.ijm " + textBoxFieldsX.Text + "," + textBoxFieldsY.Text + "," + textBoxSaveScanImageFolderPath.Text.ToString();
+                Console.WriteLine("Arguments: " + process.StartInfo.Arguments.ToString());
                 process.Start();
             }
 
