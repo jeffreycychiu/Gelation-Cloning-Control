@@ -224,7 +224,19 @@ namespace Gelation_Cloning_Control
         public async Task takePictureWhileScanning(int xFields, int yFields, int moveStageX, int moveStageY)
         {
             int picNum = 0;
-            int delayTime = 1500; //time in milliseconds for camera to stay on target
+            int exposureTime;
+            int exposureTimeBase = 4;  //default is 20us for the basler camera. The true time is exposure time * exposure time base. I think this camera is set to be absolute time in microseconds though
+            int delayTime;
+            if (Int32.TryParse(textBoxExposure.Text, out exposureTime))
+            {
+                delayTime = (exposureTime * exposureTimeBase / 1000);
+                Console.WriteLine("delayTime: " + delayTime);
+            }
+            else
+            {
+                Console.WriteLine("No exposure time entered");
+                delayTime = 1500; //time in milliseconds for camera to stay on target
+            }
 
             //Create 2d array of images
             Image<Bgr, Byte>[] imageArray = new Image<Bgr, Byte>[xFields * yFields];
