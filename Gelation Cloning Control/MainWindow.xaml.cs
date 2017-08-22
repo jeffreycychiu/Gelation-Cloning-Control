@@ -257,19 +257,12 @@ namespace Gelation_Cloning_Control
                         string[] filePath = new string[2];
                         filePath = textBoxSaveScanImageFolderPath.Text.Split('.');
                         Bitmap individualImage = (Bitmap)(windowsFormsHost.Child as System.Windows.Forms.PictureBox).Image;
-                        //individualImage.Save(filePath[0] + "-" + picNum.ToString() + "." + filePath[1], ImageFormat.Tiff);
-                        Console.WriteLine(filePath[0] + "-" + picNum.ToString() + "." + filePath[1]);
-                        //(windowsFormsHost.Child as System.Windows.Forms.PictureBox).Image.Save(filePath[0] + "-" + picNum.ToString() + "." + filePath[1], ImageFormat.Bmp);
 
                         //Save images to vector of mat then stitch after scanning is complete
                         imageArray[picNum] = new Image<Bgr, Byte>(individualImage);
-                        //mat[picNum] = imageArray[picNum].Mat;
-
                         Mat[] split = imageArray[picNum].Mat.Split();
                         mat[picNum] = split[0];
-
                         mat[picNum].Save(filePath[0] + "-" + picNum.ToString() + "." + filePath[1]);
-                        //mat[picNum] = new Mat(individualImage);
                         
                         picNum++;
                     }
@@ -301,38 +294,21 @@ namespace Gelation_Cloning_Control
                 Console.WriteLine("Arguments: " + process.StartInfo.Arguments.ToString());
                 process.Start();
             }
+            
+        }
 
-            //Load image back from the folder
+        private void btnLoadStitchedImage_Click(object sender, RoutedEventArgs e)
+        {
+            //Load image back from the folder - need to wait until stitching is complete
 
+            string imageSaveDirectory = System.IO.Path.GetDirectoryName(textBoxSaveScanImageFolderPath.Text);
+            string stitchedFileName = imageSaveDirectory + "\\stitched.tif";
+            Mat stitchedImage = CvInvoke.Imread(stitchedFileName, Emgu.CV.CvEnum.LoadImageType.AnyColor);
+            Mat displayStitchedImage = new Mat();
+            CvInvoke.Resize(stitchedImage, displayStitchedImage, new System.Drawing.Size(1000, 1000), 0, 0, Emgu.CV.CvEnum.Inter.Linear);
+            //CvInvoke.NamedWindow("Stitched Image", Emgu.CV.CvEnum.NamedWindowType.Normal);
 
-            //Stitch images using EmguCV stitcher.
-
-            //if (checkBoxSaveScanImages.IsChecked == true)
-            //{
-            //    //Make a vector of Mat from the image array
-            //    VectorOfMat vectorOfMat = new VectorOfMat();
-            //    foreach (Mat matrix in mat)
-            //    {
-            //        vectorOfMat.Push(matrix);
-            //    }
-
-                //    using (Stitcher stitcher = new Stitcher(false))
-                //    {
-                //        Mat stitchedImage = new Mat();
-                //        try
-                //        {
-                //            stitcher.Stitch(vectorOfMat, stitchedImage);
-                //        }
-                //        catch (Exception ex)
-                //        {
-                //            Console.WriteLine(ex);
-                //        }
-
-                //        ImageViewer.Show(stitchedImage);
-                //    }
-                //}
-
-
+            CvInvoke.Imshow("Test Window", displayStitchedImage);
         }
 
 
@@ -1179,6 +1155,7 @@ namespace Gelation_Cloning_Control
                 return bitmap;
             }
         }
+
 
         #endregion
 
