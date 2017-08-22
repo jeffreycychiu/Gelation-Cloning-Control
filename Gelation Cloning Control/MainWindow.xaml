@@ -167,6 +167,7 @@
                                 <RowDefinition Height="*"/>
                                 <RowDefinition Height="*"/>
                                 <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="3*"/>
@@ -190,7 +191,9 @@
                             <TextBox x:Name="textBoxSaveScanImageFolderPath" FontSize="20" HorizontalAlignment="Stretch" Grid.Row="4" Grid.Column="0" />
                             <Button x:Name="btnSaveScanImageFolderPath" Content="..." Click="btnSaveScanImageFolderPath_Click"  FontSize="20" FontWeight="Bold" Grid.Row="4" Grid.Column="1" />
                             <CheckBox x:Name="checkBoxSaveScanImages" Content="Save Separate Images" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Row="4" Grid.Column="2" IsChecked="True" />
-                            <Button x:Name="btnScan" Content="Scan" FontSize="20" FontWeight="Bold" Click="btnScan_Click" Grid.Row="5" Grid.ColumnSpan="3"/>
+                            <TextBox x:Name="textBoxImageJFilePath" Text="C:\\Users\\mdl_user\\Documents\\Jeff\\ImageJ Fiji\\Fiji.app\\ImageJ-win64.exe" HorizontalAlignment="Stretch" Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2"/>
+                            <Button x:Name="btnImageJFilePath" Content="ImageJ Path" FontSize="20" FontWeight="Bold" Grid.Row="5" Grid.Column="2" />
+                            <Button x:Name="btnScan" Content="Scan" FontSize="20" FontWeight="Bold" Click="btnScan_Click" Grid.Row="6" Grid.ColumnSpan="3"/>
                         </Grid>
                     </Border>
                     

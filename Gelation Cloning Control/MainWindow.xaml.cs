@@ -296,7 +296,7 @@ namespace Gelation_Cloning_Control
             if (checkBoxSaveScanImages.IsChecked == true)
             {
                 Process process = new Process();
-                process.StartInfo.FileName = "C:\\Users\\mdl_user\\Documents\\Jeff\\ImageJ Fiji\\Fiji.app\\ImageJ-win64.exe";
+                process.StartInfo.FileName = textBoxImageJFilePath.Text;
                 process.StartInfo.Arguments = "-macro MicroscopeStitch.ijm " + textBoxFieldsX.Text + "," + textBoxFieldsY.Text + "," + textBoxSaveScanImageFolderPath.Text.ToString();
                 Console.WriteLine("Arguments: " + process.StartInfo.Arguments.ToString());
                 process.Start();
