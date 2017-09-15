@@ -303,12 +303,35 @@ namespace Gelation_Cloning_Control
 
             string imageSaveDirectory = System.IO.Path.GetDirectoryName(textBoxSaveScanImageFolderPath.Text);
             string stitchedFileName = imageSaveDirectory + "\\stitched.tif";
+
             Mat stitchedImage = CvInvoke.Imread(stitchedFileName, Emgu.CV.CvEnum.LoadImageType.AnyColor);
             Mat displayStitchedImage = new Mat();
             CvInvoke.Resize(stitchedImage, displayStitchedImage, new System.Drawing.Size(1000, 1000), 0, 0, Emgu.CV.CvEnum.Inter.Linear);
+            
             //CvInvoke.NamedWindow("Stitched Image", Emgu.CV.CvEnum.NamedWindowType.Normal);
 
-            CvInvoke.Imshow("Test Window", displayStitchedImage);
+            //CvInvoke.Imshow("Test Window", displayStitchedImage);
+
+            //Draw and save points when the mouse is clicked. Used for testing the stage GOTO positions to target the laser
+
+
+
+            //Draw the image on the imagebox. Stop camera first.
+            try
+            {
+                //stop camera
+                Stop();
+            }
+            catch //error if camera not connected
+            {
+                
+            }
+
+            Bitmap stitchedImageBitmap = (Bitmap)Bitmap.FromFile(stitchedFileName);
+            (windowsFormsHost.Child as System.Windows.Forms.PictureBox).Image = stitchedImageBitmap;
+
+
+            
         }
 
 

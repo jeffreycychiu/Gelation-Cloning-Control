@@ -98,7 +98,7 @@
                 </Grid>
             </TabItem>
 
-            <TabItem x:Name="tabStage" Header="Stage" IsEnabled="False">
+            <TabItem x:Name="tabStage" Header="Stage" IsEnabled="True">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*"/>
