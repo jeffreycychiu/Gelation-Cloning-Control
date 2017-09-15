@@ -26,7 +26,7 @@
         <Border BorderThickness="2" BorderBrush="Black" Grid.Column="1" Margin="10,10,10,10">
             <WindowsFormsHost Name="windowsFormsHost">
                 <WindowsFormsHost.Child>
-                    <wf:PictureBox Name="pictureBoxCamera" SizeMode="StretchImage"/>
+                    <wf:PictureBox Name="pictureBoxCamera" SizeMode="StretchImage" MouseMove="pictureBoxCamera_MouseMove" MouseEnter="pictureBoxCamera_MouseEnter" MouseLeave="pictureBoxCamera_MouseLeave"/>
                 </WindowsFormsHost.Child>
             </WindowsFormsHost>
         </Border>
@@ -157,9 +157,11 @@
                         </Grid>
                     </Border>
                     
-                    <Border BorderBrush="Black" BorderThickness="1" Grid.Row="1" Grid.ColumnSpan="2">
+                    <Border BorderBrush="Black" BorderThickness="1" Grid.Row="1" Grid.ColumnSpan="2" Margin="0,0,0,10" Grid.RowSpan="2">
                         <Grid>
                             <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
                                 <RowDefinition Height="*"/>
                                 <RowDefinition Height="*"/>
                                 <RowDefinition Height="*"/>
@@ -195,6 +197,10 @@
                             <Button x:Name="btnImageJFilePath" Content="ImageJ Path" FontSize="20" FontWeight="Bold" Grid.Row="5" Grid.Column="2" />
                             <Button x:Name="btnScan" Content="Scan" FontSize="20" FontWeight="Bold" Click="btnScan_Click" Grid.Row="6" Grid.ColumnSpan="3"/>
                             <Button x:Name="btnLoadStitchedImage" Content="Load Stitched Image" FontSize="20" FontWeight="Bold" Click="btnLoadStitchedImage_Click" Grid.Row="7" Grid.ColumnSpan="3"/>
+                            <Label x:Name="labelMousePositionX" Content="Mouse Pos X:" FontSize="20" VerticalAlignment="Center" Grid.Row="8" Grid.ColumnSpan="2"/>
+                            <Label x:Name="labelMousePositionY" Content="Mouse Pos Y:" FontSize="20" VerticalAlignment="Center" Grid.Row="9" Grid.ColumnSpan="2"/>
+                            <TextBox x:Name="textBoxMousePositionX" FontSize="20" HorizontalAlignment="Stretch" VerticalAlignment="Center" Text="0" Grid.Row="8" Grid.Column="2"/>
+                            <TextBox x:Name="textBoxMousePositionY" FontSize="20" HorizontalAlignment="Stretch" VerticalAlignment="Center" Text="0" Grid.Row="9" Grid.Column="2"/>
                         </Grid>
                     </Border>
                     

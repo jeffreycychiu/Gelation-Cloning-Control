@@ -334,6 +334,23 @@ namespace Gelation_Cloning_Control
             
         }
 
+        //Write the position of the mouse into the textboxes
+        private void pictureBoxCamera_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            textBoxMousePositionX.Text = e.X.ToString();
+            textBoxMousePositionY.Text = e.Y.ToString();
+        }
+
+        //Change the mouse cursor to a cross when in the picturebox
+        private void pictureBoxCamera_MouseEnter(object sender, EventArgs e)
+        {
+            (windowsFormsHost.Child as System.Windows.Forms.PictureBox).Cursor = System.Windows.Forms.Cursors.Cross;
+        }
+
+        private void pictureBoxCamera_MouseLeave(object sender, EventArgs e)
+        {
+            (windowsFormsHost.Child as System.Windows.Forms.PictureBox).Cursor = System.Windows.Forms.Cursors.Default;
+        }
 
         #endregion
 
@@ -1178,6 +1195,8 @@ namespace Gelation_Cloning_Control
                 return bitmap;
             }
         }
+
+
 
 
         #endregion
