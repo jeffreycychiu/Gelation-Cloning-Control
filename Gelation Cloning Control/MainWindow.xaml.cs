@@ -217,11 +217,17 @@ namespace Gelation_Cloning_Control
                     break;
             }
 
-            await takePictureWhileScanning(xFields, yFields, moveStageX, moveStageY);
+            int[] scanStagePosition = new int[6];
+            scanStagePosition = await takePictureWhileScanning(xFields, yFields, moveStageX, moveStageY);
+            Console.WriteLine("Scan Stage Position: ");
+            foreach (int num in scanStagePosition)
+            {
+                Console.WriteLine(num);
+            }
         }
 
         //Async for the timing of the picture taking with the serial commands. The delay time can probably be shortened but this is a safe time
-        public async Task takePictureWhileScanning(int xFields, int yFields, int moveStageX, int moveStageY)                                                                                                                                                                                                                 
+        public async Task<int[]> takePictureWhileScanning(int xFields, int yFields, int moveStageX, int moveStageY)                                                                                                                                                                                                                 
         {
             int picNum = 0;
             int exposureTime;
@@ -238,6 +244,15 @@ namespace Gelation_Cloning_Control
             {
                 Console.WriteLine("No exposure time entered");
                 delayTime = 1500; //time in milliseconds for camera to stay on target
+            }
+
+            //Get X,Y,Z Position of stage on first image
+            int xPosFirst = 0, yPosFirst = 0, zPosFirst = 0;
+            if (checkBoxQueryStagePosition.IsChecked == true)
+            {
+                int.TryParse(textBoxXPosition.Text, out xPosFirst);
+                int.TryParse(textBoxYPosition.Text, out yPosFirst);
+                int.TryParse(textBoxZPosition.Text, out zPosFirst);
             }
 
             //Create 2d array of images
@@ -278,6 +293,16 @@ namespace Gelation_Cloning_Control
                     serialPortMicroscopeStageSend("GR,0," + moveStageY.ToString());
                 }
             }
+
+            //Get X,Y,Z Position of stage on last image
+            int xPosLast = 0, yPosLast=  0, zPosLast = 0;
+            if (checkBoxQueryStagePosition.IsChecked == true)
+            {
+                int.TryParse(textBoxXPosition.Text, out xPosLast);
+                int.TryParse(textBoxYPosition.Text, out yPosLast);
+                int.TryParse(textBoxZPosition.Text, out zPosLast);
+            }
+
             //return to origin location. If yFields is even then there is no need to move in x direction
             await Task.Delay(delayTime);
             if (yFields % 2 == 0)
@@ -294,6 +319,11 @@ namespace Gelation_Cloning_Control
                 Console.WriteLine("Arguments: " + process.StartInfo.Arguments.ToString());
                 process.Start();
             }
+
+            int[] positionArray = new int[] { xPosFirst, yPosFirst, zPosFirst, xPosLast, yPosLast, zPosLast };
+
+
+            return positionArray;
             
         }
 
