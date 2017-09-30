@@ -219,7 +219,22 @@ namespace Gelation_Cloning_Control
 
             int[] scanStagePosition = new int[6];
             scanStagePosition = await takePictureWhileScanning(xFields, yFields, moveStageX, moveStageY);
-            Console.WriteLine("Scan Stage Position: ");
+
+            int X1, Y1, X2, Y2;
+            switch(lens)
+            {
+                default:
+                    MessageBox.Show("No Lens Selected");
+                    break;
+                case "4X Nikon":
+                    X1 = scanStagePosition[0] + 35125; //Adjust X1 to real top left
+                    X2 = scanStagePosition[1] + 32031; //Adjust Y1 to real top left (should be 32031.25)
+                    Y1 = scanStagePosition[3] - 35125; //Adjust X2 to real bot right
+                    Y2 = scanStagePosition[4] - 32031; //Adjust Y2 to real top left (should be 32031.25)
+                    break;
+            }
+
+            //Write position of X1,Y1,Z1, and X2,Y2,Z2
             foreach (int num in scanStagePosition)
             {
                 Console.WriteLine(num);
