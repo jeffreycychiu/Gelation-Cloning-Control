@@ -59,6 +59,12 @@ namespace Gelation_Cloning_Control
         public int zeroY = 0;
         public int zeroZ = 0;
 
+        //The top left/bottom right of the stitched image in terms of the stage coordinates.
+        public int stitchedX1 = 0;
+        public int stitchedY1 = 0;
+        public int stitchedX2 = 0;
+        public int stitchedY2 = 0;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -220,17 +226,17 @@ namespace Gelation_Cloning_Control
             int[] scanStagePosition = new int[6];
             scanStagePosition = await takePictureWhileScanning(xFields, yFields, moveStageX, moveStageY);
 
-            int X1, Y1, X2, Y2;
             switch(lens)
             {
                 default:
                     MessageBox.Show("No Lens Selected");
                     break;
                 case "4X Nikon":
-                    X1 = scanStagePosition[0] + 35125; //Adjust X1 to real top left
-                    X2 = scanStagePosition[1] + 32031; //Adjust Y1 to real top left (should be 32031.25)
-                    Y1 = scanStagePosition[3] - 35125; //Adjust X2 to real bot right
-                    Y2 = scanStagePosition[4] - 32031; //Adjust Y2 to real top left (should be 32031.25)
+                    stitchedX1 = scanStagePosition[0] + 35125; //Adjust X1 to real top left
+                    stitchedY1 = scanStagePosition[1] + 32031; //Adjust Y1 to real top left (should be 32031.25)
+                    stitchedX2 = scanStagePosition[3] - 35125; //Adjust X2 to real bot right
+                    stitchedY2 = scanStagePosition[4] - 32031; //Adjust Y2 to real top left (should be 32031.25)
+
                     break;
             }
 
@@ -382,8 +388,18 @@ namespace Gelation_Cloning_Control
         //Write the position of the mouse into the textboxes
         private void pictureBoxCamera_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
         {
-            textBoxMousePositionX.Text = e.X.ToString();
-            textBoxMousePositionY.Text = e.Y.ToString();
+            double stageConversion = getStageConversionFromObjective(comboBoxScanLens.Text);
+
+            double mouseXPixel = e.X;
+            double mouseYPixel = e.Y;
+
+            //CHECK IF IT SHOULD BE PLUS OR MINUS
+            int mousePosStageX = (int)Math.Floor(mouseXPixel * stageConversion) + stitchedX1;
+            int mousePosStageY = (int)Math.Floor(mouseYPixel * stageConversion) + stitchedY1;
+
+            //Write the stage position to the screen. Convert pixels to stage position
+            textBoxMousePositionX.Text = mousePosStageX.ToString();
+            textBoxMousePositionY.Text = mousePosStageY.ToString();
         }
 
         //Change the mouse cursor to a cross when in the picturebox
@@ -1162,6 +1178,19 @@ namespace Gelation_Cloning_Control
 
         #endregion
 
+        #region Targeting Functions
+        //Set the position of the stitched image. (X1,Y1) top left and (X2,Y2) bot right. In terms of stage coordinates
+        private void btnSetTargetPosition_Click(object sender, RoutedEventArgs e)
+        {
+            int.TryParse(textBoxX1.Text, out stitchedX1);
+            int.TryParse(textBoxY1.Text, out stitchedY1);
+            int.TryParse(textBoxX2.Text, out stitchedX2);
+            int.TryParse(textBoxY2.Text, out stitchedY2);
+
+            MessageBox.Show("Updated (X1,Y1) and (X2,Y2)");
+        }
+        #endregion
+
         #region Other Event Handlers
 
         //Release the driver so that you can reconnect to the camera again when you re-open the program
@@ -1240,6 +1269,24 @@ namespace Gelation_Cloning_Control
                 return bitmap;
             }
         }
+
+        //Get stage position conversion based on magnification of lens used. Pixel*stageConversion = stage position
+        double getStageConversionFromObjective(string objective)
+        {
+            double stageConversion = 1;
+            switch (objective)
+            {
+                default:
+                    Console.WriteLine("No Lens Selected");
+                    break;
+                case "4X Nikon":
+                    stageConversion = 31.25;
+                    break;
+            }
+
+            return stageConversion;
+        }
+
 
 
 
