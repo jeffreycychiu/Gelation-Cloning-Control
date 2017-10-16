@@ -402,6 +402,14 @@ namespace Gelation_Cloning_Control
             textBoxMousePositionY.Text = mousePosStageY.ToString();
         }
 
+        //Write the stage position of the mouse in the picture on click event. These positions will then be used to target the laser later when it is scanning.
+        private void pictureBoxCamera_MouseClick(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            ListBoxItem point = new ListBoxItem();
+            point.Content = textBoxMousePositionX.Text + "," + textBoxMousePositionY.Text;
+            listBoxLaserScanPoints.Items.Add(point);
+        }
+
         //Change the mouse cursor to a cross when in the picturebox
         private void pictureBoxCamera_MouseEnter(object sender, EventArgs e)
         {
@@ -1286,6 +1294,7 @@ namespace Gelation_Cloning_Control
 
             return stageConversion;
         }
+
 
 
 
