@@ -286,8 +286,8 @@
 
                     <ListBox x:Name="listBoxLaserScanPoints" Grid.Row="7" Grid.RowSpan="4" Grid.Column="0" Grid.ColumnSpan="2" BorderThickness="2"/>
 
-                    <Button x:Name="btnLaserScanPointDelete" Content="Delete" FontSize="20" FontWeight="Bold" Grid.Row="7" Grid.Column="2" Grid.ColumnSpan="2"/>
-                    <Button x:Name="btnLaserScanPointClearAll" Content="Clear All" FontSize="20" FontWeight="Bold" Grid.Row="8" Grid.Column="2" Grid.ColumnSpan="2"/>
+                    <Button x:Name="btnLaserScanPointDelete" Content="Delete" Click="btnLaserScanPointDelete_Click" FontSize="20" FontWeight="Bold" Grid.Row="7" Grid.Column="2" Grid.ColumnSpan="2"/>
+                    <Button x:Name="btnLaserScanPointClearAll" Content="Clear All" Click="btnLaserScanPointClearAll_Click" FontSize="20" FontWeight="Bold" Grid.Row="8" Grid.Column="2" Grid.ColumnSpan="2"/>
                     <Button x:Name="btnLaserScanPointGo" Content="Go" FontSize="20" FontWeight="Bold" Grid.Row="10" Grid.Column="2" Grid.ColumnSpan="2"/>
 
                 </Grid>

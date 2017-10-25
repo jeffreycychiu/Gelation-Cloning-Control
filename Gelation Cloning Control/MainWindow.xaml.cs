@@ -421,6 +421,18 @@ namespace Gelation_Cloning_Control
             (windowsFormsHost.Child as System.Windows.Forms.PictureBox).Cursor = System.Windows.Forms.Cursors.Default;
         }
 
+        //Delete the selected item in the list box of laser scanning points
+        private void btnLaserScanPointDelete_Click(object sender, RoutedEventArgs e)
+        {
+            listBoxLaserScanPoints.Items.Remove(listBoxLaserScanPoints.SelectedItem);
+        }
+
+        //Delete all items in the list box of laser scanning points
+        private void btnLaserScanPointClearAll_Click(object sender, RoutedEventArgs e)
+        {
+            listBoxLaserScanPoints.Items.Clear();
+        }
+
         #endregion
 
         #region Laser Commands and Connections
@@ -1294,6 +1306,8 @@ namespace Gelation_Cloning_Control
 
             return stageConversion;
         }
+
+
 
 
 
