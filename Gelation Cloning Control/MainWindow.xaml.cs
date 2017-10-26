@@ -433,6 +433,62 @@ namespace Gelation_Cloning_Control
             listBoxLaserScanPoints.Items.Clear();
         }
 
+        //Scan all of the points in the laser scanning points listbox
+        private async void btnLaserScanPointGo_Click(object sender, RoutedEventArgs e)
+        {
+
+            await laserScan((bool)checkBoxActivateLaser.IsChecked);
+        } 
+
+        //
+        public async Task laserScan(bool activateLaser)
+        {
+            int delayTime = int.Parse(textBoxLaserTime.Text);    //needs to be adjusted based on laserTime
+            List<int[]> scanPoints = new List<int[]>();
+
+            //convert the listbox items into an list of int[2]'s. Each one of those int[2] is the x,y location of where the laser should go.
+            foreach (ListBoxItem item in listBoxLaserScanPoints.Items)
+            {
+                int[] points = item.Content.ToString().Split(',').Select(Int32.Parse).ToArray();
+                scanPoints.Add(points);
+                
+            }
+
+            //Sort list of (X,Y) locations by X. Will lower the travel time of the laser than random. Can improve this later by optimizing total path distance.
+            scanPoints = scanPoints.OrderBy(arr => arr[0]).ThenBy(arr => arr[1]).ToList();  
+
+            foreach(var item in scanPoints)
+            {
+                Console.WriteLine(item[0] + "/" + item[1]);
+            }
+
+            //Move laser to each point and shoot
+            foreach (int[] location in scanPoints)
+            {
+                //Change this after we get the offsets to be user entered.
+                int xOffset = 0;
+                int yOffset = 0;
+
+                //Add X and Y offset for where the laser is centered.
+                int xPos = location[0] + xOffset;
+                int yPos = location[1] + yOffset;
+                
+                //move stage to location
+                serialPortMicroscopeStageSend("G," + xPos.ToString() + yPos.ToString());
+                //turn on laser
+                if (checkBoxActivateLaser.IsChecked == true)
+                {
+                    serialPortArroyoSend("LASer:OUTput 1");
+                }
+                //wait a certain amount of time
+                await Task.Delay(delayTime);
+
+                //turn off laser
+                serialPortArroyoSend("LASer:OUTput 0");
+            }
+
+            listBoxLaserScanPoints.Items.Clear();
+        }
         #endregion
 
         #region Laser Commands and Connections
@@ -1306,6 +1362,7 @@ namespace Gelation_Cloning_Control
 
             return stageConversion;
         }
+
 
 
 

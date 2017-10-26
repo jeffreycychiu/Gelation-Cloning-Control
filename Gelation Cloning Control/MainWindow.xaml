@@ -282,13 +282,14 @@
                     <Label x:Name="labelLaserTime" Content="Laser Time (ms)" FontSize="18" FontWeight="Bold" VerticalAlignment="Center" Grid.Row="5" Grid.ColumnSpan="2"/>
                     <TextBox x:Name="textBoxLaserTime" FontSize="20" HorizontalAlignment="Stretch" VerticalAlignment="Center" Text="1000" Grid.Row="5" Grid.Column="2"/>
                     
-                    <Label x:Name="labelLaserScanPoints" Content="Laser Scan Points" FontSize="20" FontWeight="Bold" FontStyle="Italic" VerticalAlignment="Center" Grid.Row="6" Grid.ColumnSpan="4"/>
+                    <Label x:Name="labelLaserScanPoints" Content="Laser Scan" FontSize="20" FontWeight="Bold" FontStyle="Italic" VerticalAlignment="Center" Grid.Row="6" Grid.ColumnSpan="2"/>
+                    <CheckBox x:Name="checkBoxActivateLaser" Content="Laser ON/OFF" IsChecked="False" FontSize="18" Grid.Row="6" Grid.Column="2" Grid.ColumnSpan="2"/>
 
                     <ListBox x:Name="listBoxLaserScanPoints" Grid.Row="7" Grid.RowSpan="4" Grid.Column="0" Grid.ColumnSpan="2" BorderThickness="2"/>
 
                     <Button x:Name="btnLaserScanPointDelete" Content="Delete" Click="btnLaserScanPointDelete_Click" FontSize="20" FontWeight="Bold" Grid.Row="7" Grid.Column="2" Grid.ColumnSpan="2"/>
                     <Button x:Name="btnLaserScanPointClearAll" Content="Clear All" Click="btnLaserScanPointClearAll_Click" FontSize="20" FontWeight="Bold" Grid.Row="8" Grid.Column="2" Grid.ColumnSpan="2"/>
-                    <Button x:Name="btnLaserScanPointGo" Content="Go" FontSize="20" FontWeight="Bold" Grid.Row="10" Grid.Column="2" Grid.ColumnSpan="2"/>
+                    <Button x:Name="btnLaserScanPointGo" Content="Go" Click="btnLaserScanPointGo_Click"  FontSize="20" FontWeight="Bold" Grid.Row="10" Grid.Column="2" Grid.ColumnSpan="2"/>
 
                 </Grid>
             </TabItem>
