@@ -437,11 +437,11 @@ namespace Gelation_Cloning_Control
         private async void btnLaserScanPointGo_Click(object sender, RoutedEventArgs e)
         {
 
-            await laserScan(checkBoxActivateLaser.IsChecked);
+            await laserScan((bool)checkBoxActivateLaser.IsChecked);
         } 
 
         //
-        public async Task laserScan(bool? activateLaser)
+        public async Task laserScan(bool activateLaser)
         {
             int delayTime = int.Parse(textBoxLaserTime.Text);    //needs to be adjusted based on laserTime
             List<int[]> scanPoints = new List<int[]>();
@@ -474,7 +474,7 @@ namespace Gelation_Cloning_Control
                 int yPos = location[1] + yOffset;
                 
                 //move stage to location
-                serialPortMicroscopeStageSend("G," + xPos.ToString() + yPos.ToString());
+                serialPortMicroscopeStageSend("G," + xPos.ToString() + "," + yPos.ToString());
                 //turn on laser
                 if (checkBoxActivateLaser.IsChecked == true)
                 {
