@@ -437,11 +437,11 @@ namespace Gelation_Cloning_Control
         private async void btnLaserScanPointGo_Click(object sender, RoutedEventArgs e)
         {
 
-            await laserScan((bool)checkBoxActivateLaser.IsChecked);
+            await laserScan(checkBoxActivateLaser.IsChecked);
         } 
 
         //
-        public async Task laserScan(bool activateLaser)
+        public async Task laserScan(bool? activateLaser)
         {
             int delayTime = int.Parse(textBoxLaserTime.Text);    //needs to be adjusted based on laserTime
             List<int[]> scanPoints = new List<int[]>();
