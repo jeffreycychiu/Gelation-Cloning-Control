@@ -166,7 +166,10 @@ namespace Gelation_Cloning_Control
 
         private void btnGoTo_Click(object sender, RoutedEventArgs e)
         {
-            serialPortMicroscopeStageSend("GR," + textBoxXGoTo.Text + "," + textBoxYGoto.Text + "," + textBoxZGoTo.Text);
+            if(checkBoxGoToRelative.IsChecked == true)
+                serialPortMicroscopeStageSend("GR," + textBoxXGoTo.Text + "," + textBoxYGoto.Text + "," + textBoxZGoTo.Text);
+            else
+                serialPortMicroscopeStageSend("G," + textBoxXGoTo.Text + "," + textBoxYGoto.Text + "," + textBoxZGoTo.Text);
         }
 
         //Select folder for the images to be saved during a scanning
@@ -240,11 +243,16 @@ namespace Gelation_Cloning_Control
                     break;
             }
 
+
             //Write position of X1,Y1,Z1, and X2,Y2,Z2
+            Console.WriteLine("ScanStagePosition:");
             foreach (int num in scanStagePosition)
             {
                 Console.WriteLine(num);
             }
+
+            Console.WriteLine("Stitched X1,Y1: " + stitchedX1.ToString() + ", " + stitchedY1.ToString());
+            Console.WriteLine("Stitched X2,Y2: " + stitchedX2.ToString() + ", " + stitchedY2.ToString());
         }
 
         //Async for the timing of the picture taking with the serial commands. The delay time can probably be shortened but this is a safe time
@@ -342,7 +350,6 @@ namespace Gelation_Cloning_Control
             }
 
             int[] positionArray = new int[] { xPosFirst, yPosFirst, zPosFirst, xPosLast, yPosLast, zPosLast };
-
 
             return positionArray;
             
