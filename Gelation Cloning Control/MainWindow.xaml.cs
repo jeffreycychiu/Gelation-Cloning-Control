@@ -718,8 +718,6 @@ namespace Gelation_Cloning_Control
 
         }
 
-
-
         private void textBoxPeriodSet_TextChanged(object sender, TextChangedEventArgs e)
         {
             btnSetPeriod.IsEnabled = true;
@@ -738,6 +736,12 @@ namespace Gelation_Cloning_Control
         private void textBoxDutyCycleSet_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
             e.Handled = !IsTextAllowed(e.Text);
+        }
+
+        //Set the X,Y Location of the offset
+        private void btnLaserOffset_Click(object sender, RoutedEventArgs e)
+        {
+
         }
 
         #endregion
@@ -1362,6 +1366,7 @@ namespace Gelation_Cloning_Control
 
             return stageConversion;
         }
+
 
 
 

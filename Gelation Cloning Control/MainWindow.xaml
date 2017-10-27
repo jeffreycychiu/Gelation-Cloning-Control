@@ -246,6 +246,8 @@
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="2*"/>
@@ -282,14 +284,25 @@
                     <Label x:Name="labelLaserTime" Content="Laser Time (ms)" FontSize="18" FontWeight="Bold" VerticalAlignment="Center" Grid.Row="5" Grid.ColumnSpan="2"/>
                     <TextBox x:Name="textBoxLaserTime" FontSize="20" HorizontalAlignment="Stretch" VerticalAlignment="Center" Text="1000" Grid.Row="5" Grid.Column="2"/>
                     
-                    <Label x:Name="labelLaserScanPoints" Content="Laser Scan" FontSize="20" FontWeight="Bold" FontStyle="Italic" VerticalAlignment="Center" Grid.Row="6" Grid.ColumnSpan="2"/>
-                    <CheckBox x:Name="checkBoxActivateLaser" Content="Laser ON/OFF" IsChecked="False" FontSize="18" Grid.Row="6" Grid.Column="2" Grid.ColumnSpan="2"/>
+                    <ComboBox x:Name="comboBoxLaserLens" Text="Choose Lens" FontSize="20" FontWeight="Bold" Grid.Row="6" Grid.ColumnSpan="4" SelectedIndex="1">
+                        <ComboBoxItem>4X Nikon</ComboBoxItem>
+                        <ComboBoxItem>10X Nikon</ComboBoxItem>
+                        <ComboBoxItem>20X Nikon</ComboBoxItem>
+                        <ComboBoxItem>40X Nikon</ComboBoxItem>
+                        <ComboBoxItem>1550 Aspheric</ComboBoxItem>
+                        <ComboBoxItem>1064 Microspot Focus Thorlabs</ComboBoxItem>
+                    </ComboBox>
+                    
+                    <Button x:Name="btnLaserOffset" Content="Set Laser Offset (X,Y)" Click="btnLaserOffset_Click" FontSize="20" FontWeight="Bold" Grid.Row="7" Grid.ColumnSpan="4" />
 
-                    <ListBox x:Name="listBoxLaserScanPoints" Grid.Row="7" Grid.RowSpan="4" Grid.Column="0" Grid.ColumnSpan="2" BorderThickness="2"/>
+                    <Label x:Name="labelLaserScanPoints" Content="Laser Scan" FontSize="20" FontWeight="Bold" FontStyle="Italic" VerticalAlignment="Center" Grid.Row="8" Grid.ColumnSpan="2"/>
+                    <CheckBox x:Name="checkBoxActivateLaser" Content="Laser ON/OFF" IsChecked="False" FontSize="18" Grid.Row="8" Grid.Column="2" Grid.ColumnSpan="2"/>
 
-                    <Button x:Name="btnLaserScanPointDelete" Content="Delete" Click="btnLaserScanPointDelete_Click" FontSize="20" FontWeight="Bold" Grid.Row="7" Grid.Column="2" Grid.ColumnSpan="2"/>
-                    <Button x:Name="btnLaserScanPointClearAll" Content="Clear All" Click="btnLaserScanPointClearAll_Click" FontSize="20" FontWeight="Bold" Grid.Row="8" Grid.Column="2" Grid.ColumnSpan="2"/>
-                    <Button x:Name="btnLaserScanPointGo" Content="Go" Click="btnLaserScanPointGo_Click"  FontSize="20" FontWeight="Bold" Grid.Row="10" Grid.Column="2" Grid.ColumnSpan="2"/>
+                    <ListBox x:Name="listBoxLaserScanPoints" Grid.Row="9" Grid.RowSpan="4" Grid.Column="0" Grid.ColumnSpan="2" BorderThickness="2"/>
+
+                    <Button x:Name="btnLaserScanPointDelete" Content="Delete" Click="btnLaserScanPointDelete_Click" FontSize="20" FontWeight="Bold" Grid.Row="9" Grid.Column="2" Grid.ColumnSpan="2"/>
+                    <Button x:Name="btnLaserScanPointClearAll" Content="Clear All" Click="btnLaserScanPointClearAll_Click" FontSize="20" FontWeight="Bold" Grid.Row="10" Grid.Column="2" Grid.ColumnSpan="2"/>
+                    <Button x:Name="btnLaserScanPointGo" Content="Go" Click="btnLaserScanPointGo_Click"  FontSize="20" FontWeight="Bold" Grid.Row="12" Grid.Column="2" Grid.ColumnSpan="2"/>
 
                 </Grid>
             </TabItem>
