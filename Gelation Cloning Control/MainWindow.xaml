@@ -182,8 +182,8 @@
                             <Label x:Name="labelScanXY" Content="Scan" FontSize="20" FontWeight="Bold" HorizontalAlignment="Center" Grid.ColumnSpan="3"/>
                             <Label x:Name="labelFieldsX" Content="X Fields:" FontSize="20" FontWeight="Bold" VerticalAlignment="Center" Grid.Row="1" Grid.ColumnSpan="2"/>
                             <Label x:Name="labelFieldsY" Content="Y Fields:" FontSize="20" FontWeight="Bold" VerticalAlignment="Center" Grid.Row="2" Grid.ColumnSpan="2"/>
-                            <TextBox x:Name="textBoxFieldsX" FontSize="20" HorizontalAlignment="Stretch" Text="0" Grid.Row="1" Grid.Column="2"/>
-                            <TextBox x:Name="textBoxFieldsY" FontSize="20" HorizontalAlignment="Stretch" Text="0" Grid.Row="2" Grid.Column="2"/>
+                            <TextBox x:Name="textBoxFieldsX" FontSize="20" HorizontalAlignment="Stretch" Text="3" Grid.Row="1" Grid.Column="2"/>
+                            <TextBox x:Name="textBoxFieldsY" FontSize="20" HorizontalAlignment="Stretch" Text="3" Grid.Row="2" Grid.Column="2"/>
 
                             <ComboBox x:Name="comboBoxScanLens" Text="Choose Lens" FontSize="20" FontWeight="Bold" Grid.Row="3" Grid.ColumnSpan="3" SelectedIndex="0">
                                 <ComboBoxItem>4X Nikon</ComboBoxItem>
@@ -285,7 +285,7 @@
                     <TextBox x:Name="textBoxMousePositionY" FontSize="20" HorizontalAlignment="Stretch" VerticalAlignment="Center" Text="0" Grid.Row="4" Grid.Column="2"/>
 
                     <Label x:Name="labelLaserTime" Content="Laser Time (ms)" FontSize="18" FontWeight="Bold" VerticalAlignment="Center" Grid.Row="5" Grid.ColumnSpan="2"/>
-                    <TextBox x:Name="textBoxLaserTime" FontSize="20" HorizontalAlignment="Stretch" VerticalAlignment="Center" Text="1000" Grid.Row="5" Grid.Column="2"/>
+                    <TextBox x:Name="textBoxLaserTime" FontSize="20" HorizontalAlignment="Stretch" VerticalAlignment="Center" Text="5000" Grid.Row="5" Grid.Column="2"/>
 
                     <ComboBox x:Name="comboBoxLaserLens" Text="Choose Lens" FontSize="20" FontWeight="Bold" Grid.Row="6" Grid.ColumnSpan="4" SelectedIndex="1">
                         <ComboBoxItem>4X Nikon</ComboBoxItem>

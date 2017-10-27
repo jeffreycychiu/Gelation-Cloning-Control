@@ -395,14 +395,14 @@ namespace Gelation_Cloning_Control
         //Write the position of the mouse into the textboxes
         private void pictureBoxCamera_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
         {
-            double stageConversion = getStageConversionFromObjective(comboBoxScanLens.Text);
+            double[] stageConversion = getStageConversionFromObjective(comboBoxScanLens.Text);
 
             double mouseXPixel = e.X;
             double mouseYPixel = e.Y;
 
             //CHECK IF IT SHOULD BE PLUS OR MINUS
-            int mousePosStageX = (int)Math.Floor(mouseXPixel * stageConversion) + stitchedX1;
-            int mousePosStageY = (int)Math.Floor(mouseYPixel * stageConversion) + stitchedY1;
+            int mousePosStageX = stitchedX1 - (int)Math.Floor(mouseXPixel * stageConversion[0]);
+            int mousePosStageY = stitchedY1 - (int)Math.Floor(mouseYPixel * stageConversion[1]);
 
             //Write the stage position to the screen. Convert pixels to stage position
             textBoxMousePositionX.Text = mousePosStageX.ToString();
@@ -1358,16 +1358,17 @@ namespace Gelation_Cloning_Control
         }
 
         //Get stage position conversion based on magnification of lens used. Pixel*stageConversion = stage position
-        double getStageConversionFromObjective(string objective)
+        double[] getStageConversionFromObjective(string objective)
         {
-            double stageConversion = 1;
+            double[] stageConversion = new double[] { 1, 1 };
             switch (objective)
             {
                 default:
                     Console.WriteLine("No Lens Selected");
                     break;
                 case "4X Nikon":
-                    stageConversion = 31.25;
+                    stageConversion[0] = 77.7165;
+                    stageConversion[1] = 89.7863;
                     break;
             }
 
@@ -1385,6 +1386,6 @@ namespace Gelation_Cloning_Control
 
         #endregion
 
-
+        
     }
 }
