@@ -1367,8 +1367,8 @@ namespace Gelation_Cloning_Control
                     Console.WriteLine("No Lens Selected");
                     break;
                 case "4X Nikon":
-                    stageConversion[0] = 77.7165;
-                    stageConversion[1] = 89.7863;
+                    stageConversion[0] = 29.2377;
+                    stageConversion[1] = 30.1149;
                     break;
             }
 
