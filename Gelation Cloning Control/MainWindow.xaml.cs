@@ -1384,8 +1384,13 @@ namespace Gelation_Cloning_Control
 
 
 
+
         #endregion
 
-        
+        //After the scanned/stitched image is loaded back into program, generate the points which will be scanned
+        private void btnGenerateTarget_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

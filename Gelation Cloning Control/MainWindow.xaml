@@ -143,6 +143,7 @@
                                 <RowDefinition Height="*"/>
                                 <RowDefinition Height="*"/>
                                 <RowDefinition Height="*"/>
+                                
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
@@ -163,16 +164,16 @@
                     <Border BorderBrush="Black" BorderThickness="1" Grid.Row="1" Grid.ColumnSpan="2" Margin="0,0,0,10" Grid.RowSpan="2">
                         <Grid>
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="60*"/>
-                                <RowDefinition Height="60"/>
-                                <RowDefinition Height="60*"/>
-                                <RowDefinition Height="59*"/>
-                                <RowDefinition Height="60*"/>
-                                <RowDefinition Height="59*"/>
-                                <RowDefinition Height="60*"/>
-                                <RowDefinition Height="59*"/>
-                                <RowDefinition Height="60*"/>
-                                <RowDefinition Height="59*"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="3*"/>
@@ -200,6 +201,7 @@
                             <Button x:Name="btnImageJFilePath" Content="ImageJ Path" FontSize="20" FontWeight="Bold" Grid.Row="5" Grid.Column="2" />
                             <Button x:Name="btnScan" Content="Scan" FontSize="20" FontWeight="Bold" Click="btnScan_Click" Grid.Row="6" Grid.ColumnSpan="3"/>
                             <Button x:Name="btnLoadStitchedImage" Content="Load Stitched Image" FontSize="20" FontWeight="Bold" Click="btnLoadStitchedImage_Click" Grid.Row="7" Grid.ColumnSpan="3"/>
+
                         </Grid>
                     </Border>
 
@@ -235,7 +237,7 @@
                 </Grid>
             </TabItem>
 
-            <TabItem Header="Target">
+            <TabItem Header="Scan (Man)">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*"/>
@@ -307,6 +309,27 @@
                     <Button x:Name="btnLaserScanPointClearAll" Content="Clear All" Click="btnLaserScanPointClearAll_Click" FontSize="20" FontWeight="Bold" Grid.Row="10" Grid.Column="2" Grid.ColumnSpan="2"/>
                     <Button x:Name="btnLaserScanPointGo" Content="Go" Click="btnLaserScanPointGo_Click"  FontSize="20" FontWeight="Bold" Grid.Row="12" Grid.Column="2" Grid.ColumnSpan="2"/>
 
+                </Grid>
+            </TabItem>
+
+            <TabItem Header="Scan (Auto)">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Button x:Name="btnGenerateTarget" Content="Generate Target Points" FontSize="20" FontWeight="Bold"  IsEnabled="False" Click="btnGenerateTarget_Click" Grid.Row="8" Grid.ColumnSpan="3"/>
                 </Grid>
             </TabItem>
         </TabControl>
