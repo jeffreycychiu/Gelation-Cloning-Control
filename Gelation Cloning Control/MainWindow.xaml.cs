@@ -251,8 +251,12 @@ namespace Gelation_Cloning_Control
                 Console.WriteLine(num);
             }
 
-            Console.WriteLine("Stitched X1,Y1: " + stitchedX1.ToString() + ", " + stitchedY1.ToString());
-            Console.WriteLine("Stitched X2,Y2: " + stitchedX2.ToString() + ", " + stitchedY2.ToString());
+            textBoxX1.Text = stitchedX1.ToString();
+            textBoxY1.Text = stitchedY1.ToString();
+            textBoxX2.Text = stitchedX2.ToString();
+            textBoxY2.Text = stitchedY2.ToString();
+            //Console.WriteLine("Stitched X1,Y1: " + stitchedX1.ToString() + ", " + stitchedY1.ToString());
+            //Console.WriteLine("Stitched X2,Y2: " + stitchedX2.ToString() + ", " + stitchedY2.ToString());
         }
 
         //Async for the timing of the picture taking with the serial commands. The delay time can probably be shortened but this is a safe time
