@@ -262,16 +262,16 @@
                     </Grid.ColumnDefinitions>
 
                     <Label HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="0" Grid.Row="0">
-                        <TextBlock Text="X1(top left):" FontSize="20" FontWeight="Bold" TextWrapping="Wrap"/>
+                        <TextBlock Text="X1(top left):" FontSize="18" FontWeight="Bold" TextWrapping="Wrap"/>
                     </Label>
                     <Label HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="0" Grid.Row="1">
-                        <TextBlock Text="Y1(top left):" FontSize="20" FontWeight="Bold" TextWrapping="Wrap"/>
+                        <TextBlock Text="Y1(top left):" FontSize="18" FontWeight="Bold" TextWrapping="Wrap"/>
                     </Label>
                     <Label HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="2" Grid.Row="0">
-                        <TextBlock Text="X2(bot right):" FontSize="20" FontWeight="Bold" TextWrapping="Wrap"/>
+                        <TextBlock Text="X2(bot right):" FontSize="18" FontWeight="Bold" TextWrapping="Wrap"/>
                     </Label>
                     <Label HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="2" Grid.Row="1">
-                        <TextBlock Text="Y2(bot right):" FontSize="20" FontWeight="Bold" TextWrapping="Wrap"/>
+                        <TextBlock Text="Y2(bot right):" FontSize="18" FontWeight="Bold" TextWrapping="Wrap"/>
                     </Label>
 
                     <TextBox x:Name="textBoxX1"  VerticalAlignment="Center" FontSize="20" HorizontalAlignment="Stretch" TextWrapping="Wrap" Text="0"  Grid.Column="1" Grid.Row="0"/>
@@ -281,13 +281,13 @@
 
                     <Button x:Name="btnSetTargetPosition" Content="Set (X1,Y1) and (X2,Y2)" FontSize="20" FontWeight="Bold" Grid.Row="2" Grid.ColumnSpan="4" Click="btnSetTargetPosition_Click"/>
 
-                    <Label x:Name="labelMousePositionX" Content="Mouse PosX:" FontSize="20" FontWeight="Bold" VerticalAlignment="Center" Grid.Row="3" Grid.ColumnSpan="2"/>
-                    <Label x:Name="labelMousePositionY" Content="Mouse PosY:" FontSize="20" FontWeight="Bold" VerticalAlignment="Center" Grid.Row="4" Grid.ColumnSpan="2"/>
-                    <TextBox x:Name="textBoxMousePositionX" FontSize="20" HorizontalAlignment="Stretch" VerticalAlignment="Center" Text="0" Grid.Row="3" Grid.Column="2"/>
-                    <TextBox x:Name="textBoxMousePositionY" FontSize="20" HorizontalAlignment="Stretch" VerticalAlignment="Center" Text="0" Grid.Row="4" Grid.Column="2"/>
+                    <Label x:Name="labelMousePositionX" Content="Mouse PosX:" FontSize="18" FontWeight="Bold" VerticalAlignment="Center" Grid.Row="3" Grid.ColumnSpan="2"/>
+                    <Label x:Name="labelMousePositionY" Content="Mouse PosY:" FontSize="18" FontWeight="Bold" VerticalAlignment="Center" Grid.Row="4" Grid.ColumnSpan="2"/>
+                    <TextBox x:Name="textBoxMousePositionX" FontSize="20" HorizontalAlignment="Stretch" VerticalAlignment="Center" Text="0" Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="2"/>
+                    <TextBox x:Name="textBoxMousePositionY" FontSize="20" HorizontalAlignment="Stretch" VerticalAlignment="Center" Text="0" Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="2"/>
 
                     <Label x:Name="labelLaserTime" Content="Laser Time (ms)" FontSize="18" FontWeight="Bold" VerticalAlignment="Center" Grid.Row="5" Grid.ColumnSpan="2"/>
-                    <TextBox x:Name="textBoxLaserTime" FontSize="20" HorizontalAlignment="Stretch" VerticalAlignment="Center" Text="5000" Grid.Row="5" Grid.Column="2"/>
+                    <TextBox x:Name="textBoxLaserTime" FontSize="20" HorizontalAlignment="Stretch" VerticalAlignment="Center" Text="5000" Grid.Row="5" Grid.Column="2" Grid.ColumnSpan="2"/>
 
                     <ComboBox x:Name="comboBoxLaserLens" Text="Choose Lens" FontSize="20" FontWeight="Bold" Grid.Row="6" Grid.ColumnSpan="4" SelectedIndex="1">
                         <ComboBoxItem>4X Nikon</ComboBoxItem>

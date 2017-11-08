@@ -255,8 +255,6 @@ namespace Gelation_Cloning_Control
             textBoxY1.Text = stitchedY1.ToString();
             textBoxX2.Text = stitchedX2.ToString();
             textBoxY2.Text = stitchedY2.ToString();
-            //Console.WriteLine("Stitched X1,Y1: " + stitchedX1.ToString() + ", " + stitchedY1.ToString());
-            //Console.WriteLine("Stitched X2,Y2: " + stitchedX2.ToString() + ", " + stitchedY2.ToString());
         }
 
         //Async for the timing of the picture taking with the serial commands. The delay time can probably be shortened but this is a safe time
@@ -405,9 +403,20 @@ namespace Gelation_Cloning_Control
             double mouseYPixel = e.Y;
 
             //CHECK IF IT SHOULD BE PLUS OR MINUS
-            int mousePosStageX = stitchedX1 - (int)Math.Floor(mouseXPixel * stageConversion[0]);
-            int mousePosStageY = stitchedY1 - (int)Math.Floor(mouseYPixel * stageConversion[1]);
+            //int mousePosStageX = stitchedX1 - (int)Math.Floor(mouseXPixel * stageConversion[0]);
+            //int mousePosStageY = stitchedY1 - (int)Math.Floor(mouseYPixel * stageConversion[1]);
 
+            int mousePosStageX = 0;
+            int mousePosStageY = 0;
+
+            if ((windowsFormsHost.Child as System.Windows.Forms.PictureBox).Image != null)
+            {
+                mousePosStageX = (int)Math.Floor((double)stitchedX1 + (double)(stitchedX2 - stitchedX1) / (double)(windowsFormsHost.Child as System.Windows.Forms.PictureBox).Image.Width);
+                mousePosStageY = (int)Math.Floor((double)stitchedY1 + (double)(stitchedY2 - stitchedY1) / (double)(windowsFormsHost.Child as System.Windows.Forms.PictureBox).Image.Height);
+                Console.WriteLine(mousePosStageX);
+                Console.WriteLine(mousePosStageY);
+            }
+            
             //Write the stage position to the screen. Convert pixels to stage position
             textBoxMousePositionX.Text = mousePosStageX.ToString();
             textBoxMousePositionY.Text = mousePosStageY.ToString();
@@ -1235,10 +1244,13 @@ namespace Gelation_Cloning_Control
             //Parse the recieved data from string into int
             int numValues = 0;
             int[] positions = new int[3];
-            foreach(var positionString in recievedData.Split(','))
+            foreach (var positionString in recievedData.Split(','))
             {
-                if (int.TryParse(positionString, out positions[numValues]) == true)
+                if (numValues < 3)
+                {
+                    int.TryParse(positionString, out positions[numValues]);
                     numValues++;
+                }
             }
 
             if (numValues == 3)
