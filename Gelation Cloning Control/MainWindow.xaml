@@ -10,6 +10,7 @@
         WindowState="Maximized"
         WindowStyle="None"
         Closing="MetroWindow_Closing"
+        Icon="Logo_crop.ico"
         Title="Gelation Control" Height="900" Width="1200">
     <Controls:MetroWindow.Style>
         <Style TargetType="{x:Type Controls:MetroWindow}">

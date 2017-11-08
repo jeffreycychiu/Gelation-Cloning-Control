@@ -411,10 +411,9 @@ namespace Gelation_Cloning_Control
 
             if ((windowsFormsHost.Child as System.Windows.Forms.PictureBox).Image != null)
             {
-                mousePosStageX = (int)Math.Floor((double)stitchedX1 + (double)(stitchedX2 - stitchedX1) / (double)(windowsFormsHost.Child as System.Windows.Forms.PictureBox).Image.Width);
-                mousePosStageY = (int)Math.Floor((double)stitchedY1 + (double)(stitchedY2 - stitchedY1) / (double)(windowsFormsHost.Child as System.Windows.Forms.PictureBox).Image.Height);
-                Console.WriteLine(mousePosStageX);
-                Console.WriteLine(mousePosStageY);
+                //The mouse position clicked is     calculated by: mousePos =  X1 + (X2-X1) * (Xm / w) ; where X1,X2 = stitchedX1 and stitchedX2, Xm = mouse position X, and w = picturebox width
+                mousePosStageX = stitchedX1 + (int)Math.Round(((double)(stitchedX2 - stitchedX1) / (double)(windowsFormsHost.Child as System.Windows.Forms.PictureBox).Width) * mouseXPixel);
+                mousePosStageY = stitchedY1 + (int)Math.Round(((double)(stitchedY2 - stitchedY1) / (double)(windowsFormsHost.Child as System.Windows.Forms.PictureBox).Height) * mouseYPixel);
             }
             
             //Write the stage position to the screen. Convert pixels to stage position
