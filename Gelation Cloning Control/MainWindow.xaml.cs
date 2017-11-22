@@ -65,6 +65,11 @@ namespace Gelation_Cloning_Control
         public int stitchedX2 = 0;
         public int stitchedY2 = 0;
 
+        //Set laser offset flag
+        public bool offsetFlag = false;
+        public int offsetX = 0;
+        public int offsetY = 0;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -415,18 +420,64 @@ namespace Gelation_Cloning_Control
                 mousePosStageX = stitchedX1 + (int)Math.Round(((double)(stitchedX2 - stitchedX1) / (double)(windowsFormsHost.Child as System.Windows.Forms.PictureBox).Width) * mouseXPixel);
                 mousePosStageY = stitchedY1 + (int)Math.Round(((double)(stitchedY2 - stitchedY1) / (double)(windowsFormsHost.Child as System.Windows.Forms.PictureBox).Height) * mouseYPixel);
             }
-            
+
+            //Add the X and Y offset
+            mousePosStageX = mousePosStageX + offsetX;
+            mousePosStageY = mousePosStageY + offsetY;
+
             //Write the stage position to the screen. Convert pixels to stage position
             textBoxMousePositionX.Text = mousePosStageX.ToString();
             textBoxMousePositionY.Text = mousePosStageY.ToString();
         }
 
-        //Write the stage position of the mouse in the picture on click event. These positions will then be used to target the laser later when it is scanning.
+        //Write the stage position of the mouse in the picture on click event. Two different situations: set the offset of the laser, and write a list of points to be saved for stage to travel to during lasering
         private void pictureBoxCamera_MouseClick(object sender, System.Windows.Forms.MouseEventArgs e)
         {
-            ListBoxItem point = new ListBoxItem();
-            point.Content = textBoxMousePositionX.Text + "," + textBoxMousePositionY.Text;
-            listBoxLaserScanPoints.Items.Add(point);
+            if (offsetFlag == true)
+            {
+                int mouseX = e.X;
+                int mouseY = e.Y;
+
+                int pictureWidth = (windowsFormsHost.Child as System.Windows.Forms.PictureBox).Width;
+                int pictureHeight = (windowsFormsHost.Child as System.Windows.Forms.PictureBox).Height;
+
+                double offsetXMicron;
+                double offsetYMicron;
+
+                //Calculate the offset based on user click position, as well as lens used for lasering
+                string laserLens = comboBoxLaserLens.Text;
+
+                switch(laserLens)
+                {
+                    case "4X Nikon":
+                        break;
+                    case "10X Nikon":
+                        //Conversions: (X: 1pixel=0.5um) , (Y: 1pixel=0.493827um). Conversions from hemocytometer calibration
+                        offsetXMicron = (mouseX - (pictureWidth / 2)) * 0.5;
+                        offsetYMicron = (mouseY - (pictureHeight / 2)) * 0.493827;
+
+                        //Convert to stage units. 1 stage unit = 0.04um for prior stage
+                        offsetX = Convert.ToInt32(offsetXMicron / 0.04);
+                        offsetY = Convert.ToInt32(offsetYMicron / 0.04);
+
+                        MessageBox.Show("New Offsets Set. X: " + offsetX.ToString() + " ; Y: " + offsetY.ToString());
+
+                        break;
+                    default:    
+
+                        break;
+                }
+
+                offsetFlag = false;
+                borderPictureBox.BorderBrush = System.Windows.Media.Brushes.Black;
+                borderPictureBox.BorderThickness = new Thickness(2);
+            }
+            else
+            {
+                ListBoxItem point = new ListBoxItem();
+                point.Content = textBoxMousePositionX.Text + "," + textBoxMousePositionY.Text;
+                listBoxLaserScanPoints.Items.Add(point);
+            }
         }
 
         //Change the mouse cursor to a cross when in the picturebox
@@ -757,9 +808,13 @@ namespace Gelation_Cloning_Control
             e.Handled = !IsTextAllowed(e.Text);
         }
 
-        //Set the X,Y Location of the offset
+        //Set the X,Y Location of the offset. Default is for 10X objective.
         private void btnLaserOffset_Click(object sender, RoutedEventArgs e)
         {
+            //Only implement 10X objective for now
+            offsetFlag = true;
+            borderPictureBox.BorderBrush = System.Windows.Media.Brushes.YellowGreen;
+            borderPictureBox.BorderThickness = new Thickness(5);
 
         }
 
