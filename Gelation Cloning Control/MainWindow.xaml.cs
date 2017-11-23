@@ -362,23 +362,24 @@ namespace Gelation_Cloning_Control
             
         }
 
+        //Load image into the picturebox. Must wait until the stitching has completed!!
         private void btnLoadStitchedImage_Click(object sender, RoutedEventArgs e)
         {
-            //Load image back from the folder - need to wait until stitching is complete
+           
+            //string imageSaveDirectory = System.IO.Path.GetDirectoryName(textBoxSaveScanImageFolderPath.Text);
+            //string stitchedFileName = imageSaveDirectory + "\\stitched.tif";
+            string stitchedFileName;
 
-            string imageSaveDirectory = System.IO.Path.GetDirectoryName(textBoxSaveScanImageFolderPath.Text);
-            string stitchedFileName = imageSaveDirectory + "\\stitched.tif";
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            if (openFileDialog.ShowDialog() == true)
+                stitchedFileName = openFileDialog.FileName;
+            else
+                return;
+            Console.WriteLine(stitchedFileName);
 
             Mat stitchedImage = CvInvoke.Imread(stitchedFileName, Emgu.CV.CvEnum.LoadImageType.AnyColor);
             Mat displayStitchedImage = new Mat();
             CvInvoke.Resize(stitchedImage, displayStitchedImage, new System.Drawing.Size(1000, 1000), 0, 0, Emgu.CV.CvEnum.Inter.Linear);
-            
-            //CvInvoke.NamedWindow("Stitched Image", Emgu.CV.CvEnum.NamedWindowType.Normal);
-
-            //CvInvoke.Imshow("Test Window", displayStitchedImage);
-
-            //Draw and save points when the mouse is clicked. Used for testing the stage GOTO positions to target the laser
-
 
 
             //Draw the image on the imagebox. Stop camera first.
@@ -387,7 +388,7 @@ namespace Gelation_Cloning_Control
                 //stop camera
                 Stop();
             }
-            catch //error if camera not connected
+            catch //error if camera not connected - fill in proper exception
             {
                 
             }
@@ -1266,6 +1267,24 @@ namespace Gelation_Cloning_Control
 
         #endregion
 
+        #region Image Processing
+
+        //Process the image in the picturebox.
+        //INPUT: Flourescent Image? Or multichannel
+        //RETURN: list of (X,Y) locations of the centroids of the colonies to be targetted
+        //Other things that could be returned: Number of cells? or should that be a different button all together
+        private void btnProcessImage_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        //After the scanned/stitched image is loaded back into program, generate the points which will be scanned
+        private void btnGenerateTarget_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+        #endregion
+
         #region Serial Event Handlers
         //Write the data recieved from the Arroyo instrument to the listbox. Helpful for debugging
         private void SerialPortArroyo_DataReceived(object sender, SerialDataReceivedEventArgs e)
@@ -1457,10 +1476,6 @@ namespace Gelation_Cloning_Control
 
         #endregion
 
-        //After the scanned/stitched image is loaded back into program, generate the points which will be scanned
-        private void btnGenerateTarget_Click(object sender, RoutedEventArgs e)
-        {
 
-        }
     }
 }
