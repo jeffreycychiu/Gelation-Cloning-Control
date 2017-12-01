@@ -70,6 +70,9 @@ namespace Gelation_Cloning_Control
         public int offsetX = 0;
         public int offsetY = 0;
 
+        public Mat stitchedImageBF = new Mat();
+        public Mat stitchedImageEGFP = new Mat();
+
         public MainWindow()
         {
             InitializeComponent();
@@ -380,8 +383,7 @@ namespace Gelation_Cloning_Control
             Mat stitchedImage = CvInvoke.Imread(stitchedFileName, Emgu.CV.CvEnum.LoadImageType.AnyColor);
             Mat displayStitchedImage = new Mat();
             CvInvoke.Resize(stitchedImage, displayStitchedImage, new System.Drawing.Size(1000, 1000), 0, 0, Emgu.CV.CvEnum.Inter.Linear);
-
-
+            
             //Draw the image on the imagebox. Stop camera first.
             try
             {
@@ -1269,6 +1271,50 @@ namespace Gelation_Cloning_Control
 
         #region Image Processing
 
+        //Load the stitched brightfield (BF) image into memory
+        private void btnLoadImageBF_Click(object sender, RoutedEventArgs e)
+        {
+            string fileNameImageBF;
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            if (openFileDialog.ShowDialog() == true)
+                fileNameImageBF = openFileDialog.FileName;
+            else
+            {
+                MessageBox.Show("Error: No file chosen");
+                return;
+            }
+
+           stitchedImageBF = CvInvoke.Imread(fileNameImageBF, Emgu.CV.CvEnum.LoadImageType.AnyColor);
+           Mat displayStitchedImageBF = new Mat();
+           CvInvoke.Resize(stitchedImageBF, displayStitchedImageBF, new System.Drawing.Size(1000, 1000), 0, 0, Emgu.CV.CvEnum.Inter.Linear);
+           ImageViewer.Show(displayStitchedImageBF, "test");
+        }
+
+        //Load the stitched flourescent EGFP image into memory
+        private void btnLoadImageEGFP_Click(object sender, RoutedEventArgs e)
+        {
+            string fileNameImageEGFP;
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            if (openFileDialog.ShowDialog() == true)
+                fileNameImageEGFP = openFileDialog.FileName;
+            else
+            {
+                MessageBox.Show("Error: No file chosen");
+                return;
+            }
+
+            stitchedImageEGFP = CvInvoke.Imread(fileNameImageEGFP, Emgu.CV.CvEnum.LoadImageType.AnyColor);
+            Mat displayStitchedImageEGFP = new Mat();
+            CvInvoke.Resize(stitchedImageEGFP, displayStitchedImageEGFP, new System.Drawing.Size(1000, 1000), 0, 0, Emgu.CV.CvEnum.Inter.Linear);
+            ImageViewer.Show(displayStitchedImageEGFP, "test");
+        }
+
+        //Segment and detect cells using the BF image. Return the centroid, number of cells, and segmented region of each cell colony
+        private void btnDetectCellsBF_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
         //Process the image in the picturebox.
         //INPUT: Flourescent Image? Or multichannel
         //RETURN: list of (X,Y) locations of the centroids of the colonies to be targetted
@@ -1474,7 +1520,10 @@ namespace Gelation_Cloning_Control
 
 
 
+
         #endregion
+
+
 
 
     }

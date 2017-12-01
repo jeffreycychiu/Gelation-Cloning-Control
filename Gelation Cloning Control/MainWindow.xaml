@@ -330,8 +330,11 @@
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <Button x:Name="btnProcessImage" Content="Process Image" FontSize="20" FontWeight="Bold" Click="btnProcessImage_Click" Grid.Row="1" Grid.ColumnSpan="3"/>
-                    <Button x:Name="btnGenerateTarget" Content="Generate Target Points" FontSize="20" FontWeight="Bold"  IsEnabled="False" Click="btnGenerateTarget_Click" Grid.Row="8" Grid.ColumnSpan="3"/>
+                    <Button x:Name="btnLoadImageBF" Content="Load Image (BF)" FontSize="20" FontWeight="Bold" Click="btnLoadImageBF_Click"  Grid.Row="0" Grid.ColumnSpan="3"/>
+                    <Button x:Name="btnLoadImageEGFP" Content="Load Image (EGFP)" FontSize="20" FontWeight="Bold" Click="btnLoadImageEGFP_Click"  Grid.Row="1" Grid.ColumnSpan="3"/>
+                    <Button x:Name="btnDetectCellsBF" Content="Detect Cells (BF)" FontSize="20" FontWeight="Bold" Click="btnDetectCellsBF_Click" Grid.Row="2" Grid.ColumnSpan="3"/>
+                    <Button x:Name="btnProcessImage" Content="Process Image" FontSize="20" FontWeight="Bold" Click="btnProcessImage_Click" Grid.Row="6" Grid.ColumnSpan="3"/>
+                    <Button x:Name="btnGenerateTarget" Content="Generate Target Points" FontSize="20" FontWeight="Bold"  IsEnabled="False" Click="btnGenerateTarget_Click" Grid.Row="7" Grid.ColumnSpan="3"/>
                 </Grid>
             </TabItem>
         </TabControl>
