@@ -1304,7 +1304,7 @@ namespace Gelation_Cloning_Control
             }
 
             stitchedImageEGFP = CvInvoke.Imread(fileNameImageEGFP, Emgu.CV.CvEnum.LoadImageType.AnyColor);
-            Mat displayStitchedImageEGFP = new Mat();
+            Mat displayStitchedImageEGFP = new Mat(); 
             CvInvoke.Resize(stitchedImageEGFP, displayStitchedImageEGFP, new System.Drawing.Size(1000, 1000), 0, 0, Emgu.CV.CvEnum.Inter.Linear);
             ImageViewer.Show(displayStitchedImageEGFP, "test");
         }
@@ -1312,6 +1312,37 @@ namespace Gelation_Cloning_Control
         //Segment and detect cells using the BF image. Return the centroid, number of cells, and segmented region of each cell colony
         private void btnDetectCellsBF_Click(object sender, RoutedEventArgs e)
         {
+            //Show BF image first
+            //Mat imageBF = new Mat();
+            //Image<Bgr,Byte>imageBF = Mat.ToImage<Bgr,Byte>(stitchedImageBF);
+
+            Image<Bgr, Byte> imageBF = stitchedImageBF.ToImage<Bgr, Byte>();
+            //ImageViewer.Show(imageBF, "Stitched Image (BF)");
+
+            //Identify the inner diameter of the well. So we can exclude everything outside of the well
+            //The diameter of the well is a constant (depending on the plate used for 96 well plate).
+            //The plate I use is ______ for non tissue culture plate and ____ for tissue culture plate (insert model #s)
+            //The diameter of the bottom of the well is ___mm and ___mm respectively (using 6.35mm for now)
+
+            //First gaussian blur to reduce noise and avoid false circle detection
+            Mat imageGaussianBlur = new Mat();
+            CvInvoke.GaussianBlur(imageBF, imageGaussianBlur, new System.Drawing.Size(9, 9), 2, 2);
+
+            //Hough circle transform to find the diameter of the well
+            //TODO: Fix this. Needs single channel image but currently passing in multichannel?
+            CircleF[] detectedCircles = CvInvoke.HoughCircles(imageBF, Emgu.CV.CvEnum.HoughType.Gradient, 1, 10);
+
+            //draw circles onto copied original image
+            foreach ( CircleF circle in detectedCircles)
+            {
+                imageBF.Draw(circle, new Bgr(System.Drawing.Color.Red), 2);
+                //imageBF.Draw(circle, System.Drawing.Color.Red, 2);
+            }
+
+            ImageViewer.Show(imageBF, "Circles detected w/ hough transform");
+        
+           
+
 
         }
 
@@ -1327,7 +1358,7 @@ namespace Gelation_Cloning_Control
         //After the scanned/stitched image is loaded back into program, generate the points which will be scanned
         private void btnGenerateTarget_Click(object sender, RoutedEventArgs e)
         {
-
+             
         }
         #endregion
 
