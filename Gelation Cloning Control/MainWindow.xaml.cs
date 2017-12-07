@@ -1285,9 +1285,9 @@ namespace Gelation_Cloning_Control
             }
 
            stitchedImageBF = CvInvoke.Imread(fileNameImageBF, Emgu.CV.CvEnum.LoadImageType.AnyColor);
-           Mat displayStitchedImageBF = new Mat();
-           CvInvoke.Resize(stitchedImageBF, displayStitchedImageBF, new System.Drawing.Size(1000, 1000), 0, 0, Emgu.CV.CvEnum.Inter.Linear);
-           ImageViewer.Show(displayStitchedImageBF, "test");
+           //Mat displayStitchedImageBF = new Mat();
+           //CvInvoke.Resize(stitchedImageBF, displayStitchedImageBF, new System.Drawing.Size(1000, 1000), 0, 0, Emgu.CV.CvEnum.Inter.Linear);
+           //ImageViewer.Show(displayStitchedImageBF, "test");
         }
 
         //Load the stitched flourescent EGFP image into memory
@@ -1304,9 +1304,9 @@ namespace Gelation_Cloning_Control
             }
 
             stitchedImageEGFP = CvInvoke.Imread(fileNameImageEGFP, Emgu.CV.CvEnum.LoadImageType.AnyColor);
-            Mat displayStitchedImageEGFP = new Mat(); 
-            CvInvoke.Resize(stitchedImageEGFP, displayStitchedImageEGFP, new System.Drawing.Size(1000, 1000), 0, 0, Emgu.CV.CvEnum.Inter.Linear);
-            ImageViewer.Show(displayStitchedImageEGFP, "test");
+            //Mat displayStitchedImageEGFP = new Mat(); 
+            //CvInvoke.Resize(stitchedImageEGFP, displayStitchedImageEGFP, new System.Drawing.Size(1000, 1000), 0, 0, Emgu.CV.CvEnum.Inter.Linear);
+            //ImageViewer.Show(displayStitchedImageEGFP, "test");
         }
 
         //Segment and detect cells using the BF image. Return the centroid, number of cells, and segmented region of each cell colony
@@ -1316,7 +1316,7 @@ namespace Gelation_Cloning_Control
             //Mat imageBF = new Mat();
             //Image<Bgr,Byte>imageBF = Mat.ToImage<Bgr,Byte>(stitchedImageBF);
 
-            Image<Bgr, Byte> imageBF = stitchedImageBF.ToImage<Bgr, Byte>();
+            Image<Gray, Byte> imageBF = stitchedImageBF.ToImage<Gray, Byte>();
             //ImageViewer.Show(imageBF, "Stitched Image (BF)");
 
             //Identify the inner diameter of the well. So we can exclude everything outside of the well
@@ -1326,20 +1326,25 @@ namespace Gelation_Cloning_Control
 
             //First gaussian blur to reduce noise and avoid false circle detection
             Mat imageGaussianBlur = new Mat();
-            CvInvoke.GaussianBlur(imageBF, imageGaussianBlur, new System.Drawing.Size(9, 9), 2, 2);
+            CvInvoke.GaussianBlur(imageBF, imageGaussianBlur, new System.Drawing.Size(3, 3), 2, 2);
+
+            //ImageViewer.Show(imageGaussianBlur, "Gaussian Blurred Image");
 
             //Hough circle transform to find the diameter of the well
-            //TODO: Fix this. Needs single channel image but currently passing in multichannel?
-            CircleF[] detectedCircles = CvInvoke.HoughCircles(imageBF, Emgu.CV.CvEnum.HoughType.Gradient, 1, 10);
+            //CircleF[] detectedCircles = CvInvoke.HoughCircles(imageGaussianBlur, Emgu.CV.CvEnum.HoughType.Gradient, 1, 10);
+            CircleF[] detectedCircles = CvInvoke.HoughCircles(imageGaussianBlur, Emgu.CV.CvEnum.HoughType.Gradient, 1, 10, 100, 138);
 
             //draw circles onto copied original image
-            foreach ( CircleF circle in detectedCircles)
+            Gray circleColor = new Gray(255);
+            foreach (CircleF circle in detectedCircles)
             {
-                imageBF.Draw(circle, new Bgr(System.Drawing.Color.Red), 2);
+                //imageBF.Draw(circle, new Bgr(System.Drawing.Color.Red), 2);
                 //imageBF.Draw(circle, System.Drawing.Color.Red, 2);
+                imageBF.Draw(circle, circleColor, 2);
             }
 
             ImageViewer.Show(imageBF, "Circles detected w/ hough transform");
+            
         
            
 
