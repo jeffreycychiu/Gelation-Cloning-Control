@@ -270,7 +270,9 @@ namespace Gelation_Cloning_Control
         {
             int picNum = 0;
             int exposureTime;
-            int exposureTimeBase = 4;  //default is 20us for the basler camera. The true time is exposure time * exposure time base. I think this camera is set to be absolute time in microseconds though
+            //default is 20us for the basler camera. The true time is exposure time * exposure time base. I think this camera is set to be absolute time in microseconds though.
+            //Think this parameter should be 4 but to be safe lets make it 10 for a longer delay between pictures
+            int exposureTimeBase = 10; 
             int delayTime;
             if (Int32.TryParse(textBoxExposure.Text, out exposureTime))
             {
