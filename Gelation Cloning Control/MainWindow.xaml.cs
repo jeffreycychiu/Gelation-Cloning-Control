@@ -213,8 +213,8 @@ namespace Gelation_Cloning_Control
                     MessageBox.Show("No Lens Selected");
                     break;
                 case "4X Nikon":
-                    moveStageX = -60000;
-                    moveStageY = -60000;
+                    moveStageX = -56224;
+                    moveStageY = -51250;
                     break;
                 case "10X Nikon":
                     moveStageX = -24000;
