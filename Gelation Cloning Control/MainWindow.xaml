@@ -27,7 +27,7 @@
         <Border x:Name="borderPictureBox" BorderThickness="2" BorderBrush="Black" Grid.Column="1" Margin="10,10,10,10">
             <WindowsFormsHost Name="windowsFormsHost">
                 <WindowsFormsHost.Child>
-                    <wf:PictureBox Name="pictureBoxCamera" SizeMode="StretchImage" MouseMove="pictureBoxCamera_MouseMove" MouseClick="pictureBoxCamera_MouseClick" MouseEnter="pictureBoxCamera_MouseEnter" MouseLeave="pictureBoxCamera_MouseLeave"/>
+                    <wf:PictureBox Name="pictureBoxCamera" SizeMode="StretchImage" MouseWheel="pictureBoxCamera_MouseWheel" MouseMove="pictureBoxCamera_MouseMove" MouseClick="pictureBoxCamera_MouseClick" MouseEnter="pictureBoxCamera_MouseEnter" MouseLeave="pictureBoxCamera_MouseLeave"/>
                 </WindowsFormsHost.Child>
             </WindowsFormsHost>
         </Border>

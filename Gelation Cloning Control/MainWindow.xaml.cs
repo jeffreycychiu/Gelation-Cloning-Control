@@ -213,8 +213,8 @@ namespace Gelation_Cloning_Control
                     MessageBox.Show("No Lens Selected");
                     break;
                 case "4X Nikon":
-                    moveStageX = -56224;
-                    moveStageY = -51250;
+                    moveStageX = -59712;    //15% overlap. Calculated from entire x field of 4x being 70250 stage units. 70250*0.85 = 59712.5
+                    moveStageY = -54453;    //15% overlap. Calculated from entire y field of 4x being 64062.5 stage units. 64062.5*0.85 = 54453.125
                     break;
                 case "10X Nikon":
                     moveStageX = -24000;
@@ -494,6 +494,13 @@ namespace Gelation_Cloning_Control
         private void pictureBoxCamera_MouseLeave(object sender, EventArgs e)
         {
             (windowsFormsHost.Child as System.Windows.Forms.PictureBox).Cursor = System.Windows.Forms.Cursors.Default;
+        }
+
+        //Implement zooming in picturebox when the mouse wheel is scrolled. Needs to maintain the proper stage x,y positioning for targetting
+        private void pictureBoxCamera_MouseWheel(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            System.Drawing.Size currentPictureSize = (windowsFormsHost.Child as System.Windows.Forms.PictureBox).Size;
+
         }
 
         //Delete the selected item in the list box of laser scanning points
@@ -1559,9 +1566,10 @@ namespace Gelation_Cloning_Control
 
 
 
+
+
+
         #endregion
-
-
 
 
     }
