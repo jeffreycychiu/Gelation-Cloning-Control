@@ -72,6 +72,7 @@ namespace Gelation_Cloning_Control
 
         public Mat stitchedImageBF = new Mat();
         public Mat stitchedImageEGFP = new Mat();
+        private System.Drawing.Point mouseDownLocation;
 
         public MainWindow()
         {
@@ -409,12 +410,23 @@ namespace Gelation_Cloning_Control
         {
             double[] stageConversion = getStageConversionFromObjective(comboBoxScanLens.Text);
 
+            //Pan functionality
+            if (e.Button == System.Windows.Forms.MouseButtons.Left)
+            {
+
+                System.Drawing.Point mouseCurrentPosition = e.Location;
+                int mouseDeltaX = mouseCurrentPosition.X - mouseDownLocation.X;
+                int mouseDeltaY = mouseCurrentPosition.Y - mouseDownLocation.Y;
+
+                int mouseNewX = (windowsFormsHost.Child as System.Windows.Forms.PictureBox).Location.X + mouseDeltaX;
+                int mouseNewY = (windowsFormsHost.Child as System.Windows.Forms.PictureBox).Location.Y + mouseDeltaY;
+
+                (windowsFormsHost.Child as System.Windows.Forms.PictureBox).Location = new System.Drawing.Point(mouseNewX, mouseNewY);
+            }
+
+
             double mouseXPixel = e.X;
             double mouseYPixel = e.Y;
-
-            //CHECK IF IT SHOULD BE PLUS OR MINUS
-            //int mousePosStageX = stitchedX1 - (int)Math.Floor(mouseXPixel * stageConversion[0]);
-            //int mousePosStageY = stitchedY1 - (int)Math.Floor(mouseYPixel * stageConversion[1]);
 
             int mousePosStageX = 0;
             int mousePosStageY = 0;
@@ -435,7 +447,11 @@ namespace Gelation_Cloning_Control
             textBoxMousePositionY.Text = mousePosStageY.ToString();
         }
 
-        //Write the stage position of the mouse in the picture on click event. Two different situations: set the offset of the laser, and write a list of points to be saved for stage to travel to during lasering
+        //Write the stage position of the mouse in the picture on click event. 
+        //Three different situations: 
+        //1)set the offset of the laser (Left or right click)
+        //2)Right click: write a list of points to be saved for stage to travel to during lasering
+        //3)Left click: Pan image
         private void pictureBoxCamera_MouseClick(object sender, System.Windows.Forms.MouseEventArgs e)
         {
             if (offsetFlag == true)
@@ -477,12 +493,31 @@ namespace Gelation_Cloning_Control
                 borderPictureBox.BorderBrush = System.Windows.Media.Brushes.Black;
                 borderPictureBox.BorderThickness = new Thickness(2);
             }
-            else
+            else if (e.Button == System.Windows.Forms.MouseButtons.Right)
             {
                 ListBoxItem point = new ListBoxItem();
                 point.Content = textBoxMousePositionX.Text + "," + textBoxMousePositionY.Text;
                 listBoxLaserScanPoints.Items.Add(point);
             }
+            else if (e.Button == System.Windows.Forms.MouseButtons.Left)
+            {
+                //Pan?
+            }
+        }
+
+        //Implement panning using mousedown
+        private void pictureBoxCamera_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            if (e.Button == System.Windows.Forms.MouseButtons.Left)
+            {
+                (windowsFormsHost.Child as System.Windows.Forms.PictureBox).Cursor = System.Windows.Forms.Cursors.Hand;
+                mouseDownLocation = e.Location;
+            }
+        }
+
+        private void pictureBoxCamera_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            (windowsFormsHost.Child as System.Windows.Forms.PictureBox).Cursor = System.Windows.Forms.Cursors.Cross;
         }
 
         //Change the mouse cursor to a cross when in the picturebox
@@ -510,16 +545,16 @@ namespace Gelation_Cloning_Control
             int zoomWidth = (windowsFormsHost.Child as System.Windows.Forms.PictureBox).Width;
             int zoomHeight = (windowsFormsHost.Child as System.Windows.Forms.PictureBox).Height;
 
-            //Zoom in if delta>0. 10% zoom per scroll
+            //Zoom in if delta>0. 25% zoom per scroll
             if (e.Delta > 0)
             {
-                zoomWidth = (windowsFormsHost.Child as System.Windows.Forms.PictureBox).Width + ((windowsFormsHost.Child as System.Windows.Forms.PictureBox).Width / 10);
-                zoomHeight = (windowsFormsHost.Child as System.Windows.Forms.PictureBox).Height + ((windowsFormsHost.Child as System.Windows.Forms.PictureBox).Height / 10);
+                zoomWidth = (windowsFormsHost.Child as System.Windows.Forms.PictureBox).Width + ((windowsFormsHost.Child as System.Windows.Forms.PictureBox).Width / 4);
+                zoomHeight = (windowsFormsHost.Child as System.Windows.Forms.PictureBox).Height + ((windowsFormsHost.Child as System.Windows.Forms.PictureBox).Height / 4);
             }
             else if (e.Delta < 0)
             {
-                zoomWidth = (windowsFormsHost.Child as System.Windows.Forms.PictureBox).Width - ((windowsFormsHost.Child as System.Windows.Forms.PictureBox).Width / 10);
-                zoomHeight = (windowsFormsHost.Child as System.Windows.Forms.PictureBox).Height - ((windowsFormsHost.Child as System.Windows.Forms.PictureBox).Height / 10);
+                zoomWidth = (windowsFormsHost.Child as System.Windows.Forms.PictureBox).Width - ((windowsFormsHost.Child as System.Windows.Forms.PictureBox).Width / 4);
+                zoomHeight = (windowsFormsHost.Child as System.Windows.Forms.PictureBox).Height - ((windowsFormsHost.Child as System.Windows.Forms.PictureBox).Height / 4);
             }
 
             (windowsFormsHost.Child as System.Windows.Forms.PictureBox).Size = new System.Drawing.Size(zoomWidth, zoomHeight);
@@ -1592,8 +1627,8 @@ namespace Gelation_Cloning_Control
 
 
 
-        #endregion
 
+        #endregion
 
     }
 }
