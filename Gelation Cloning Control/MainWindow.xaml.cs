@@ -489,17 +489,40 @@ namespace Gelation_Cloning_Control
         private void pictureBoxCamera_MouseEnter(object sender, EventArgs e)
         {
             (windowsFormsHost.Child as System.Windows.Forms.PictureBox).Cursor = System.Windows.Forms.Cursors.Cross;
+            if (!(windowsFormsHost.Child as System.Windows.Forms.PictureBox).Focused)
+                (windowsFormsHost.Child as System.Windows.Forms.PictureBox).Focus();
         }
 
         private void pictureBoxCamera_MouseLeave(object sender, EventArgs e)
         {
             (windowsFormsHost.Child as System.Windows.Forms.PictureBox).Cursor = System.Windows.Forms.Cursors.Default;
+            if ((windowsFormsHost.Child as System.Windows.Forms.PictureBox).Focused)
+                (windowsFormsHost.Child as System.Windows.Forms.PictureBox).Parent.Focus();
         }
 
         //Implement zooming in picturebox when the mouse wheel is scrolled. Needs to maintain the proper stage x,y positioning for targetting
         private void pictureBoxCamera_MouseWheel(object sender, System.Windows.Forms.MouseEventArgs e)
         {
-            System.Drawing.Size currentPictureSize = (windowsFormsHost.Child as System.Windows.Forms.PictureBox).Size;
+            (windowsFormsHost.Child as System.Windows.Forms.PictureBox).SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+
+            Console.WriteLine("Scroll detected");
+
+            int zoomWidth = (windowsFormsHost.Child as System.Windows.Forms.PictureBox).Width;
+            int zoomHeight = (windowsFormsHost.Child as System.Windows.Forms.PictureBox).Height;
+
+            //Zoom in if delta>0. 10% zoom per scroll
+            if (e.Delta > 0)
+            {
+                zoomWidth = (windowsFormsHost.Child as System.Windows.Forms.PictureBox).Width + ((windowsFormsHost.Child as System.Windows.Forms.PictureBox).Width / 10);
+                zoomHeight = (windowsFormsHost.Child as System.Windows.Forms.PictureBox).Height + ((windowsFormsHost.Child as System.Windows.Forms.PictureBox).Height / 10);
+            }
+            else if (e.Delta < 0)
+            {
+                zoomWidth = (windowsFormsHost.Child as System.Windows.Forms.PictureBox).Width - ((windowsFormsHost.Child as System.Windows.Forms.PictureBox).Width / 10);
+                zoomHeight = (windowsFormsHost.Child as System.Windows.Forms.PictureBox).Height - ((windowsFormsHost.Child as System.Windows.Forms.PictureBox).Height / 10);
+            }
+
+            (windowsFormsHost.Child as System.Windows.Forms.PictureBox).Size = new System.Drawing.Size(zoomWidth, zoomHeight);
 
         }
 
