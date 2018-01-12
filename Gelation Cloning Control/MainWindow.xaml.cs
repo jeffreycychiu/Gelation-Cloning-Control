@@ -248,6 +248,12 @@ namespace Gelation_Cloning_Control
                     stitchedY1 = scanStagePosition[1] + 32031; //Adjust Y1 to real top left (should be 32031.25)
                     stitchedX2 = scanStagePosition[3] - 35125; //Adjust X2 to real bot right
                     stitchedY2 = scanStagePosition[4] - 32031; //Adjust Y2 to real top left (should be 32031.25)
+                    break;
+                case "10X Nikon":
+                    stitchedX1 = scanStagePosition[0] + 19173; //Adjust X1 to real top left (38345.8725 / 2 = 19172.93)
+                    stitchedY1 = scanStagePosition[1] + 15857; //Adjust Y1 to real top left (31714.1089 / 2 = 15875.05)
+                    stitchedX2 = scanStagePosition[3] - 19173; //Adjust X1 to real bot right (38345.8725 / 2 = 19172.93)
+                    stitchedY2 = scanStagePosition[4] - 19173; //Adjust X1 to real bot right (38345.8725 / 2 = 19172.93)
 
                     break;
             }
