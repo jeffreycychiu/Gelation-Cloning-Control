@@ -218,8 +218,8 @@ namespace Gelation_Cloning_Control
                     moveStageY = -54453;    //15% overlap. Calculated from entire y field of 4x being 64062.5 stage units. 64062.5*0.85 = 54453.125
                     break;
                 case "10X Nikon":
-                    moveStageX = -24000;
-                    moveStageY = -24000;
+                    moveStageX = -32594;    //15% overlap. Calculated from entire x field of 10X being 38345.8725 stage units (1 stage unit = 0.04um). 38345.8725*0.85 = 32593.99
+                    moveStageY = -26957;    //15% overlap. Calculated from entire x field of 10X being 31714.1089 stage units (1 stage unit = 0.04um). 31714.1089*0.85 = 26956.99
                     break;
                 case "20X Nikon":
                     moveStageX = -12000;
