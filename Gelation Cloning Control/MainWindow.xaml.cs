@@ -1386,11 +1386,9 @@ namespace Gelation_Cloning_Control
         private void btnDetectCellsBF_Click(object sender, RoutedEventArgs e)
         {
             //Show BF image first
-            //Mat imageBF = new Mat();
-            //Image<Bgr,Byte>imageBF = Mat.ToImage<Bgr,Byte>(stitchedImageBF);
-
             Image<Gray, Byte> imageBF = stitchedImageBF.ToImage<Gray, Byte>();
-            //ImageViewer.Show(imageBF, "Stitched Image (BF)");
+
+            /* Commented out - not using the outside well diameter detection right now
 
             //Identify the inner diameter of the well. So we can exclude everything outside of the well
             //The diameter of the well is a constant (depending on the plate used for 96 well plate).
@@ -1403,6 +1401,7 @@ namespace Gelation_Cloning_Control
 
             //ImageViewer.Show(imageGaussianBlur, "Gaussian Blurred Image");
 
+            
             //Hough circle transform to find the diameter of the well
             //CircleF[] detectedCircles = CvInvoke.HoughCircles(imageGaussianBlur, Emgu.CV.CvEnum.HoughType.Gradient, 5, 8);   //detect small circles - doesn't work takes way too long
             CircleF[] detectedCircles = CvInvoke.HoughCircles(imageGaussianBlur, Emgu.CV.CvEnum.HoughType.Gradient, 1, 10, 128, 138); //detect large circles
@@ -1415,8 +1414,13 @@ namespace Gelation_Cloning_Control
                 //imageBF.Draw(circle, System.Drawing.Color.Red, 2);
                 imageBF.Draw(circle, circleColor, 2);
             }
+            */
 
-            ImageViewer.Show(imageBF, "Circles detected w/ hough transform");
+            //Adaptive threshold
+            int windowSize = 11;
+            imageBF = imageBF.ThresholdAdaptive(new Gray(255), Emgu.CV.CvEnum.AdaptiveThresholdType.GaussianC, Emgu.CV.CvEnum.ThresholdType.BinaryInv, windowSize, new Gray(5));
+
+            ImageViewer.Show(imageBF, "BF cells detected");
         }
 
         //Detect the antibodies secreted from the cells in the EGFP domain
