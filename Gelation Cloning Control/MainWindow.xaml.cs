@@ -1416,11 +1416,27 @@ namespace Gelation_Cloning_Control
             }
             */
 
-            //Adaptive threshold
+            //Adaptive threshold 
             int windowSize = 11;
             imageBF = imageBF.ThresholdAdaptive(new Gray(255), Emgu.CV.CvEnum.AdaptiveThresholdType.GaussianC, Emgu.CV.CvEnum.ThresholdType.BinaryInv, windowSize, new Gray(5));
 
-            ImageViewer.Show(imageBF, "BF cells detected");
+            //filter morphological operations fix this https://stackoverflow.com/questions/30369031/remove-spurious-small-islands-of-noise-in-an-image-python-opencv
+            Mat se1 = Emgu.CV.CvInvoke.GetStructuringElement(Emgu.CV.CvEnum.ElementShape.Rectangle, new System.Drawing.Size(5, 5), new System.Drawing.Point(-1, 1));
+            Mat se2 = Emgu.CV.CvInvoke.GetStructuringElement(Emgu.CV.CvEnum.ElementShape.Rectangle, new System.Drawing.Size(2, 2), new System.Drawing.Point(-1, 1));
+
+            Mat mask = new Mat();
+            Emgu.CV.CvInvoke.MorphologyEx(imageBF, mask, Emgu.CV.CvEnum.MorphOp.Close, se1, new System.Drawing.Point(-1, 1), 1, Emgu.CV.CvEnum.BorderType.Default, new MCvScalar(1));
+            Emgu.CV.CvInvoke.MorphologyEx(mask, mask, Emgu.CV.CvEnum.MorphOp.Close, se1, new System.Drawing.Point(-1, 1), 1, Emgu.CV.CvEnum.BorderType.Default, new MCvScalar(1));
+
+            Mat output = imageBF.Mat;
+            output.SetTo(new MCvScalar(0), mask);
+
+
+            
+
+
+
+            ImageViewer.Show(output, "BF cells detected");
         }
 
         //Detect the antibodies secreted from the cells in the EGFP domain
