@@ -1404,8 +1404,8 @@ namespace Gelation_Cloning_Control
             //ImageViewer.Show(imageGaussianBlur, "Gaussian Blurred Image");
 
             //Hough circle transform to find the diameter of the well
-            //CircleF[] detectedCircles = CvInvoke.HoughCircles(imageGaussianBlur, Emgu.CV.CvEnum.HoughType.Gradient, 1, 10);
-            CircleF[] detectedCircles = CvInvoke.HoughCircles(imageGaussianBlur, Emgu.CV.CvEnum.HoughType.Gradient, 1, 10, 100, 138);
+            //CircleF[] detectedCircles = CvInvoke.HoughCircles(imageGaussianBlur, Emgu.CV.CvEnum.HoughType.Gradient, 5, 8);   //detect small circles - doesn't work takes way too long
+            CircleF[] detectedCircles = CvInvoke.HoughCircles(imageGaussianBlur, Emgu.CV.CvEnum.HoughType.Gradient, 1, 10, 128, 138); //detect large circles
 
             //draw circles onto copied original image
             Gray circleColor = new Gray(255);
@@ -1417,12 +1417,22 @@ namespace Gelation_Cloning_Control
             }
 
             ImageViewer.Show(imageBF, "Circles detected w/ hough transform");
-            
-        
-           
-
-
         }
+
+        //Detect the antibodies secreted from the cells in the EGFP domain
+        private void btnDetectSecretionEGFP_Click(object sender, RoutedEventArgs e)
+        {
+            Image<Gray, Byte> imageEGFP = stitchedImageEGFP.ToImage<Gray, Byte>();
+            //threshold image
+            int thresholdValue = 100;
+            imageEGFP = imageEGFP.ThresholdBinary(new Gray(thresholdValue), new Gray(255));
+
+            ImageViewer.Show(imageEGFP, "Thresholded EGFP image");
+        }
+
+
+
+    
 
         //Process the image in the picturebox.
         //INPUT: Flourescent Image? Or multichannel
@@ -1635,6 +1645,7 @@ namespace Gelation_Cloning_Control
 
 
         #endregion
+
 
     }
 }
