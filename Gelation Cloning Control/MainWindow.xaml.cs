@@ -1436,11 +1436,18 @@ namespace Gelation_Cloning_Control
             //Mat output = imageBF.Mat;
             //output.SetTo(new MCvScalar(0), mask);
             Image<Gray, Byte> maskImage = mask.ToImage<Gray, Byte>();
-            Image<Gray, Byte>output = imageBF.Mul(maskImage);
-            ImageViewer.Show(output, "Image after noise filtering mask");
-            
-            //Find centroid of areas remaining. These represent the center of masses of the cells
+            Image<Gray, Byte> morphologyImage = imageBF.Mul(maskImage);
+            ImageViewer.Show(morphologyImage, "Image after noise filtering mask using morphology operations");
 
+            //Find centroid of areas remaining. These represent the center of masses of the cells
+            Mat contours = new Mat();
+            Mat hiearchy = new Mat();
+            //findcontours gives error currently
+            //Emgu.CV.CvInvoke.FindContours(morphologyImage, contours, hiearchy, Emgu.CV.CvEnum.RetrType.Tree, Emgu.CV.CvEnum.ChainApproxMethod.ChainApproxSimple);
+
+            //double area = Emgu.CV.CvInvoke.ContourArea(contours);
+
+            //Console.WriteLine("area: " + area.ToString());
 
 
 
