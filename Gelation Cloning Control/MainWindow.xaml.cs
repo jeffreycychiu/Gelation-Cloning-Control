@@ -1429,7 +1429,7 @@ namespace Gelation_Cloning_Control
 
             //Adaptive threshold 
             //int windowSize = 15;
-            //imageBF = imageBF.ThresholdAdaptive(new Gray(255), Emgu.CV.CvEnum.AdaptiveThresholdType.GaussianC, Emgu.CV.CvEnum.ThresholdType.BinaryInv, windowSize, new Gray(5));
+            //imageAdaptiveThreshold = imageBF.ThresholdAdaptive(new Gray(255), Emgu.CV.CvEnum.AdaptiveThresholdType.GaussianC, Emgu.CV.CvEnum.ThresholdType.BinaryInv, windowSize, new Gray(5));
             //ImageViewer.Show(imageBF, "image after adaptive threshold");
 
             //Filter out the noise using morphological operations
@@ -1442,12 +1442,14 @@ namespace Gelation_Cloning_Control
             Emgu.CV.CvInvoke.MorphologyEx(mask, mask, Emgu.CV.CvEnum.MorphOp.Open, se2, new System.Drawing.Point(-1, 1), 1, Emgu.CV.CvEnum.BorderType.Default, new MCvScalar(1));
            
             ImageViewer.Show(mask, "mask");
-
-            //Mat output = imageBF.Mat;
-            //output.SetTo(new MCvScalar(0), mask);
+            
             Image<Gray, Byte> maskImage = mask.ToImage<Gray, Byte>();
-            Image<Gray, Byte> morphologyImage = imageBF.Mul(maskImage);
-            ImageViewer.Show(morphologyImage, "Image after noise filtering mask using morphology operations");
+            //Image<Gray, Byte> morphologyImage = imageBF.Mul(maskImage);
+            //ImageViewer.Show(morphologyImage, "Image after noise filtering mask using morphology operations");
+
+            //Overlay mask with original image. Convert mask to red colour, then overlay in red over original imageBF
+            Image<Gray, Byte> imageOverlayMask = imageBF.Add(maskImage);
+            ImageViewer.Show(imageOverlayMask, "mask added to original image");
             
 
             //Find centroid of areas remaining. These represent the center of masses of the cells
