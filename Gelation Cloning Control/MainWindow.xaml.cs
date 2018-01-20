@@ -1416,10 +1416,21 @@ namespace Gelation_Cloning_Control
             }
             */
 
+            //Edge detection
+            Mat cannyImage = new Mat();
+            Mat otsu = new Mat();
+            double otsuThreshold = Emgu.CV.CvInvoke.Threshold(imageBF, otsu, 0, 255, Emgu.CV.CvEnum.ThresholdType.Otsu | Emgu.CV.CvEnum.ThresholdType.Binary);
+            //See https://stackoverflow.com/questions/4292249/automatic-calculation-of-low-and-high-thresholds-for-the-canny-operation-in-open for calculation of canny thresholds
+            double cannyThresholdLow = otsuThreshold * 0.5;
+            double cannyThresholdHigh = otsuThreshold;
+            Console.WriteLine("Canny Thresholds LOW: " + cannyThresholdLow.ToString() + " || HIGH: " + cannyThresholdHigh.ToString());
+            Emgu.CV.CvInvoke.Canny(imageBF, cannyImage, cannyThresholdLow, cannyThresholdHigh);
+            ImageViewer.Show(cannyImage, "Canny Edge");
+
             //Adaptive threshold 
-            int windowSize = 11;
+            int windowSize = 15;
             imageBF = imageBF.ThresholdAdaptive(new Gray(255), Emgu.CV.CvEnum.AdaptiveThresholdType.GaussianC, Emgu.CV.CvEnum.ThresholdType.BinaryInv, windowSize, new Gray(5));
-            ImageViewer.Show(imageBF, "imageBF");
+            ImageViewer.Show(imageBF, "image after adaptive threshold");
 
             //Filter out the noise using morphological operations
             //See link for details https://stackoverflow.com/questions/30369031/remove-spurious-small-islands-of-noise-in-an-image-python-opencv
@@ -1429,6 +1440,7 @@ namespace Gelation_Cloning_Control
             Mat mask = new Mat();
             Emgu.CV.CvInvoke.MorphologyEx(imageBF, mask, Emgu.CV.CvEnum.MorphOp.Close, se1, new System.Drawing.Point(-1, 1), 1, Emgu.CV.CvEnum.BorderType.Default, new MCvScalar(1));
             Emgu.CV.CvInvoke.MorphologyEx(mask, mask, Emgu.CV.CvEnum.MorphOp.Open, se2, new System.Drawing.Point(-1, 1), 1, Emgu.CV.CvEnum.BorderType.Default, new MCvScalar(1));
+            
             //Emgu.CV.CvInvoke.MorphologyEx(mask, mask, Emgu.CV.CvEnum.MorphOp.Close, se1, new System.Drawing.Point(-1, 1), 1, Emgu.CV.CvEnum.BorderType.Default, new MCvScalar(1));
             //Emgu.CV.CvInvoke.MorphologyEx(mask, mask, Emgu.CV.CvEnum.MorphOp.Open, se2, new System.Drawing.Point(-1, 1), 1, Emgu.CV.CvEnum.BorderType.Default, new MCvScalar(1));
             ImageViewer.Show(mask, "mask");
@@ -1438,6 +1450,7 @@ namespace Gelation_Cloning_Control
             Image<Gray, Byte> maskImage = mask.ToImage<Gray, Byte>();
             Image<Gray, Byte> morphologyImage = imageBF.Mul(maskImage);
             ImageViewer.Show(morphologyImage, "Image after noise filtering mask using morphology operations");
+            
 
             //Find centroid of areas remaining. These represent the center of masses of the cells
             Mat contours = new Mat();
