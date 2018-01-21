@@ -1447,16 +1447,23 @@ namespace Gelation_Cloning_Control
             //Image<Gray, Byte> morphologyImage = imageBF.Mul(maskImage);
             //ImageViewer.Show(morphologyImage, "Image after noise filtering mask using morphology operations");
 
-            //Overlay mask with original image. Convert mask to red colour, then overlay in red over original imageBF
+            //Overlay mask with original image.
+
+            //overlay in red transparency
+            //Image<Bgra, Byte> transparentMask = maskImage.Convert<Bgra, Byte>();
+            //Bgra redAlpha = new Bgra(0, 0, 255, 100);
+            //Image<Bgra, Byte> redTransparent = new Image<Bgra, byte>(transparentMask.Cols, transparentMask.Rows, redAlpha);
+            //transparentMask = transparentMask.Mul(redTransparent);            //ImageViewer.Show(transparentMask, "Transparent Mask");
+
             Image<Gray, Byte> imageOverlayMask = imageBF.Add(maskImage);
             ImageViewer.Show(imageOverlayMask, "mask added to original image");
-            
 
-            //Find centroid of areas remaining. These represent the center of masses of the cells
+            //Find areas and centroid of areas remaining. Remove the small areas (should be noise), and large areas (debris)
+            //then return centroids 
             Mat contours = new Mat();
             Mat hiearchy = new Mat();
-            //findcontours gives error currently
-            //Emgu.CV.CvInvoke.FindContours(morphologyImage, contours, hiearchy, Emgu.CV.CvEnum.RetrType.Tree, Emgu.CV.CvEnum.ChainApproxMethod.ChainApproxSimple);
+            //findcontours gives error currently. THINK CONTOURS NEEDS TO BE A DIFFERENT THING (NOT MAT) SINCE IT IS A VECTOR OF VECTORS
+            Emgu.CV.CvInvoke.FindContours(maskImage, contours, hiearchy, Emgu.CV.CvEnum.RetrType.List, Emgu.CV.CvEnum.ChainApproxMethod.ChainApproxNone);
 
             //double area = Emgu.CV.CvInvoke.ContourArea(contours);
 
