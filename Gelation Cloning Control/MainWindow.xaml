@@ -68,32 +68,37 @@
                         HorizontalAlignment="Left" Height="25" Margin="10,340,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="54"/>
                     <Button x:Name="btnSetDutyCycle" Content="Set" Click="btnSetDutyCycle_Click"  IsEnabled="False" Padding="0" HorizontalAlignment="Left" Margin="69,340,0,0" VerticalAlignment="Top" Width="43" Height="26"  
                         Controls:ButtonHelper.PreserveTextCase="true" Style="{DynamicResource SquareButtonStyle}" />
-                    <Button x:Name="btnFireCycleOnce" Content="Fire Cycle Once" Click="btnFireCycleOnce_Click" IsEnabled="False" Padding="0" HorizontalAlignment="Left" Margin="10,371,0,0" VerticalAlignment="Top" Width="102" Height="25"  
+                    <Button x:Name="btnFireCycles" Content="Fire PWM cycles" Click="btnFireCycles_Click" IsEnabled="False" Padding="0" HorizontalAlignment="Left" Margin="10,421,0,0" VerticalAlignment="Top" Width="102" Height="25"  
                         Controls:ButtonHelper.PreserveTextCase="true" Style="{DynamicResource SquareButtonStyle}" />
 
 
 
-                    <Label x:Name="labelCameraControl" Content="Camera Control" FontSize="20" FontWeight="Bold"  HorizontalAlignment="Left" Margin="3,407,0,0" VerticalAlignment="Top"/>
-                    <ListView x:Name="listViewCamera" SelectionChanged="listViewCamera_SelectionChanged" HorizontalAlignment="Left" Height="80" Margin="10,446,0,0" VerticalAlignment="Top" Width="140" BorderThickness="2">
+                    <Label x:Name="labelCameraControl" Content="Camera Control" FontSize="20" FontWeight="Bold"  HorizontalAlignment="Left" Margin="3,454,0,0" VerticalAlignment="Top"/>
+                    <ListView x:Name="listViewCamera" SelectionChanged="listViewCamera_SelectionChanged" HorizontalAlignment="Left" Height="80" Margin="10,493,0,0" VerticalAlignment="Top" Width="140" BorderThickness="2">
                         <ListView.View>
                             <GridView>
                                 <GridViewColumn  Header="Camera:" DisplayMemberBinding="{Binding DataContext}" />
                             </GridView>
                         </ListView.View>
                     </ListView>
-                    <Button x:Name="btnCameraSingleShot" Content="Single Shot" Click="btnCameraSingleShot_Click" IsEnabled="False" Padding="0" HorizontalAlignment="Left" Margin="10,531,0,0" VerticalAlignment="Top" Width="140" Height="25"  
+                    <Button x:Name="btnCameraSingleShot" Content="Single Shot" Click="btnCameraSingleShot_Click" IsEnabled="False" Padding="0" HorizontalAlignment="Left" Margin="10,578,0,0" VerticalAlignment="Top" Width="140" Height="25"  
                         Controls:ButtonHelper.PreserveTextCase="true" Style="{DynamicResource SquareButtonStyle}" />
-                    <Button x:Name="btnCameraContinuousShot" Content="Continuous Shot" Click="btnCameraContinuousShot_Click" IsEnabled="False" Padding="0" HorizontalAlignment="Left" Margin="10,561,0,0" VerticalAlignment="Top" Width="140" Height="25"  
+                    <Button x:Name="btnCameraContinuousShot" Content="Continuous Shot" Click="btnCameraContinuousShot_Click" IsEnabled="False" Padding="0" HorizontalAlignment="Left" Margin="10,608,0,0" VerticalAlignment="Top" Width="140" Height="25"  
                         Controls:ButtonHelper.PreserveTextCase="true" Style="{DynamicResource SquareButtonStyle}" />
-                    <Button x:Name="btnCameraStop" Content="Stop Camera" Click="btnCameraStop_Click"  Padding="0" IsEnabled="False" HorizontalAlignment="Left" Margin="10,591,0,0" VerticalAlignment="Top" Width="140" Height="25"  
+                    <Button x:Name="btnCameraStop" Content="Stop Camera" Click="btnCameraStop_Click"  Padding="0" IsEnabled="False" HorizontalAlignment="Left" Margin="10,638,0,0" VerticalAlignment="Top" Width="140" Height="25"  
                         Controls:ButtonHelper.PreserveTextCase="true" Style="{DynamicResource SquareButtonStyle}" />
-                    <Label x:Name="labelExposure" Content="Exposure" FontWeight="Bold" Height="25" HorizontalAlignment="Left" Margin="10,621,0,0" VerticalAlignment="Top"/>
+                    <Label x:Name="labelExposure" Content="Exposure" FontWeight="Bold" Height="25" HorizontalAlignment="Left" Margin="10,668,0,0" VerticalAlignment="Top"/>
                     <TextBox x:Name="textBoxExposure" IsEnabled="False" KeyDown="textBoxExposure_KeyDown" PreviewTextInput="textBoxCurrent_PreviewTextInput" Text=""
-                        HorizontalAlignment="Left" Height="20" Margin="85,621,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="65"/>
-                    <Label x:Name="labelGain" Content="Gain" FontWeight="Bold" Height="25" HorizontalAlignment="Left" Margin="10,652,0,0" VerticalAlignment="Top"/>
+                        HorizontalAlignment="Left" Height="20" Margin="85,668,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="65"/>
+                    <Label x:Name="labelGain" Content="Gain" FontWeight="Bold" Height="25" HorizontalAlignment="Left" Margin="10,699,0,0" VerticalAlignment="Top"/>
                     <TextBox x:Name="textBoxGain" IsEnabled="False" KeyDown="textBoxGain_KeyDown"  PreviewTextInput="textBoxCurrent_PreviewTextInput" Text=""
-                        HorizontalAlignment="Left" Height="20" Margin="85,652,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="65"/>
-                    <Button x:Name="btnSaveImage"  Content="Save Image" Click="btnSaveImage_Click"  Padding="0" HorizontalAlignment="Left" Margin="10,683,0,0" VerticalAlignment="Top" Width="140" Height="25"  
+                        HorizontalAlignment="Left" Height="20" Margin="85,699,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="65"/>
+                    <Button x:Name="btnSaveImage"  Content="Save Image" Click="btnSaveImage_Click"  Padding="0" HorizontalAlignment="Left" Margin="10,730,0,0" VerticalAlignment="Top" Width="140" Height="25"  
+                        Controls:ButtonHelper.PreserveTextCase="true" Style="{DynamicResource SquareButtonStyle}" />
+                    <TextBox x:Name="textBoxNumberCycles" TextChanged="textBoxNumberCycles_TextChanged"  Text="1" PreviewTextInput="textBoxDutyCycleSet_PreviewTextInput" IsEnabled="false"
+                        HorizontalAlignment="Left" Height="25" Margin="10,390,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="54"/>
+                    <TextBlock x:Name="textBlockNumberCycles" HorizontalAlignment="Left" Margin="10,371,0,0" TextWrapping="Wrap" Text="Number of Cycles" VerticalAlignment="Top"/>
+                    <Button x:Name="btnSetNumCycles" Content="Set" Click="btnSetNumCycles_Click" IsEnabled="false" Padding="0" HorizontalAlignment="Left" Margin="69,390,0,0" VerticalAlignment="Top" Width="43" Height="26"  
                         Controls:ButtonHelper.PreserveTextCase="true" Style="{DynamicResource SquareButtonStyle}" />
 
 
@@ -145,7 +150,7 @@
                                 <RowDefinition Height="*"/>
                                 <RowDefinition Height="*"/>
                                 <RowDefinition Height="*"/>
-                                
+
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>

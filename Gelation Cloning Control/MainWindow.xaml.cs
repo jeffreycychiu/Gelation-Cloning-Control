@@ -789,13 +789,8 @@ namespace Gelation_Cloning_Control
             radioBtnCW.IsChecked = false;
             textBoxPeriodSet.IsEnabled = true;
             textBoxDutyCycleSet.IsEnabled = true;
-            //btnSetPeriod.IsEnabled = true;
-            //btnSetDutyCycle.IsEnabled = true;
-            btnFireCycleOnce.IsEnabled = true;
-
-            //Create a stopwatch event
-
-
+            textBoxNumberCycles.IsEnabled = true;
+            btnFireCycles.IsEnabled = true;
         }
 
         private void radioBtnPWM_Unchecked(object sender, RoutedEventArgs e)
@@ -803,8 +798,11 @@ namespace Gelation_Cloning_Control
             radioBtnCW.IsEnabled = true;
             textBoxPeriodSet.IsEnabled = false;
             textBoxDutyCycleSet.IsEnabled = false;
+            textBoxNumberCycles.IsEnabled = false;
             btnSetPeriod.IsEnabled = false;
             btnSetDutyCycle.IsEnabled = false;
+            btnSetNumCycles.IsEnabled = false;
+            btnFireCycles.IsEnabled = false;
         }
 
         private void btnSetPeriod_Click(object sender, RoutedEventArgs e)
@@ -836,33 +834,57 @@ namespace Gelation_Cloning_Control
                 textBoxDutyCycleSet.Text = 0.ToString();
             }
             btnSetDutyCycle.IsEnabled = false;
+            btnSetNumCycles.IsEnabled = true;
+        }
+
+        private void btnSetNumCycles_Click(object sender, RoutedEventArgs e)
+        {
+            int numCycles;
+            if (int.TryParse(textBoxDutyCycleSet.Text, out numCycles) && numCycles >= 0 && numCycles <= 100)
+            {
+                //
+            }
+            else
+            {
+                MessageBox.Show("Error: Number of cycles must be between 0 and 100");
+                textBoxDutyCycleSet.Text = 0.ToString();
+            }
+            btnSetNumCycles.IsEnabled = false;
+            btnSetDutyCycle.IsEnabled = false;
         }
 
         //Fire one period of the cycle set by the duty cycle/period settings
-        private void btnFireCycleOnce_Click(object sender, RoutedEventArgs e)
+        private void btnFireCycles_Click(object sender, RoutedEventArgs e)
         {
             //Create a new timer for this purpose:
             int period = int.Parse(textBoxPeriodSet.Text);
             double dutyCycle = double.Parse(textBoxDutyCycleSet.Text);
-
-
+            //int numCycles = int.Parse(textBlockNumberCycles.Text);
+            int numCycles;
+            int.TryParse(textBoxNumberCycles.Text, out numCycles);
 
             Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Start();
 
-            serialPortArroyoSend("LASer:OUTput 1");
-            serialPortArroyoSend("LASer:OUTput?");
+            for(int i = 0; i < numCycles; i++)
+            {
+                stopwatch.Start();
 
-            while (stopwatch.ElapsedMilliseconds < Math.Floor(period * dutyCycle / 100)) ;  //do nothing
+                serialPortArroyoSend("LASer:OUTput 1");
+                serialPortArroyoSend("LASer:OUTput?");
 
-            serialPortArroyoSend("LASer:OUTput 0");
-            serialPortArroyoSend("LASer:OUTput?");
+                while (stopwatch.ElapsedMilliseconds < Math.Floor(period * dutyCycle / 100)) ;  //do nothing
 
-            while (stopwatch.ElapsedMilliseconds < period) ; //do nothing until period over
+                serialPortArroyoSend("LASer:OUTput 0");
+                serialPortArroyoSend("LASer:OUTput?");
 
-            stopwatch.Reset();
+                while (stopwatch.ElapsedMilliseconds < period) ; //do nothing until period over
+
+                stopwatch.Reset();
+            }
+
 
         }
+        
 
         private void textBoxPeriodSet_TextChanged(object sender, TextChangedEventArgs e)
         {
@@ -872,6 +894,11 @@ namespace Gelation_Cloning_Control
         private void textBoxDutyCycleSet_TextChanged(object sender, TextChangedEventArgs e)
         {
             btnSetDutyCycle.IsEnabled = true;
+        }
+
+        private void textBoxNumberCycles_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            //btnSetNumCycles.IsEnabled = true;
         }
 
         private void textBoxPeriodSet_PreviewTextInput(object sender, TextCompositionEventArgs e)
@@ -1682,6 +1709,8 @@ namespace Gelation_Cloning_Control
 
             return stageConversion;
         }
+
+
 
 
 
