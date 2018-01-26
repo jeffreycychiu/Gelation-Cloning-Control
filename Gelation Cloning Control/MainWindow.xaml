@@ -95,7 +95,7 @@
                         HorizontalAlignment="Left" Height="20" Margin="85,699,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="65"/>
                     <Button x:Name="btnSaveImage"  Content="Save Image" Click="btnSaveImage_Click"  Padding="0" HorizontalAlignment="Left" Margin="10,730,0,0" VerticalAlignment="Top" Width="140" Height="25"  
                         Controls:ButtonHelper.PreserveTextCase="true" Style="{DynamicResource SquareButtonStyle}" />
-                    <TextBox x:Name="textBoxNumberCycles" TextChanged="textBoxNumberCycles_TextChanged"  Text="1" PreviewTextInput="textBoxDutyCycleSet_PreviewTextInput" IsEnabled="false"
+                    <TextBox x:Name="textBoxNumberCycles" TextChanged="textBoxNumberCycles_TextChanged"  PreviewTextInput="textBoxNumberCycles_PreviewTextInput"  IsEnabled="false"
                         HorizontalAlignment="Left" Height="25" Margin="10,390,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="54"/>
                     <TextBlock x:Name="textBlockNumberCycles" HorizontalAlignment="Left" Margin="10,371,0,0" TextWrapping="Wrap" Text="Number of Cycles" VerticalAlignment="Top"/>
                     <Button x:Name="btnSetNumCycles" Content="Set" Click="btnSetNumCycles_Click" IsEnabled="false" Padding="0" HorizontalAlignment="Left" Margin="69,390,0,0" VerticalAlignment="Top" Width="43" Height="26"  

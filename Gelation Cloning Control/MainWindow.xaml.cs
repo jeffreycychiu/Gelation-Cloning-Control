@@ -898,7 +898,7 @@ namespace Gelation_Cloning_Control
 
         private void textBoxNumberCycles_TextChanged(object sender, TextChangedEventArgs e)
         {
-            //btnSetNumCycles.IsEnabled = true;
+            btnSetNumCycles.IsEnabled = true;
         }
 
         private void textBoxPeriodSet_PreviewTextInput(object sender, TextCompositionEventArgs e)
@@ -907,6 +907,11 @@ namespace Gelation_Cloning_Control
         }
 
         private void textBoxDutyCycleSet_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            e.Handled = !IsTextAllowed(e.Text);
+        }
+
+        private void textBoxNumberCycles_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
             e.Handled = !IsTextAllowed(e.Text);
         }
@@ -1709,6 +1714,7 @@ namespace Gelation_Cloning_Control
 
             return stageConversion;
         }
+
 
 
 
