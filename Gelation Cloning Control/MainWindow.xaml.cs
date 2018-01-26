@@ -1492,9 +1492,8 @@ namespace Gelation_Cloning_Control
 
             //Find areas and centroid of areas remaining. Remove the small areas (should be noise), and large areas (debris)
             //then return centroids 
-            Mat contours = new Mat();
+            VectorOfVectorOfPoint contours = new VectorOfVectorOfPoint();
             Mat hiearchy = new Mat();
-            //findcontours gives error currently. THINK CONTOURS NEEDS TO BE A DIFFERENT THING (NOT MAT) SINCE IT IS A VECTOR OF VECTORS
             Emgu.CV.CvInvoke.FindContours(maskImage, contours, hiearchy, Emgu.CV.CvEnum.RetrType.List, Emgu.CV.CvEnum.ChainApproxMethod.ChainApproxNone);
 
             //double area = Emgu.CV.CvInvoke.ContourArea(contours);
