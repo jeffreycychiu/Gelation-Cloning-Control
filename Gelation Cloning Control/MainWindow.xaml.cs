@@ -1496,9 +1496,13 @@ namespace Gelation_Cloning_Control
             Mat hiearchy = new Mat();
             Emgu.CV.CvInvoke.FindContours(maskImage, contours, hiearchy, Emgu.CV.CvEnum.RetrType.List, Emgu.CV.CvEnum.ChainApproxMethod.ChainApproxNone);
 
-            //double area = Emgu.CV.CvInvoke.ContourArea(contours);
+            Console.WriteLine("Number of contours detected: " + contours.Size);
 
-            //Console.WriteLine("area: " + area.ToString());
+            for (int i = 0; i < contours.Size; i++)
+            {
+                double area = CvInvoke.ContourArea(contours[i], false);
+                Console.WriteLine("Area: " + area);
+            }
 
 
 
