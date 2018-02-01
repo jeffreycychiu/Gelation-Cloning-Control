@@ -74,11 +74,11 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="PylonC.NET, Version=4.1.0.0, Culture=neutral, PublicKeyToken=a77e8471c5919d5a, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Basler\PylonC.NET.dll</HintPath>
+      <HintPath>..\packages\Basler.PylonC.NET.5.0.5\lib\net20\PylonC.NET.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="PylonC.NETSupportLibrary">
-      <HintPath>..\bin\PylonC.NETSupportLibrary.dll</HintPath>
+      <HintPath>.\PylonC.NETSupportLibrary.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -152,7 +152,9 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="OpenTK.dll.config" />
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Properties\DataSources\PylonC.NETSupportLibrary.BitmapFactory.datasource" />
     <None Include="Properties\DataSources\PylonC.NETSupportLibrary.DeviceEnumerator+Device.datasource" />
     <None Include="Properties\DataSources\PylonC.NETSupportLibrary.DeviceEnumerator.datasource" />
