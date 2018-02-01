@@ -1498,12 +1498,16 @@ namespace Gelation_Cloning_Control
 
             Console.WriteLine("Number of contours detected: " + contours.Size);
 
+            //Calculate areas and moments to find centroids
+            double[] areas = new double[contours.Size];
+
             for (int i = 0; i < contours.Size; i++)
             {
-                double area = CvInvoke.ContourArea(contours[i], false);
-                Console.WriteLine("Area: " + area);
+                areas[i] = CvInvoke.ContourArea(contours[i], false);
+                //Console.WriteLine("Area: " + areas[i]);
             }
 
+            MCvMoments moments = CvInvoke.Moments(contours, false);
 
 
         }
