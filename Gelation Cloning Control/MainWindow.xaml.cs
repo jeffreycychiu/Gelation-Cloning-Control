@@ -1457,7 +1457,7 @@ namespace Gelation_Cloning_Control
             double cannyThresholdHigh = otsuThreshold;
             Console.WriteLine("Canny Thresholds LOW: " + cannyThresholdLow.ToString() + " || HIGH: " + cannyThresholdHigh.ToString());
             Emgu.CV.CvInvoke.Canny(imageBF, cannyImage, cannyThresholdLow, cannyThresholdHigh);
-            ImageViewer.Show(cannyImage, "Canny Edge");
+            //ImageViewer.Show(cannyImage, "Canny Edge");
 
             //Adaptive threshold 
             //int windowSize = 15;
@@ -1473,7 +1473,7 @@ namespace Gelation_Cloning_Control
             Emgu.CV.CvInvoke.MorphologyEx(cannyImage, mask, Emgu.CV.CvEnum.MorphOp.Close, se1, new System.Drawing.Point(-1, 1), 1, Emgu.CV.CvEnum.BorderType.Default, new MCvScalar(1));
             Emgu.CV.CvInvoke.MorphologyEx(mask, mask, Emgu.CV.CvEnum.MorphOp.Open, se2, new System.Drawing.Point(-1, 1), 1, Emgu.CV.CvEnum.BorderType.Default, new MCvScalar(1));
            
-            ImageViewer.Show(mask, "mask");
+            //ImageViewer.Show(mask, "mask");
             
             Image<Gray, Byte> maskImage = mask.ToImage<Gray, Byte>();
             //Image<Gray, Byte> morphologyImage = imageBF.Mul(maskImage);
@@ -1500,16 +1500,23 @@ namespace Gelation_Cloning_Control
 
             //Calculate areas and moments to find centroids
             double[] areas = new double[contours.Size];
+            //double[] momentsM00 = new double[contours.Size];
+            //double[] momentsM01 = new double[contours.Size];
+
+            System.Drawing.Point[] centroidPoints = new System.Drawing.Point[contours.Size];
 
             for (int i = 0; i < contours.Size; i++)
             {
                 areas[i] = CvInvoke.ContourArea(contours[i], false);
-                //Console.WriteLine("Area: " + areas[i]);
+                MCvMoments moment = CvInvoke.Moments(contours[i]);
+                //momentsM00[i] = moment.M00;
+                //momentsM01[i] = moment.M01;
+                int centroidX = Convert.ToInt32(Math.Round(moment.M10 / moment.M00));
+                int centroidY = Convert.ToInt32(Math.Round(moment.M01 / moment.M00));
+
+                centroidPoints[i] = new System.Drawing.Point(centroidX, centroidY);
             }
-
-            MCvMoments moments = CvInvoke.Moments(contours, false);
-
-
+            
         }
 
         //Detect the antibodies secreted from the cells in the EGFP domain
