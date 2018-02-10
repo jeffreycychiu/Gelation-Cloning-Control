@@ -853,8 +853,49 @@ namespace Gelation_Cloning_Control
             btnSetDutyCycle.IsEnabled = false;
         }
 
-        //Fire one period of the cycle set by the duty cycle/period settings
+        //Fire the amount of pulses as specified by the PWM settings
         private void btnFireCycles_Click(object sender, RoutedEventArgs e)
+        {
+            ////Create a new timer for this purpose:
+            //int period = int.Parse(textBoxPeriodSet.Text);
+            //double dutyCycle = double.Parse(textBoxDutyCycleSet.Text);
+            ////int numCycles = int.Parse(textBlockNumberCycles.Text);
+            //int numCycles;
+            //int.TryParse(textBoxNumberCycles.Text, out numCycles);
+
+            //Stopwatch stopwatch = new Stopwatch();
+
+            //for(int i = 0; i < numCycles; i++)
+            //{
+            //    stopwatch.Start();
+
+            //    serialPortArroyoSend("LASer:OUTput 1");
+            //    serialPortArroyoSend("LASer:OUTput?");
+
+            //    while (stopwatch.ElapsedMilliseconds < Math.Floor(period * dutyCycle / 100)) ;  //do nothing
+
+            //    serialPortArroyoSend("LASer:OUTput 0");
+            //    serialPortArroyoSend("LASer:OUTput?");
+
+            //    while (stopwatch.ElapsedMilliseconds < period) ; //do nothing until period over
+
+            //    stopwatch.Reset();
+            //}
+
+            firePulsesPWM();
+        }
+
+        //pressing the space key also fires the PWM (activates btnFireCycles_Click
+        private void pictureBoxCamera_KeyPress(object sender, System.Windows.Forms.KeyPressEventArgs e)
+        {
+            if ( e.KeyChar == (char)Key.Space)
+            {
+                firePulsesPWM();
+            }
+        }
+
+        //Helper function: Fires the amount of pulses as specified by the PWM settings
+        private void firePulsesPWM ()
         {
             //Create a new timer for this purpose:
             int period = int.Parse(textBoxPeriodSet.Text);
@@ -865,7 +906,7 @@ namespace Gelation_Cloning_Control
 
             Stopwatch stopwatch = new Stopwatch();
 
-            for(int i = 0; i < numCycles; i++)
+            for (int i = 0; i < numCycles; i++)
             {
                 stopwatch.Start();
 
@@ -881,10 +922,7 @@ namespace Gelation_Cloning_Control
 
                 stopwatch.Reset();
             }
-
-
         }
-        
 
         private void textBoxPeriodSet_TextChanged(object sender, TextChangedEventArgs e)
         {
@@ -1728,6 +1766,7 @@ namespace Gelation_Cloning_Control
 
             return stageConversion;
         }
+
 
 
 

@@ -28,7 +28,8 @@
             <WindowsFormsHost Name="windowsFormsHost">
                 <WindowsFormsHost.Child>
                     <wf:PictureBox Name="pictureBoxCamera" SizeMode="StretchImage" MouseWheel="pictureBoxCamera_MouseWheel" MouseMove="pictureBoxCamera_MouseMove" MouseClick="pictureBoxCamera_MouseClick" 
-                                   MouseDown="pictureBoxCamera_MouseDown" MouseUp="pictureBoxCamera_MouseUp"  MouseEnter="pictureBoxCamera_MouseEnter" MouseLeave="pictureBoxCamera_MouseLeave"/>
+                                   MouseDown="pictureBoxCamera_MouseDown" MouseUp="pictureBoxCamera_MouseUp"  MouseEnter="pictureBoxCamera_MouseEnter" MouseLeave="pictureBoxCamera_MouseLeave"
+                                   KeyPress="pictureBoxCamera_KeyPress"/>
                 </WindowsFormsHost.Child>
             </WindowsFormsHost>
         </Border>
