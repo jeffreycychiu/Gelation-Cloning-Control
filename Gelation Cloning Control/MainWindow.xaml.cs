@@ -1458,8 +1458,6 @@ namespace Gelation_Cloning_Control
             //Show BF image first
             Image<Gray, Byte> imageBF = stitchedImageBF.ToImage<Gray, Byte>();
 
-            /* Commented out - not using the outside well diameter detection right now
-
             //Identify the inner diameter of the well. So we can exclude everything outside of the well
             //The diameter of the well is a constant (depending on the plate used for 96 well plate).
             //The plate I use is ______ for non tissue culture plate and ____ for tissue culture plate (insert model #s)
@@ -1468,23 +1466,22 @@ namespace Gelation_Cloning_Control
             //First gaussian blur to reduce noise and avoid false circle detection
             Mat imageGaussianBlur = new Mat();
             CvInvoke.GaussianBlur(imageBF, imageGaussianBlur, new System.Drawing.Size(3, 3), 2, 2);
-
             //ImageViewer.Show(imageGaussianBlur, "Gaussian Blurred Image");
-
             
             //Hough circle transform to find the diameter of the well
-            //CircleF[] detectedCircles = CvInvoke.HoughCircles(imageGaussianBlur, Emgu.CV.CvEnum.HoughType.Gradient, 5, 8);   //detect small circles - doesn't work takes way too long
-            CircleF[] detectedCircles = CvInvoke.HoughCircles(imageGaussianBlur, Emgu.CV.CvEnum.HoughType.Gradient, 1, 10, 128, 138); //detect large circles
+            CircleF[] detectedCircles = CvInvoke.HoughCircles(imageGaussianBlur, Emgu.CV.CvEnum.HoughType.Gradient, dp: 1, minDist: 10, param2: 10, minRadius: 2575, maxRadius: 2600);
 
             //draw circles onto copied original image
             Gray circleColor = new Gray(255);
             foreach (CircleF circle in detectedCircles)
             {
-                //imageBF.Draw(circle, new Bgr(System.Drawing.Color.Red), 2);
-                //imageBF.Draw(circle, System.Drawing.Color.Red, 2);
                 imageBF.Draw(circle, circleColor, 2);
             }
-            */
+
+            ImageViewer.Show(imageBF, "Large Well Diam Circle Drawn");
+
+            //Delete everything outside of circle
+
 
             //Edge detection
             Mat cannyImage = new Mat();
