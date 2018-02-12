@@ -1468,20 +1468,32 @@ namespace Gelation_Cloning_Control
             CvInvoke.GaussianBlur(imageBF, imageGaussianBlur, new System.Drawing.Size(3, 3), 2, 2);
             //ImageViewer.Show(imageGaussianBlur, "Gaussian Blurred Image");
             
-            //Hough circle transform to find the diameter of the well
-            CircleF[] detectedCircles = CvInvoke.HoughCircles(imageGaussianBlur, Emgu.CV.CvEnum.HoughType.Gradient, dp: 1, minDist: 10, param2: 10, minRadius: 2575, maxRadius: 2600);
+            //Hough circle transform to find the diameter of the well. Using minRadius = 2575, maxRadius = 2600 for 96 well plate. Will need to change if plate changes
+            CircleF[] detectedWellCircles = CvInvoke.HoughCircles(imageGaussianBlur, Emgu.CV.CvEnum.HoughType.Gradient, dp: 1, minDist: 10, param2: 10, minRadius: 2575, maxRadius: 2600);
 
             //draw circles onto copied original image
             Gray circleColor = new Gray(255);
-            foreach (CircleF circle in detectedCircles)
+            foreach (CircleF circle in detectedWellCircles)
             {
-                imageBF.Draw(circle, circleColor, 2);
+                //imageBF.Draw(circle, circleColor, 2);
             }
 
-            ImageViewer.Show(imageBF, "Large Well Diam Circle Drawn");
+            //ImageViewer.Show(imageBF, "Large Well Diam Circle Drawn");
 
-            //Delete everything outside of circle
+            //Sort circles by descending radius (largest radius first)
+            if (detectedWellCircles.Count() > 0)
+            {
+                Array.Sort(detectedWellCircles, delegate (CircleF circle1, CircleF circle2) { return circle2.Radius.CompareTo(circle1.Radius); });
+                int wellRadius = (int)detectedWellCircles[0].Radius;
+                System.Drawing.PointF wellCenter = detectedWellCircles[0].Center;
+            }
 
+            //Create a new image of same width/height. Draw a filled circle matching the largest circle found when detecting the well perimeter
+            Mat wellPlateCircleMask = new Mat(imageBF.Size, Emgu.CV.CvEnum.DepthType.Cv32S, 1);         //create empty mat of same size
+            Image<Gray, Byte> wellPlateCircleMaskImage = wellPlateCircleMask.ToImage<Gray, Byte>();
+            wellPlateCircleMaskImage.Draw(detectedWellCircles[0], circleColor, -1);                     //draw a filled circle
+            imageBF = imageBF.And(wellPlateCircleMaskImage);                                            //AND the original image and the well plate circle mask to remove the data outside of the well
+            ImageViewer.Show(imageBF, "original image AND with well perimeter mask");
 
             //Edge detection
             Mat cannyImage = new Mat();
