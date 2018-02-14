@@ -1535,7 +1535,7 @@ namespace Gelation_Cloning_Control
             //transparentMask = transparentMask.Mul(redTransparent);            //ImageViewer.Show(transparentMask, "Transparent Mask");
 
             Image<Gray, Byte> imageOverlayMask = imageBF.Add(maskImage);
-            ImageViewer.Show(imageOverlayMask, "mask added to original image");
+            //ImageViewer.Show(imageOverlayMask, "mask added to original image");
 
             //Find areas and centroid of areas remaining. Remove the small areas (should be noise), and large areas (debris)
             //then return centroids 
@@ -1551,6 +1551,7 @@ namespace Gelation_Cloning_Control
             //double[] momentsM01 = new double[contours.Size];
 
             System.Drawing.Point[] centroidPoints = new System.Drawing.Point[contours.Size];
+            Gray centroidColor = new Gray(0);
 
             for (int i = 0; i < contours.Size; i++)
             {
@@ -1562,8 +1563,14 @@ namespace Gelation_Cloning_Control
                 int centroidY = Convert.ToInt32(Math.Round(moment.M01 / moment.M00));
 
                 centroidPoints[i] = new System.Drawing.Point(centroidX, centroidY);
+                CircleF centroidVisual = new CircleF(centroidPoints[i], 2);
+                imageOverlayMask.Draw(centroidVisual, new Gray(0), 1);
             }
             
+            ImageViewer.Show(imageOverlayMask, "mask added with centroid points drawn");
+
+
+
         }
 
         //Detect the antibodies secreted from the cells in the EGFP domain
