@@ -1468,6 +1468,7 @@ namespace Gelation_Cloning_Control
             CvInvoke.GaussianBlur(imageBF, imageGaussianBlur, new System.Drawing.Size(3, 3), 2, 2);
             //ImageViewer.Show(imageGaussianBlur, "Gaussian Blurred Image");
             
+
             //Hough circle transform to find the diameter of the well. Using minRadius = 2575, maxRadius = 2600 for 96 well plate. Will need to change if plate changes
             CircleF[] detectedWellCircles = CvInvoke.HoughCircles(imageGaussianBlur, Emgu.CV.CvEnum.HoughType.Gradient, dp: 1, minDist: 10, param2: 10, minRadius: 2575, maxRadius: 2600);
 
@@ -1493,7 +1494,7 @@ namespace Gelation_Cloning_Control
             Image<Gray, Byte> wellPlateCircleMaskImage = wellPlateCircleMask.ToImage<Gray, Byte>();
             wellPlateCircleMaskImage.Draw(detectedWellCircles[0], circleColor, -1);                     //draw a filled circle
             imageBF = imageBF.And(wellPlateCircleMaskImage);                                            //AND the original image and the well plate circle mask to remove the data outside of the well
-            ImageViewer.Show(imageBF, "original image AND with well perimeter mask");
+            //ImageViewer.Show(imageBF, "original image AND with well perimeter mask");
 
             //Edge detection
             Mat cannyImage = new Mat();
@@ -1547,30 +1548,30 @@ namespace Gelation_Cloning_Control
 
             //Calculate areas and moments to find centroids
             double[] areas = new double[contours.Size];
-            //double[] momentsM00 = new double[contours.Size];
-            //double[] momentsM01 = new double[contours.Size];
 
             System.Drawing.Point[] centroidPoints = new System.Drawing.Point[contours.Size];
+            System.Drawing.Rectangle[] boundingBox = new System.Drawing.Rectangle[contours.Size];
+
             Gray centroidColor = new Gray(0);
 
             for (int i = 0; i < contours.Size; i++)
             {
                 areas[i] = CvInvoke.ContourArea(contours[i], false);
                 MCvMoments moment = CvInvoke.Moments(contours[i]);
-                //momentsM00[i] = moment.M00;
-                //momentsM01[i] = moment.M01;
                 int centroidX = Convert.ToInt32(Math.Round(moment.M10 / moment.M00));
                 int centroidY = Convert.ToInt32(Math.Round(moment.M01 / moment.M00));
 
                 centroidPoints[i] = new System.Drawing.Point(centroidX, centroidY);
                 CircleF centroidVisual = new CircleF(centroidPoints[i], 2);
-                imageOverlayMask.Draw(centroidVisual, new Gray(0), 1);
+                imageOverlayMask.Draw(centroidVisual, centroidColor, 1);
+
+                //Get bounding box of each contour. Expand by a percentage in case FindContours missed a bit of the cells.
+                boundingBox[i] = CvInvoke.BoundingRectangle(contours[i]);
+                imageOverlayMask.Draw(boundingBox[i], centroidColor, 1);
+
             }
-            
-            ImageViewer.Show(imageOverlayMask, "mask added with centroid points drawn");
 
-
-
+            ImageViewer.Show(imageOverlayMask, "mask added with centroid points drawn and bounding box");
         }
 
         //Detect the antibodies secreted from the cells in the EGFP domain
