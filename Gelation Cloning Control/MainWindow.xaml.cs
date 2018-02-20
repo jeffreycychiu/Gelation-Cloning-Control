@@ -1467,10 +1467,28 @@ namespace Gelation_Cloning_Control
             Mat imageGaussianBlur = new Mat();
             CvInvoke.GaussianBlur(imageBF, imageGaussianBlur, new System.Drawing.Size(3, 3), 2, 2);
             //ImageViewer.Show(imageGaussianBlur, "Gaussian Blurred Image");
-            
+
 
             //Hough circle transform to find the diameter of the well. Using minRadius = 2575, maxRadius = 2600 for 96 well plate. Will need to change if plate changes
-            CircleF[] detectedWellCircles = CvInvoke.HoughCircles(imageGaussianBlur, Emgu.CV.CvEnum.HoughType.Gradient, dp: 1, minDist: 10, param2: 10, minRadius: 2575, maxRadius: 2600);
+            //Choose the min and max radius depending on which microscope the scanned image was from (user input)
+            int minWellRadius = 2575;
+            int maxWellRadius = 2600;
+            if ( comboBoxMicroscopeSelect.SelectedIndex == 0)   //0 == Leo
+            {
+                minWellRadius = 2575;
+                maxWellRadius = 2600;
+                Console.WriteLine("LEO");
+            }
+            else if ( comboBoxMicroscopeSelect.SelectedIndex == 1)  //1 = Mich
+            {
+                minWellRadius = 1950;
+                maxWellRadius = 1975;
+                Console.WriteLine("MICH");
+            }
+
+
+
+            CircleF[] detectedWellCircles = CvInvoke.HoughCircles(imageGaussianBlur, Emgu.CV.CvEnum.HoughType.Gradient, dp: 1, minDist: 10, param2: 10, minRadius: minWellRadius, maxRadius: maxWellRadius);
 
             //draw circles onto copied original image
             Gray circleColor = new Gray(255);
@@ -1505,7 +1523,7 @@ namespace Gelation_Cloning_Control
             double cannyThresholdHigh = otsuThreshold;
             Console.WriteLine("Canny Thresholds LOW: " + cannyThresholdLow.ToString() + " || HIGH: " + cannyThresholdHigh.ToString());
             Emgu.CV.CvInvoke.Canny(imageBF, cannyImage, cannyThresholdLow, cannyThresholdHigh);
-            //ImageViewer.Show(cannyImage, "Canny Edge");
+            ImageViewer.Show(cannyImage, "Canny Edge");
 
             //Adaptive threshold 
             //int windowSize = 15;
@@ -1528,12 +1546,6 @@ namespace Gelation_Cloning_Control
             //ImageViewer.Show(morphologyImage, "Image after noise filtering mask using morphology operations");
 
             //Overlay mask with original image.
-
-            //overlay in red transparency
-            //Image<Bgra, Byte> transparentMask = maskImage.Convert<Bgra, Byte>();
-            //Bgra redAlpha = new Bgra(0, 0, 255, 100);
-            //Image<Bgra, Byte> redTransparent = new Image<Bgra, byte>(transparentMask.Cols, transparentMask.Rows, redAlpha);
-            //transparentMask = transparentMask.Mul(redTransparent);            //ImageViewer.Show(transparentMask, "Transparent Mask");
 
             Image<Gray, Byte> imageOverlayMask = imageBF.Add(maskImage);
             //ImageViewer.Show(imageOverlayMask, "mask added to original image");
@@ -1568,7 +1580,6 @@ namespace Gelation_Cloning_Control
                 //Get bounding box of each contour. Expand by a percentage in case FindContours missed a bit of the cells.
                 boundingBox[i] = CvInvoke.BoundingRectangle(contours[i]);
                 imageOverlayMask.Draw(boundingBox[i], centroidColor, 1);
-
             }
 
             ImageViewer.Show(imageOverlayMask, "mask added with centroid points drawn and bounding box");
