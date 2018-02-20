@@ -1473,17 +1473,17 @@ namespace Gelation_Cloning_Control
             //Choose the min and max radius depending on which microscope the scanned image was from (user input)
             int minWellRadius = 2575;
             int maxWellRadius = 2600;
-            if ( comboBoxMicroscopeSelect.SelectedIndex == 0)   //0 == Leo
+            if ( comboBoxMicroscopeSelect.SelectedIndex == 0)   //0 == Mich
+            {
+                minWellRadius = 1950;
+                maxWellRadius = 2100;
+                Console.WriteLine("Mich");
+            }
+            else if ( comboBoxMicroscopeSelect.SelectedIndex == 1)  //1 = Leo
             {
                 minWellRadius = 2575;
                 maxWellRadius = 2600;
-                Console.WriteLine("LEO");
-            }
-            else if ( comboBoxMicroscopeSelect.SelectedIndex == 1)  //1 = Mich
-            {
-                minWellRadius = 1950;
-                maxWellRadius = 1975;
-                Console.WriteLine("MICH");
+                Console.WriteLine("Leo");
             }
 
 
@@ -1519,7 +1519,7 @@ namespace Gelation_Cloning_Control
             Mat otsu = new Mat();
             double otsuThreshold = Emgu.CV.CvInvoke.Threshold(imageBF, otsu, 0, 255, Emgu.CV.CvEnum.ThresholdType.Otsu | Emgu.CV.CvEnum.ThresholdType.Binary);
             //See https://stackoverflow.com/questions/4292249/automatic-calculation-of-low-and-high-thresholds-for-the-canny-operation-in-open for calculation of canny thresholds
-            double cannyThresholdLow = otsuThreshold * 0.5;
+            double cannyThresholdLow = otsuThreshold * 0.10;        //edited this low threshold for the large colonies of cells. When using 0.5 it doesn't detect them
             double cannyThresholdHigh = otsuThreshold;
             Console.WriteLine("Canny Thresholds LOW: " + cannyThresholdLow.ToString() + " || HIGH: " + cannyThresholdHigh.ToString());
             Emgu.CV.CvInvoke.Canny(imageBF, cannyImage, cannyThresholdLow, cannyThresholdHigh);
@@ -1536,7 +1536,7 @@ namespace Gelation_Cloning_Control
             Mat se2 = Emgu.CV.CvInvoke.GetStructuringElement(Emgu.CV.CvEnum.ElementShape.Rectangle, new System.Drawing.Size(5, 5), new System.Drawing.Point(-1, 1));
 
             Mat mask = new Mat();
-            Emgu.CV.CvInvoke.MorphologyEx(cannyImage, mask, Emgu.CV.CvEnum.MorphOp.Close, se1, new System.Drawing.Point(-1, 1), 1, Emgu.CV.CvEnum.BorderType.Default, new MCvScalar(1));
+            Emgu.CV.CvInvoke.MorphologyEx(cannyImage, mask, Emgu.CV.CvEnum.MorphOp.Close, se1, new System.Drawing.Point(-1, 1), 4, Emgu.CV.CvEnum.BorderType.Default, new MCvScalar(1));
             Emgu.CV.CvInvoke.MorphologyEx(mask, mask, Emgu.CV.CvEnum.MorphOp.Open, se2, new System.Drawing.Point(-1, 1), 1, Emgu.CV.CvEnum.BorderType.Default, new MCvScalar(1));
            
             //ImageViewer.Show(mask, "mask");
@@ -1570,8 +1570,16 @@ namespace Gelation_Cloning_Control
             {
                 areas[i] = CvInvoke.ContourArea(contours[i], false);
                 MCvMoments moment = CvInvoke.Moments(contours[i]);
-                int centroidX = Convert.ToInt32(Math.Round(moment.M10 / moment.M00));
-                int centroidY = Convert.ToInt32(Math.Round(moment.M01 / moment.M00));
+                int centroidX, centroidY;
+                if (moment.M00 != 0)
+                {
+                    centroidX = Convert.ToInt32(Math.Round(moment.M10 / moment.M00));
+                    centroidY = Convert.ToInt32(Math.Round(moment.M01 / moment.M00));
+                }
+                else
+                {
+                    break;
+                }
 
                 centroidPoints[i] = new System.Drawing.Point(centroidX, centroidY);
                 CircleF centroidVisual = new CircleF(centroidPoints[i], 2);
