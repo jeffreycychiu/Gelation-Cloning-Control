@@ -1536,7 +1536,7 @@ namespace Gelation_Cloning_Control
             Mat se2 = Emgu.CV.CvInvoke.GetStructuringElement(Emgu.CV.CvEnum.ElementShape.Rectangle, new System.Drawing.Size(5, 5), new System.Drawing.Point(-1, 1));
 
             Mat mask = new Mat();
-            Emgu.CV.CvInvoke.MorphologyEx(cannyImage, mask, Emgu.CV.CvEnum.MorphOp.Close, se1, new System.Drawing.Point(-1, 1), 4, Emgu.CV.CvEnum.BorderType.Default, new MCvScalar(1));
+            Emgu.CV.CvInvoke.MorphologyEx(cannyImage, mask, Emgu.CV.CvEnum.MorphOp.Close, se1, new System.Drawing.Point(-1, 1), 1, Emgu.CV.CvEnum.BorderType.Default, new MCvScalar(1));
             Emgu.CV.CvInvoke.MorphologyEx(mask, mask, Emgu.CV.CvEnum.MorphOp.Open, se2, new System.Drawing.Point(-1, 1), 1, Emgu.CV.CvEnum.BorderType.Default, new MCvScalar(1));
            
             //ImageViewer.Show(mask, "mask");
@@ -1548,15 +1548,22 @@ namespace Gelation_Cloning_Control
             //Overlay mask with original image.
 
             Image<Gray, Byte> imageOverlayMask = imageBF.Add(maskImage);
-            //ImageViewer.Show(imageOverlayMask, "mask added to original image");
-
+            ImageViewer.Show(imageOverlayMask, "mask added to original image");
+        
             //Find areas and centroid of areas remaining. Remove the small areas (should be noise), and large areas (debris)
             //then return centroids 
             VectorOfVectorOfPoint contours = new VectorOfVectorOfPoint();
             Mat hiearchy = new Mat();
+
+            Image<Gray, Byte> imageOverlayContours = imageBF;
+
             Emgu.CV.CvInvoke.FindContours(maskImage, contours, hiearchy, Emgu.CV.CvEnum.RetrType.List, Emgu.CV.CvEnum.ChainApproxMethod.ChainApproxNone);
 
             Console.WriteLine("Number of contours detected: " + contours.Size);
+
+            //Draw contours on image to visualize
+            MCvScalar contourColor = new MCvScalar(0);
+            Emgu.CV.CvInvoke.DrawContours(imageOverlayContours, contours, -1, contourColor, 2);
 
             //Calculate areas and moments to find centroids
             double[] areas = new double[contours.Size];
@@ -1583,14 +1590,28 @@ namespace Gelation_Cloning_Control
 
                 centroidPoints[i] = new System.Drawing.Point(centroidX, centroidY);
                 CircleF centroidVisual = new CircleF(centroidPoints[i], 2);
-                imageOverlayMask.Draw(centroidVisual, centroidColor, 1);
+                imageOverlayContours.Draw(centroidVisual, centroidColor, 1);
 
                 //Get bounding box of each contour. Expand by a percentage in case FindContours missed a bit of the cells.
                 boundingBox[i] = CvInvoke.BoundingRectangle(contours[i]);
-                imageOverlayMask.Draw(boundingBox[i], centroidColor, 1);
+                imageOverlayContours.Draw(boundingBox[i], centroidColor, 1);
             }
 
-            ImageViewer.Show(imageOverlayMask, "mask added with centroid points drawn and bounding box");
+            ImageViewer.Show(imageOverlayContours, "Contour drawn and overlaid on original image");
+
+            //Write each image bound by the contour rectangle into a new image array
+            //Then determine if each image is a cell colony and what the areas are
+
+            Image<Gray, Byte>[] imageColony = new Image<Gray, Byte>[contours.Size];
+
+            for (int i = 0; i < contours.Size; i++)
+            {
+                imageColony[i] = imageBF.Copy(boundingBox[i]);
+            }
+
+            
+
+
         }
 
         //Detect the antibodies secreted from the cells in the EGFP domain
