@@ -1468,7 +1468,6 @@ namespace Gelation_Cloning_Control
             CvInvoke.GaussianBlur(imageBF, imageGaussianBlur, new System.Drawing.Size(3, 3), 2, 2);
             //ImageViewer.Show(imageGaussianBlur, "Gaussian Blurred Image");
 
-
             //Hough circle transform to find the diameter of the well. Using minRadius = 2575, maxRadius = 2600 for 96 well plate. Will need to change if plate changes
             //Choose the min and max radius depending on which microscope the scanned image was from (user input)
             int minWellRadius = 2575;
@@ -1486,8 +1485,6 @@ namespace Gelation_Cloning_Control
                 Console.WriteLine("Leo");
             }
 
-
-
             CircleF[] detectedWellCircles = CvInvoke.HoughCircles(imageGaussianBlur, Emgu.CV.CvEnum.HoughType.Gradient, dp: 1, minDist: 10, param2: 10, minRadius: minWellRadius, maxRadius: maxWellRadius);
 
             //draw circles onto copied original image
@@ -1499,20 +1496,23 @@ namespace Gelation_Cloning_Control
 
             //ImageViewer.Show(imageBF, "Large Well Diam Circle Drawn");
 
-            //Sort circles by descending radius (largest radius first)
+            
             if (detectedWellCircles.Count() > 0)
             {
+                //Sort circles by descending radius (largest radius first)
                 Array.Sort(detectedWellCircles, delegate (CircleF circle1, CircleF circle2) { return circle2.Radius.CompareTo(circle1.Radius); });
                 int wellRadius = (int)detectedWellCircles[0].Radius;
                 System.Drawing.PointF wellCenter = detectedWellCircles[0].Center;
+                
+                //Create a new image of same width/height. Draw a filled circle matching the largest circle found when detecting the well perimeter
+                Mat wellPlateCircleMask = new Mat(imageBF.Size, Emgu.CV.CvEnum.DepthType.Cv32S, 1);         //create empty mat of same size
+                Image<Gray, Byte> wellPlateCircleMaskImage = wellPlateCircleMask.ToImage<Gray, Byte>();
+                wellPlateCircleMaskImage.Draw(detectedWellCircles[0], circleColor, -1);                     //draw a filled circle
+                imageBF = imageBF.And(wellPlateCircleMaskImage);                                            //AND the original image and the well plate circle mask to remove the data outside of the well
+                //ImageViewer.Show(imageBF, "original image AND with well perimeter mask");
+
             }
 
-            //Create a new image of same width/height. Draw a filled circle matching the largest circle found when detecting the well perimeter
-            Mat wellPlateCircleMask = new Mat(imageBF.Size, Emgu.CV.CvEnum.DepthType.Cv32S, 1);         //create empty mat of same size
-            Image<Gray, Byte> wellPlateCircleMaskImage = wellPlateCircleMask.ToImage<Gray, Byte>();
-            wellPlateCircleMaskImage.Draw(detectedWellCircles[0], circleColor, -1);                     //draw a filled circle
-            imageBF = imageBF.And(wellPlateCircleMaskImage);                                            //AND the original image and the well plate circle mask to remove the data outside of the well
-            //ImageViewer.Show(imageBF, "original image AND with well perimeter mask");
 
             //Edge detection
             Mat cannyImage = new Mat();
@@ -1625,9 +1625,164 @@ namespace Gelation_Cloning_Control
             ImageViewer.Show(imageEGFP, "Thresholded EGFP image");
         }
 
+        //Calculate Cell Area
+        private void btnCalculateArea_Click(object sender, RoutedEventArgs e)
+        {
+            //Show BF image first
+            Image<Gray, Byte> imageBF = stitchedImageBF.ToImage<Gray, Byte>();
+
+            //Identify the inner diameter of the well. So we can exclude everything outside of the well
+            //The diameter of the well is a constant (depending on the plate used for 96 well plate).
+            //The plate I use is ______ for non tissue culture plate and ____ for tissue culture plate (insert model #s)
+            //The diameter of the bottom of the well is ___mm and ___mm respectively (using 6.35mm for now)
+
+            //First gaussian blur to reduce noise and avoid false circle detection
+            Mat imageGaussianBlur = new Mat();
+            CvInvoke.GaussianBlur(imageBF, imageGaussianBlur, new System.Drawing.Size(3, 3), 2, 2);
+            //ImageViewer.Show(imageGaussianBlur, "Gaussian Blurred Image");
+
+            //Hough circle transform to find the diameter of the well. Using minRadius = 2575, maxRadius = 2600 for 96 well plate. Will need to change if plate changes
+            //Choose the min and max radius depending on which microscope the scanned image was from (user input)
+            int minWellRadius = 2575;
+            int maxWellRadius = 2600;
+            if (comboBoxMicroscopeSelect.SelectedIndex == 0)   //0 == Mich
+            {
+                minWellRadius = 1950;
+                maxWellRadius = 2100;
+                Console.WriteLine("Mich");
+            }
+            else if (comboBoxMicroscopeSelect.SelectedIndex == 1)  //1 = Leo
+            {
+                minWellRadius = 2575;
+                maxWellRadius = 2600;
+                Console.WriteLine("Leo");
+            }
+
+            CircleF[] detectedWellCircles = CvInvoke.HoughCircles(imageGaussianBlur, Emgu.CV.CvEnum.HoughType.Gradient, dp: 1, minDist: 10, param2: 10, minRadius: minWellRadius, maxRadius: maxWellRadius);
+
+            //draw circles onto copied original image
+            Gray circleColor = new Gray(255);
+            foreach (CircleF circle in detectedWellCircles)
+            {
+                //imageBF.Draw(circle, circleColor, 2);
+            }
+
+            //ImageViewer.Show(imageBF, "Large Well Diam Circle Drawn");
 
 
-    
+            if (detectedWellCircles.Count() > 0)
+            {
+                //Sort circles by descending radius (largest radius first)
+                Array.Sort(detectedWellCircles, delegate (CircleF circle1, CircleF circle2) { return circle2.Radius.CompareTo(circle1.Radius); });
+                int wellRadius = (int)detectedWellCircles[0].Radius;
+                System.Drawing.PointF wellCenter = detectedWellCircles[0].Center;
+
+                //Create a new image of same width/height. Draw a filled circle matching the largest circle found when detecting the well perimeter
+                Mat wellPlateCircleMask = new Mat(imageBF.Size, Emgu.CV.CvEnum.DepthType.Cv32S, 1);         //create empty mat of same size
+                Image<Gray, Byte> wellPlateCircleMaskImage = wellPlateCircleMask.ToImage<Gray, Byte>();
+                wellPlateCircleMaskImage.Draw(detectedWellCircles[0], circleColor, -1);                     //draw a filled circle
+                imageBF = imageBF.And(wellPlateCircleMaskImage);                                            //AND the original image and the well plate circle mask to remove the data outside of the well
+                //ImageViewer.Show(imageBF, "original image AND with well perimeter mask");
+
+            }
+
+
+            //Edge detection
+            Mat cannyImage = new Mat();
+            Mat otsu = new Mat();
+            double otsuThreshold = Emgu.CV.CvInvoke.Threshold(imageBF, otsu, 0, 255, Emgu.CV.CvEnum.ThresholdType.Otsu | Emgu.CV.CvEnum.ThresholdType.Binary);
+            //See https://stackoverflow.com/questions/4292249/automatic-calculation-of-low-and-high-thresholds-for-the-canny-operation-in-open for calculation of canny thresholds
+            double cannyThresholdLow = otsuThreshold * 0.10;        //edited this low threshold for the large colonies of cells. When using 0.5 it doesn't detect them
+            double cannyThresholdHigh = otsuThreshold;
+            Console.WriteLine("Canny Thresholds LOW: " + cannyThresholdLow.ToString() + " || HIGH: " + cannyThresholdHigh.ToString());
+            Emgu.CV.CvInvoke.Canny(imageBF, cannyImage, cannyThresholdLow, cannyThresholdHigh);
+            ImageViewer.Show(cannyImage, "Canny Edge");
+
+            //Adaptive threshold 
+            //int windowSize = 15;
+            //imageAdaptiveThreshold = imageBF.ThresholdAdaptive(new Gray(255), Emgu.CV.CvEnum.AdaptiveThresholdType.GaussianC, Emgu.CV.CvEnum.ThresholdType.BinaryInv, windowSize, new Gray(5));
+            //ImageViewer.Show(imageBF, "image after adaptive threshold");
+
+            //Filter out the noise using morphological operations
+            //See link for details https://stackoverflow.com/questions/30369031/remove-spurious-small-islands-of-noise-in-an-image-python-opencv
+            Mat se1 = Emgu.CV.CvInvoke.GetStructuringElement(Emgu.CV.CvEnum.ElementShape.Rectangle, new System.Drawing.Size(9, 9), new System.Drawing.Point(-1, 1));
+            Mat se2 = Emgu.CV.CvInvoke.GetStructuringElement(Emgu.CV.CvEnum.ElementShape.Rectangle, new System.Drawing.Size(5, 5), new System.Drawing.Point(-1, 1));
+
+            Mat mask = new Mat();
+            Emgu.CV.CvInvoke.MorphologyEx(cannyImage, mask, Emgu.CV.CvEnum.MorphOp.Close, se1, new System.Drawing.Point(-1, 1), 1, Emgu.CV.CvEnum.BorderType.Default, new MCvScalar(1));
+            Emgu.CV.CvInvoke.MorphologyEx(mask, mask, Emgu.CV.CvEnum.MorphOp.Open, se2, new System.Drawing.Point(-1, 1), 1, Emgu.CV.CvEnum.BorderType.Default, new MCvScalar(1));
+
+            //ImageViewer.Show(mask, "mask");
+
+            Image<Gray, Byte> maskImage = mask.ToImage<Gray, Byte>();
+            //Image<Gray, Byte> morphologyImage = imageBF.Mul(maskImage);
+            //ImageViewer.Show(morphologyImage, "Image after noise filtering mask using morphology operations");
+
+            //Overlay mask with original image.
+
+            Image<Gray, Byte> imageOverlayMask = imageBF.Add(maskImage);
+            ImageViewer.Show(imageOverlayMask, "mask added to original image");
+
+            //Find areas and centroid of areas remaining. Remove the small areas (should be noise), and large areas (debris)
+            //then return centroids 
+            VectorOfVectorOfPoint contours = new VectorOfVectorOfPoint();
+            Mat hiearchy = new Mat();
+
+            Image<Gray, Byte> imageOverlayContours = imageBF;
+
+            Emgu.CV.CvInvoke.FindContours(maskImage, contours, hiearchy, Emgu.CV.CvEnum.RetrType.List, Emgu.CV.CvEnum.ChainApproxMethod.ChainApproxNone);
+
+            Console.WriteLine("Number of contours detected: " + contours.Size);
+
+            //Draw contours on image to visualize
+            MCvScalar contourColor = new MCvScalar(0);
+            Emgu.CV.CvInvoke.DrawContours(imageOverlayContours, contours, -1, contourColor, 2);
+
+            //Calculate areas and moments to find centroids
+            double[] areas = new double[contours.Size];
+
+            System.Drawing.Point[] centroidPoints = new System.Drawing.Point[contours.Size];
+            System.Drawing.Rectangle[] boundingBox = new System.Drawing.Rectangle[contours.Size];
+
+            Gray centroidColor = new Gray(0);
+
+            for (int i = 0; i < contours.Size; i++)
+            {
+                areas[i] = CvInvoke.ContourArea(contours[i], false);
+                MCvMoments moment = CvInvoke.Moments(contours[i]);
+                int centroidX, centroidY;
+                if (moment.M00 != 0)
+                {
+                    centroidX = Convert.ToInt32(Math.Round(moment.M10 / moment.M00));
+                    centroidY = Convert.ToInt32(Math.Round(moment.M01 / moment.M00));
+                }
+                else
+                {
+                    break;
+                }
+
+                centroidPoints[i] = new System.Drawing.Point(centroidX, centroidY);
+                CircleF centroidVisual = new CircleF(centroidPoints[i], 2);
+                imageOverlayContours.Draw(centroidVisual, centroidColor, 1);
+
+                //Get bounding box of each contour. Expand by a percentage in case FindContours missed a bit of the cells.
+                boundingBox[i] = CvInvoke.BoundingRectangle(contours[i]);
+                imageOverlayContours.Draw(boundingBox[i], centroidColor, 1);
+            }
+
+            ImageViewer.Show(imageOverlayContours, "Contour drawn and overlaid on original image");
+
+            //Write each image bound by the contour rectangle into a new image array
+            //Then determine if each image is a cell colony and what the areas are
+
+            Image<Gray, Byte>[] imageColony = new Image<Gray, Byte>[contours.Size];
+
+            for (int i = 0; i < contours.Size; i++)
+            {
+                imageColony[i] = imageBF.Copy(boundingBox[i]);
+            }
+        }
+
 
         //Process the image in the picturebox.
         //INPUT: Flourescent Image? Or multichannel
@@ -1823,6 +1978,7 @@ namespace Gelation_Cloning_Control
 
             return stageConversion;
         }
+
 
 
 
