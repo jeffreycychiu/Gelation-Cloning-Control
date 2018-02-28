@@ -1519,16 +1519,11 @@ namespace Gelation_Cloning_Control
             Mat otsu = new Mat();
             double otsuThreshold = Emgu.CV.CvInvoke.Threshold(imageBF, otsu, 0, 255, Emgu.CV.CvEnum.ThresholdType.Otsu | Emgu.CV.CvEnum.ThresholdType.Binary);
             //See https://stackoverflow.com/questions/4292249/automatic-calculation-of-low-and-high-thresholds-for-the-canny-operation-in-open for calculation of canny thresholds
-            double cannyThresholdLow = otsuThreshold * 0.10;        //edited this low threshold for the large colonies of cells. When using 0.5 it doesn't detect them
+            double cannyThresholdLow = otsuThreshold * 0.50;        //Use 0.5 for small cell colonies (cell area detection uses 0.1)
             double cannyThresholdHigh = otsuThreshold;
             Console.WriteLine("Canny Thresholds LOW: " + cannyThresholdLow.ToString() + " || HIGH: " + cannyThresholdHigh.ToString());
             Emgu.CV.CvInvoke.Canny(imageBF, cannyImage, cannyThresholdLow, cannyThresholdHigh);
             ImageViewer.Show(cannyImage, "Canny Edge");
-
-            //Adaptive threshold 
-            //int windowSize = 15;
-            //imageAdaptiveThreshold = imageBF.ThresholdAdaptive(new Gray(255), Emgu.CV.CvEnum.AdaptiveThresholdType.GaussianC, Emgu.CV.CvEnum.ThresholdType.BinaryInv, windowSize, new Gray(5));
-            //ImageViewer.Show(imageBF, "image after adaptive threshold");
 
             //Filter out the noise using morphological operations
             //See link for details https://stackoverflow.com/questions/30369031/remove-spurious-small-islands-of-noise-in-an-image-python-opencv
@@ -1563,19 +1558,24 @@ namespace Gelation_Cloning_Control
 
             //Draw contours on image to visualize
             MCvScalar contourColor = new MCvScalar(0);
-            Emgu.CV.CvInvoke.DrawContours(imageOverlayContours, contours, -1, contourColor, 2);
+            //Emgu.CV.CvInvoke.DrawContours(imageOverlayContours, contours, -1, contourColor, 2);
 
             //Calculate areas and moments to find centroids
-            double[] areas = new double[contours.Size];
+            //double[] areas = new double[contours.Size];
+            //System.Drawing.Point[] centroidPoints = new System.Drawing.Point[contours.Size];
+            //System.Drawing.Rectangle[] boundingBox = new System.Drawing.Rectangle[contours.Size];
 
-            System.Drawing.Point[] centroidPoints = new System.Drawing.Point[contours.Size];
-            System.Drawing.Rectangle[] boundingBox = new System.Drawing.Rectangle[contours.Size];
+            List<double> areasList = new List<double>(contours.Size);
+            List<System.Drawing.Point> centroidPointsList = new List<System.Drawing.Point>(contours.Size);
+            List<System.Drawing.Rectangle> boundingBoxList = new List<System.Drawing.Rectangle>(contours.Size);
 
             Gray centroidColor = new Gray(0);
 
             for (int i = 0; i < contours.Size; i++)
             {
-                areas[i] = CvInvoke.ContourArea(contours[i], false);
+                //areas[i] = CvInvoke.ContourArea(contours[i], false);
+                areasList.Add(CvInvoke.ContourArea(contours[i], false));
+                Console.WriteLine(areasList[i]);
                 MCvMoments moment = CvInvoke.Moments(contours[i]);
                 int centroidX, centroidY;
                 if (moment.M00 != 0)
@@ -1588,17 +1588,20 @@ namespace Gelation_Cloning_Control
                     break;
                 }
 
-                centroidPoints[i] = new System.Drawing.Point(centroidX, centroidY);
-                CircleF centroidVisual = new CircleF(centroidPoints[i], 2);
-                imageOverlayContours.Draw(centroidVisual, centroidColor, 1);
+                //centroidPoints[i] = new System.Drawing.Point(centroidX, centroidY);
+                centroidPointsList.Add(new System.Drawing.Point(centroidX, centroidY));
+                //CircleF centroidVisual = new CircleF(centroidPoints[i], 2);
+                CircleF centroidVisual = new CircleF(centroidPointsList[i], 2);
+                //imageOverlayContours.Draw(centroidVisual, centroidColor, 1);
 
-                //Get bounding box of each contour. Expand by a percentage in case FindContours missed a bit of the cells.
-                boundingBox[i] = CvInvoke.BoundingRectangle(contours[i]);
-                imageOverlayContours.Draw(boundingBox[i], centroidColor, 1);
+                //Get bounding box of each contour
+                //boundingBox[i] = CvInvoke.BoundingRectangle(contours[i]);
+                boundingBoxList.Add(CvInvoke.BoundingRectangle(contours[i]));
+                //imageOverlayContours.Draw(boundingBoxList[i], centroidColor, 1);
             }
 
-            ImageViewer.Show(imageOverlayContours, "Contour drawn and overlaid on original image");
-
+            //ImageViewer.Show(imageOverlayContours, "Contour drawn and overlaid on original image");
+            
             //Write each image bound by the contour rectangle into a new image array
             //Then determine if each image is a cell colony and what the areas are
 
@@ -1606,10 +1609,38 @@ namespace Gelation_Cloning_Control
 
             for (int i = 0; i < contours.Size; i++)
             {
-                imageColony[i] = imageBF.Copy(boundingBox[i]);
+                imageColony[i] = imageBF.Copy(boundingBoxList[i]);
             }
 
-            
+            //Remove small areas. Small areas are areas smaller than one cell
+            int minimumArea = 75;
+            System.Drawing.Point[][] contourArray = contours.ToArrayOfArray();
+
+            for (int i = areasList.Count - 1; i >= 0; i--)
+            {
+                if (areasList[i] < minimumArea)
+                {
+                    areasList.RemoveAt(i);
+                    boundingBoxList.RemoveAt(i);
+                    centroidPointsList.RemoveAt(i);
+                }
+            }
+
+            Image<Gray, Byte> imageOverlayContoursSmallAreasRemoved = imageBF;
+
+            //Draw the centroid and bounding box on picture
+            for (int i = 0; i < areasList.Count; i++)
+            {
+                CircleF centroid = new CircleF(centroidPointsList[i], 2);
+                imageOverlayContoursSmallAreasRemoved.Draw(centroid, centroidColor, 1);
+                imageOverlayContoursSmallAreasRemoved.Draw(boundingBoxList[i], centroidColor, 1);
+                Console.WriteLine("areas after removed: " + areasList[i].ToString());
+            }
+
+
+            ImageViewer.Show(imageOverlayContoursSmallAreasRemoved, "small areas removed Contour drawn and overlaid on original image");
+
+
 
 
         }
@@ -1740,7 +1771,6 @@ namespace Gelation_Cloning_Control
 
             //Calculate areas and moments to find centroids
             double[] areas = new double[contours.Size];
-
             System.Drawing.Point[] centroidPoints = new System.Drawing.Point[contours.Size];
             System.Drawing.Rectangle[] boundingBox = new System.Drawing.Rectangle[contours.Size];
 
@@ -1748,7 +1778,7 @@ namespace Gelation_Cloning_Control
 
             for (int i = 0; i < contours.Size; i++)
             {
-                areas[i] = CvInvoke.ContourArea(contours[i], false);
+                areas[i] = (CvInvoke.ContourArea(contours[i], false));
                 MCvMoments moment = CvInvoke.Moments(contours[i]);
                 int centroidX, centroidY;
                 if (moment.M00 != 0)
@@ -1978,23 +2008,6 @@ namespace Gelation_Cloning_Control
 
             return stageConversion;
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
