@@ -1456,6 +1456,7 @@ namespace Gelation_Cloning_Control
         private void btnDetectCellsBF_Click(object sender, RoutedEventArgs e)
         {
             //Show BF image first
+            //ImageViewer imageViewer = new ImageViewer();
             Image<Gray, Byte> imageBF = stitchedImageBF.ToImage<Gray, Byte>();
 
             //Identify the inner diameter of the well. So we can exclude everything outside of the well
@@ -1523,7 +1524,7 @@ namespace Gelation_Cloning_Control
             double cannyThresholdHigh = otsuThreshold;
             Console.WriteLine("Canny Thresholds LOW: " + cannyThresholdLow.ToString() + " || HIGH: " + cannyThresholdHigh.ToString());
             Emgu.CV.CvInvoke.Canny(imageBF, cannyImage, cannyThresholdLow, cannyThresholdHigh);
-            ImageViewer.Show(cannyImage, "Canny Edge");
+            //ImageViewer.Show(cannyImage, "Canny Edge");
 
             //Filter out the noise using morphological operations
             //See link for details https://stackoverflow.com/questions/30369031/remove-spurious-small-islands-of-noise-in-an-image-python-opencv
@@ -1543,7 +1544,7 @@ namespace Gelation_Cloning_Control
             //Overlay mask with original image.
 
             Image<Gray, Byte> imageOverlayMask = imageBF.Add(maskImage);
-            ImageViewer.Show(imageOverlayMask, "mask added to original image");
+            //ImageViewer.Show(imageOverlayMask, "mask added to original image");
         
             //Find areas and centroid of areas remaining. Remove the small areas (should be noise), and large areas (debris)
             //then return centroids 
@@ -1605,6 +1606,7 @@ namespace Gelation_Cloning_Control
             //Write each image bound by the contour rectangle into a new image array
             //Then determine if each image is a cell colony and what the areas are
 
+            
             Image<Gray, Byte>[] imageColony = new Image<Gray, Byte>[contours.Size];
 
             for (int i = 0; i < contours.Size; i++)
@@ -1641,7 +1643,12 @@ namespace Gelation_Cloning_Control
             ImageViewer.Show(imageOverlayContoursSmallAreasRemoved, "small areas removed Contour drawn and overlaid on original image");
 
 
+            //Not sure if these are neccesary
+            imageBF.Dispose();
+            imageOverlayContours.Dispose();
+            imageOverlayContoursSmallAreasRemoved.Dispose();
 
+            imageGaussianBlur.Dispose();
 
         }
 
@@ -1650,10 +1657,34 @@ namespace Gelation_Cloning_Control
         {
             Image<Gray, Byte> imageEGFP = stitchedImageEGFP.ToImage<Gray, Byte>();
             //threshold image
-            int thresholdValue = 100;
-            imageEGFP = imageEGFP.ThresholdBinary(new Gray(thresholdValue), new Gray(255));
+            //int thresholdValue = 100;
+            //imageEGFP = imageEGFP.ThresholdBinary(new Gray(thresholdValue), new Gray(255));
 
-            ImageViewer.Show(imageEGFP, "Thresholded EGFP image");
+            //Adaptive threshold 
+            int windowSize = 15;
+            Image <Gray,Byte> imageAdaptiveThreshold = imageEGFP.ThresholdAdaptive(new Gray(255), Emgu.CV.CvEnum.AdaptiveThresholdType.GaussianC, Emgu.CV.CvEnum.ThresholdType.BinaryInv, windowSize, new Gray(5));
+            //ImageViewer.Show(imageBF, "image after adaptive threshold");
+
+            //morphological open and close to get rid of noise
+            Mat se1 = Emgu.CV.CvInvoke.GetStructuringElement(Emgu.CV.CvEnum.ElementShape.Rectangle, new System.Drawing.Size(3, 3), new System.Drawing.Point(-1, 1));
+            Mat se2 = Emgu.CV.CvInvoke.GetStructuringElement(Emgu.CV.CvEnum.ElementShape.Rectangle, new System.Drawing.Size(3, 3), new System.Drawing.Point(-1, 1));
+
+            //ImageViewer.Show(imageAdaptiveThreshold, "Thresholded EGFP image");
+
+            Mat mask = new Mat();
+            Emgu.CV.CvInvoke.MorphologyEx(imageAdaptiveThreshold, mask, Emgu.CV.CvEnum.MorphOp.Open, se1, new System.Drawing.Point(-1, 1), 1, Emgu.CV.CvEnum.BorderType.Default, new MCvScalar(1));
+            Emgu.CV.CvInvoke.MorphologyEx(mask, mask, Emgu.CV.CvEnum.MorphOp.Close, se2, new System.Drawing.Point(-1, 1), 1, Emgu.CV.CvEnum.BorderType.Default, new MCvScalar(1));
+
+            Image<Gray, Byte> maskImage = mask.ToImage<Gray, Byte>();
+            ImageViewer.Show(maskImage);
+            //Image<Gray, Byte> morphologyImage = imageEGFP.Mul(maskImage);
+            //ImageViewer.Show(morphologyImage, "Image after noise filtering mask using morphology operations");
+
+            //Overlay mask with original image.
+
+            Image<Gray, Byte> imageOverlayMask = imageEGFP.Add(maskImage);
+            ImageViewer.Show(imageOverlayMask, "mask added to original image");
+            
         }
 
         //Calculate Cell Area
