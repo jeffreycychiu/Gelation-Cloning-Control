@@ -74,6 +74,10 @@ namespace Gelation_Cloning_Control
         public Mat stitchedImageEGFP = new Mat();
         private System.Drawing.Point mouseDownLocation;
 
+        List<double> areasList = new List<double>();
+        List<System.Drawing.Point> centroidPointsList = new List<System.Drawing.Point>();
+        List<System.Drawing.Rectangle> boundingBoxList = new List<System.Drawing.Rectangle>();
+
         public MainWindow()
         {
             InitializeComponent();
@@ -1428,9 +1432,7 @@ namespace Gelation_Cloning_Control
             }
 
            stitchedImageBF = CvInvoke.Imread(fileNameImageBF, Emgu.CV.CvEnum.LoadImageType.AnyColor);
-           //Mat displayStitchedImageBF = new Mat();
-           //CvInvoke.Resize(stitchedImageBF, displayStitchedImageBF, new System.Drawing.Size(1000, 1000), 0, 0, Emgu.CV.CvEnum.Inter.Linear);
-           //ImageViewer.Show(displayStitchedImageBF, "test");
+           btnLoadImageEGFP.IsEnabled = true;
         }
 
         //Load the stitched flourescent EGFP image into memory
@@ -1447,9 +1449,31 @@ namespace Gelation_Cloning_Control
             }
 
             stitchedImageEGFP = CvInvoke.Imread(fileNameImageEGFP, Emgu.CV.CvEnum.LoadImageType.AnyColor);
-            //Mat displayStitchedImageEGFP = new Mat(); 
-            //CvInvoke.Resize(stitchedImageEGFP, displayStitchedImageEGFP, new System.Drawing.Size(1000, 1000), 0, 0, Emgu.CV.CvEnum.Inter.Linear);
-            //ImageViewer.Show(displayStitchedImageEGFP, "test");
+
+            //Pad the smaller of the images with 0's to be the same size as larger
+            double rowsToPad = Math.Abs(stitchedImageBF.Height - stitchedImageEGFP.Height);
+            double colsToPad = Math.Abs(stitchedImageBF.Width - stitchedImageEGFP.Width);
+            
+            if (stitchedImageBF.Height < stitchedImageEGFP.Height)
+            {
+                CvInvoke.CopyMakeBorder(stitchedImageBF, stitchedImageBF, (int)Math.Ceiling(rowsToPad/2), (int)Math.Floor(rowsToPad/2), 0, 0, Emgu.CV.CvEnum.BorderType.Constant, new MCvScalar(0));
+            }   
+            else if (stitchedImageBF.Height > stitchedImageEGFP.Height)
+            {
+                CvInvoke.CopyMakeBorder(stitchedImageEGFP, stitchedImageEGFP, (int)Math.Ceiling(rowsToPad/2), (int)Math.Floor(rowsToPad / 2), 0, 0, Emgu.CV.CvEnum.BorderType.Constant, new MCvScalar(0));
+            }
+
+            if (stitchedImageBF.Width < stitchedImageEGFP.Width)
+            {
+                CvInvoke.CopyMakeBorder(stitchedImageBF, stitchedImageBF, 0, 0, (int)Math.Ceiling(colsToPad / 2), (int)Math.Floor(colsToPad / 2), Emgu.CV.CvEnum.BorderType.Constant, new MCvScalar(0));
+            }
+            else if (stitchedImageBF.Width > stitchedImageEGFP.Width)
+            {
+                CvInvoke.CopyMakeBorder(stitchedImageEGFP, stitchedImageEGFP, 0, 0, (int)Math.Ceiling(colsToPad / 2), (int)Math.Floor(colsToPad / 2), Emgu.CV.CvEnum.BorderType.Constant, new MCvScalar(0));
+            }
+            
+            //Register the EGFP image to the BF image
+
         }
 
         //Segment and detect cells using the BF image. Return the centroid, number of cells, and segmented region of each cell colony
@@ -1566,9 +1590,9 @@ namespace Gelation_Cloning_Control
             //System.Drawing.Point[] centroidPoints = new System.Drawing.Point[contours.Size];
             //System.Drawing.Rectangle[] boundingBox = new System.Drawing.Rectangle[contours.Size];
 
-            List<double> areasList = new List<double>(contours.Size);
-            List<System.Drawing.Point> centroidPointsList = new List<System.Drawing.Point>(contours.Size);
-            List<System.Drawing.Rectangle> boundingBoxList = new List<System.Drawing.Rectangle>(contours.Size);
+            //List<double> areasList = new List<double>(contours.Size);
+            //List<System.Drawing.Point> centroidPointsList = new List<System.Drawing.Point>(contours.Size);
+            //List<System.Drawing.Rectangle> boundingBoxList = new List<System.Drawing.Rectangle>(contours.Size);
 
             Gray centroidColor = new Gray(0);
 
@@ -1656,14 +1680,11 @@ namespace Gelation_Cloning_Control
         private void btnDetectSecretionEGFP_Click(object sender, RoutedEventArgs e)
         {
             Image<Gray, Byte> imageEGFP = stitchedImageEGFP.ToImage<Gray, Byte>();
-            //threshold image
-            //int thresholdValue = 100;
-            //imageEGFP = imageEGFP.ThresholdBinary(new Gray(thresholdValue), new Gray(255));
 
             //Adaptive threshold 
-            int windowSize = 15;
+            int windowSize = 9;
             Image <Gray,Byte> imageAdaptiveThreshold = imageEGFP.ThresholdAdaptive(new Gray(255), Emgu.CV.CvEnum.AdaptiveThresholdType.GaussianC, Emgu.CV.CvEnum.ThresholdType.BinaryInv, windowSize, new Gray(5));
-            //ImageViewer.Show(imageBF, "image after adaptive threshold");
+            ImageViewer.Show(imageAdaptiveThreshold, "image after adaptive threshold");
 
             //morphological open and close to get rid of noise
             Mat se1 = Emgu.CV.CvInvoke.GetStructuringElement(Emgu.CV.CvEnum.ElementShape.Rectangle, new System.Drawing.Size(3, 3), new System.Drawing.Point(-1, 1));
@@ -1680,10 +1701,10 @@ namespace Gelation_Cloning_Control
             //Image<Gray, Byte> morphologyImage = imageEGFP.Mul(maskImage);
             //ImageViewer.Show(morphologyImage, "Image after noise filtering mask using morphology operations");
 
-            //Overlay mask with original image.
-
-            Image<Gray, Byte> imageOverlayMask = imageEGFP.Add(maskImage);
-            ImageViewer.Show(imageOverlayMask, "mask added to original image");
+            //Overlay mask with BF image
+            Image<Gray, Byte> imageBF = stitchedImageBF.ToImage<Gray, Byte>();
+            Image<Gray, Byte> imageOverlayMask = imageBF.Add(maskImage);
+            ImageViewer.Show(imageOverlayMask, "mask added to BF image");
             
         }
 

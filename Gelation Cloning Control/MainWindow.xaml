@@ -342,7 +342,7 @@
                         <ComboBoxItem>Leo</ComboBoxItem>
                     </ComboBox>
                     <Button x:Name="btnLoadImageBF" Content="Load Image (BF)" FontSize="20" FontWeight="Bold" Click="btnLoadImageBF_Click"  Grid.Row="1" Grid.ColumnSpan="3"/>
-                    <Button x:Name="btnLoadImageEGFP" Content="Load Image (EGFP)" FontSize="20" FontWeight="Bold" Click="btnLoadImageEGFP_Click"  Grid.Row="2" Grid.ColumnSpan="3"/>
+                    <Button x:Name="btnLoadImageEGFP" Content="Load Image (EGFP)" FontSize="20" FontWeight="Bold" Click="btnLoadImageEGFP_Click" IsEnabled="False" Grid.Row="2" Grid.ColumnSpan="3"/>
                     <Button x:Name="btnDetectCellsBF" Content="Detect Cells (BF)" FontSize="20" FontWeight="Bold" Click="btnDetectCellsBF_Click" Grid.Row="3" Grid.ColumnSpan="3"/>
                     <Button x:Name="btnDetectSecretionEGFP" Content="Detect Secretion (EGFP)" FontSize="20" FontWeight="Bold" Click="btnDetectSecretionEGFP_Click"  Grid.Row="4" Grid.ColumnSpan="3"/>
                     <Button x:Name="btnCalculateArea" Content="Calculate Cell Area" FontSize="20" FontWeight="Bold" Click="btnCalculateArea_Click"  Grid.Row="5" Grid.ColumnSpan="3"/>
