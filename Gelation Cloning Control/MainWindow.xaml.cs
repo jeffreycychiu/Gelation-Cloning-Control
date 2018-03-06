@@ -1496,6 +1496,7 @@ namespace Gelation_Cloning_Control
                 //ImageViewer.Show(imageGaussianBlur, "Gaussian Blurred Image");
 
                 /*
+                //The well diameter detection and removal using hough circle transform disabled for now. It takes up too much memory for some reason. Implement it back in later if neccessary
 
                 //Hough circle transform to find the diameter of the well. Using minRadius = 2575, maxRadius = 2600 for 96 well plate. Will need to change if plate changes
                 //Choose the min and max radius depending on which microscope the scanned image was from (user input)
@@ -1626,7 +1627,11 @@ namespace Gelation_Cloning_Control
 
                     //Get bounding box of each contour
                     //boundingBox[i] = CvInvoke.BoundingRectangle(contours[i]);
-                    boundingBoxList.Add(CvInvoke.BoundingRectangle(contours[i]));
+                    System.Drawing.Rectangle boundingRectangle = CvInvoke.BoundingRectangle(contours[i]);
+                    int inflateWidth = (int)Math.Round((double)boundingRectangle.Width * 1.0);
+                    int inflateHeight = (int)Math.Round((double)boundingRectangle.Height * 1.0);
+                    boundingRectangle.Inflate(inflateWidth, inflateHeight);
+                    boundingBoxList.Add(boundingRectangle);
                     //imageOverlayContours.Draw(boundingBoxList[i], centroidColor, 1);
                 }
 
@@ -1636,12 +1641,12 @@ namespace Gelation_Cloning_Control
                 //Then determine if each image is a cell colony and what the areas are
 
             
-                Image<Gray, Byte>[] imageColony = new Image<Gray, Byte>[contours.Size];
+                //Image<Gray, Byte>[] imageColony = new Image<Gray, Byte>[contours.Size];
 
-                for (int i = 0; i < contours.Size; i++)
-                {
-                    imageColony[i] = imageBF.Copy(boundingBoxList[i]);
-                }
+                //for (int i = 0; i < contours.Size; i++)
+                //{
+                //    imageColony[i] = imageBF.Copy(boundingBoxList[i]);
+                //}
 
                 //Remove small areas. Small areas are areas smaller than one cell
                 int minimumArea = 75;
@@ -1681,6 +1686,7 @@ namespace Gelation_Cloning_Control
             }
             catch (Exception ex)
             {
+                MessageBox.Show("Exception: " + ex.ToString());
                 Console.WriteLine(ex.ToString());
             }
 
