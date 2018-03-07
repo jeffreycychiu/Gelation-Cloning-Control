@@ -1652,13 +1652,14 @@ namespace Gelation_Cloning_Control
                 //    imageColony[i] = imageBF.Copy(boundingBoxList[i]);
                 //}
 
-                //Remove small areas. Small areas are areas smaller than one cell
+                //Remove small and large areas. Small areas are areas smaller than one cell. Large areas gets rid of the execcisvley big things incorrectly detected as contours
                 int minimumArea = 75;
+                int maxArea = 5000;
                 System.Drawing.Point[][] contourArray = contours.ToArrayOfArray();
 
                 for (int i = areasList.Count - 1; i >= 0; i--)
                 {
-                    if (areasList[i] < minimumArea)
+                    if (areasList[i] < minimumArea || areasList[i] > maxArea)
                     {
                         areasList.RemoveAt(i);
                         boundingBoxList.RemoveAt(i);
