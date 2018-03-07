@@ -1628,13 +1628,31 @@ namespace Gelation_Cloning_Control
                     //CircleF centroidVisual = new CircleF(centroidPoints[i], 2);
                     CircleF centroidVisual = new CircleF(centroidPointsList[i], 2);
                     //imageOverlayContours.Draw(centroidVisual, centroidColor, 1);
-
+                    
                     //Get bounding box of each contour
                     //boundingBox[i] = CvInvoke.BoundingRectangle(contours[i]);
                     System.Drawing.Rectangle boundingRectangle = CvInvoke.BoundingRectangle(contours[i]);
                     int inflateWidth = (int)Math.Round((double)boundingRectangle.Width * 1.0);
                     int inflateHeight = (int)Math.Round((double)boundingRectangle.Height * 1.0);
                     boundingRectangle.Inflate(inflateWidth, inflateHeight);
+                    //Make sure the bounding rectangle is within the dimensions of the image
+                    if (boundingRectangle.X + boundingRectangle.Width > stitchedImageBF.Width)
+                    {
+                        boundingRectangle.Width = stitchedImageBF.Width - boundingRectangle.X;
+                    }
+                    else if( boundingRectangle.X < 0)
+                    {
+                        boundingRectangle.X = 0;
+                    }
+                    if (boundingRectangle.Y + boundingRectangle.Height > stitchedImageBF.Height)
+                    {
+                        boundingRectangle.Height = stitchedImageBF.Height - boundingRectangle.Y;
+                    }
+                    else if( boundingRectangle.Y < 0)
+                    {
+                        boundingRectangle.Y = 0;
+                    }
+
                     boundingBoxList.Add(boundingRectangle);
                     //imageOverlayContours.Draw(boundingBoxList[i], centroidColor, 1);
                 }
@@ -1734,7 +1752,8 @@ namespace Gelation_Cloning_Control
                 Image<Gray, Byte>[] colonySecretionEGFP = new Image<Gray, Byte>[centroidPointsList.Count()];
                 for (int i = 0; i < centroidPointsList.Count(); i++)
                 {
-                    colonySecretionEGFP[i] = imageEGFP.Copy(boundingBoxList[i]);
+                    colonySecretionEGFP[i] = maskImage.Copy(boundingBoxList[i]);
+                    ImageViewer.Show(colonySecretionEGFP[i]);
                 }
 
             }
