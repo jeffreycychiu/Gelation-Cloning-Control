@@ -1495,7 +1495,13 @@ namespace Gelation_Cloning_Control
                 CvInvoke.GaussianBlur(imageBF, imageGaussianBlur, new System.Drawing.Size(3, 3), 2, 2);
                 //ImageViewer.Show(imageGaussianBlur, "Gaussian Blurred Image");
 
-                /*
+                //Otsu Threshold to get the threshold to use for Canny detection. This number is also used in the hough circle transform
+                Mat otsu = new Mat();
+                double otsuThreshold = Emgu.CV.CvInvoke.Threshold(imageBF, otsu, 0, 255, Emgu.CV.CvEnum.ThresholdType.Otsu | Emgu.CV.CvEnum.ThresholdType.Binary);
+                //See https://stackoverflow.com/questions/4292249/automatic-calculation-of-low-and-high-thresholds-for-the-canny-operation-in-open for calculation of canny thresholds
+                double cannyThresholdLow = otsuThreshold * 0.50;        //Use 0.5 for small cell colonies (cell area detection uses 0.1)
+                double cannyThresholdHigh = otsuThreshold;
+
                 //The well diameter detection and removal using hough circle transform disabled for now. It takes up too much memory for some reason. Implement it back in later if neccessary
 
                 //Hough circle transform to find the diameter of the well. Using minRadius = 2575, maxRadius = 2600 for 96 well plate. Will need to change if plate changes
@@ -1504,8 +1510,8 @@ namespace Gelation_Cloning_Control
                 int maxWellRadius = 2600;
                 if ( comboBoxMicroscopeSelect.SelectedIndex == 0)   //0 == Mich
                 {
-                    minWellRadius = 1950;
-                    maxWellRadius = 2100;
+                    minWellRadius = 1950;  //1950
+                    maxWellRadius = 2050;  //2100
                     Console.WriteLine("Mich");
                 }
                 else if ( comboBoxMicroscopeSelect.SelectedIndex == 1)  //1 = Leo
@@ -1514,8 +1520,10 @@ namespace Gelation_Cloning_Control
                     maxWellRadius = 2600;
                     Console.WriteLine("Leo");
                 }
-
-                CircleF[] detectedWellCircles = CvInvoke.HoughCircles(imageGaussianBlur, Emgu.CV.CvEnum.HoughType.Gradient, dp: 1, minDist: 10, param2: 10, minRadius: minWellRadius, maxRadius: maxWellRadius);
+                
+                
+                //Hough circle transform to find large circle. param2 is accumulator threshold for circle centers, smaller means more false circles
+                CircleF[] detectedWellCircles = CvInvoke.HoughCircles(imageGaussianBlur, Emgu.CV.CvEnum.HoughType.Gradient, dp: 1, minDist: 10, param1: cannyThresholdHigh, param2:25, minRadius: minWellRadius, maxRadius: maxWellRadius);
 
                 //draw circles onto copied original image
                 Gray circleColor = new Gray(255);
@@ -1543,15 +1551,11 @@ namespace Gelation_Cloning_Control
 
                 }
                 
-                */
+                
 
                 //Edge detection
                 Mat cannyImage = new Mat();
-                Mat otsu = new Mat();
-                double otsuThreshold = Emgu.CV.CvInvoke.Threshold(imageBF, otsu, 0, 255, Emgu.CV.CvEnum.ThresholdType.Otsu | Emgu.CV.CvEnum.ThresholdType.Binary);
-                //See https://stackoverflow.com/questions/4292249/automatic-calculation-of-low-and-high-thresholds-for-the-canny-operation-in-open for calculation of canny thresholds
-                double cannyThresholdLow = otsuThreshold * 0.50;        //Use 0.5 for small cell colonies (cell area detection uses 0.1)
-                double cannyThresholdHigh = otsuThreshold;
+
                 Console.WriteLine("Canny Thresholds LOW: " + cannyThresholdLow.ToString() + " || HIGH: " + cannyThresholdHigh.ToString());
                 Emgu.CV.CvInvoke.Canny(imageBF, cannyImage, cannyThresholdLow, cannyThresholdHigh);
                 //ImageViewer.Show(cannyImage, "Canny Edge");
@@ -1701,12 +1705,12 @@ namespace Gelation_Cloning_Control
 
                 //Adaptive threshold 
                 int windowSize = 9;
-                Image<Gray, Byte> imageAdaptiveThreshold = imageEGFP.ThresholdAdaptive(new Gray(255), Emgu.CV.CvEnum.AdaptiveThresholdType.GaussianC, Emgu.CV.CvEnum.ThresholdType.BinaryInv, windowSize, new Gray(5));
+                Image<Gray, Byte> imageAdaptiveThreshold = imageEGFP.ThresholdAdaptive(new Gray(255), Emgu.CV.CvEnum.AdaptiveThresholdType.GaussianC, Emgu.CV.CvEnum.ThresholdType.BinaryInv, windowSize, new Gray(1));
                 ImageViewer.Show(imageAdaptiveThreshold, "image after adaptive threshold");
 
                 //morphological open and close to get rid of noise
                 Mat se1 = Emgu.CV.CvInvoke.GetStructuringElement(Emgu.CV.CvEnum.ElementShape.Rectangle, new System.Drawing.Size(3, 3), new System.Drawing.Point(-1, 1));
-                Mat se2 = Emgu.CV.CvInvoke.GetStructuringElement(Emgu.CV.CvEnum.ElementShape.Rectangle, new System.Drawing.Size(3, 3), new System.Drawing.Point(-1, 1));
+                Mat se2 = Emgu.CV.CvInvoke.GetStructuringElement(Emgu.CV.CvEnum.ElementShape.Rectangle, new System.Drawing.Size(7, 7), new System.Drawing.Point(-1, 1));
 
                 //ImageViewer.Show(imageAdaptiveThreshold, "Thresholded EGFP image");
 
@@ -1715,7 +1719,7 @@ namespace Gelation_Cloning_Control
                 Emgu.CV.CvInvoke.MorphologyEx(mask, mask, Emgu.CV.CvEnum.MorphOp.Close, se2, new System.Drawing.Point(-1, 1), 1, Emgu.CV.CvEnum.BorderType.Default, new MCvScalar(1));
 
                 Image<Gray, Byte> maskImage = mask.ToImage<Gray, Byte>();
-                ImageViewer.Show(maskImage);
+                ImageViewer.Show(maskImage, "Mask Image");
                 //Image<Gray, Byte> morphologyImage = imageEGFP.Mul(maskImage);
                 //ImageViewer.Show(morphologyImage, "Image after noise filtering mask using morphology operations");
 
@@ -1723,6 +1727,15 @@ namespace Gelation_Cloning_Control
                 Image<Gray, Byte> imageBF = stitchedImageBF.ToImage<Gray, Byte>();
                 Image<Gray, Byte> imageOverlayMask = imageBF.Add(maskImage);
                 ImageViewer.Show(imageOverlayMask, "mask added to BF image");
+
+
+                //Create new sub images for each section as defined in ROI using brightfield detection
+                Image<Gray, Byte>[] colonySecretionEGFP = new Image<Gray, Byte>[centroidPointsList.Count()];
+                for (int i = 0; i < centroidPointsList.Count(); i++)
+                {
+                    colonySecretionEGFP[i] = imageEGFP.Copy(boundingBoxList[i]);
+                }
+
             }
             catch (Exception ex)
             {
