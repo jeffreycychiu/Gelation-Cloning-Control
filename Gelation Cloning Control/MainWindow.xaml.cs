@@ -77,6 +77,9 @@ namespace Gelation_Cloning_Control
         List<double> areasList = new List<double>();
         List<System.Drawing.Point> centroidPointsList = new List<System.Drawing.Point>();
         List<System.Drawing.Rectangle> boundingBoxList = new List<System.Drawing.Rectangle>();
+        List<double> numFluorPixels = new List<double>();
+
+        List<CellColony> cellColonies = new List<CellColony>();
 
         public MainWindow()
         {
@@ -1725,7 +1728,7 @@ namespace Gelation_Cloning_Control
                 //Adaptive threshold 
                 int windowSize = 9;
                 Image<Gray, Byte> imageAdaptiveThreshold = imageEGFP.ThresholdAdaptive(new Gray(255), Emgu.CV.CvEnum.AdaptiveThresholdType.GaussianC, Emgu.CV.CvEnum.ThresholdType.BinaryInv, windowSize, new Gray(1));
-                ImageViewer.Show(imageAdaptiveThreshold, "image after adaptive threshold");
+                //ImageViewer.Show(imageAdaptiveThreshold, "image after adaptive threshold");
 
                 //morphological open and close to get rid of noise
                 Mat se1 = Emgu.CV.CvInvoke.GetStructuringElement(Emgu.CV.CvEnum.ElementShape.Rectangle, new System.Drawing.Size(3, 3), new System.Drawing.Point(-1, 1));
@@ -1738,15 +1741,14 @@ namespace Gelation_Cloning_Control
                 Emgu.CV.CvInvoke.MorphologyEx(mask, mask, Emgu.CV.CvEnum.MorphOp.Close, se2, new System.Drawing.Point(-1, 1), 1, Emgu.CV.CvEnum.BorderType.Default, new MCvScalar(1));
 
                 Image<Gray, Byte> maskImage = mask.ToImage<Gray, Byte>();
-                ImageViewer.Show(maskImage, "Mask Image");
+                //ImageViewer.Show(maskImage, "Mask Image");
                 //Image<Gray, Byte> morphologyImage = imageEGFP.Mul(maskImage);
                 //ImageViewer.Show(morphologyImage, "Image after noise filtering mask using morphology operations");
 
                 //Overlay mask with BF image
                 Image<Gray, Byte> imageBF = stitchedImageBF.ToImage<Gray, Byte>();
                 Image<Gray, Byte> imageOverlayMask = imageBF.Add(maskImage);
-                ImageViewer.Show(imageOverlayMask, "mask added to BF image");
-
+                //ImageViewer.Show(imageOverlayMask, "mask added to BF image");
 
                 //Create new sub images for each section as defined in ROI using brightfield detection. Count the number of white pixels (255) in each image
                 Image<Gray, Byte>[] colonySecretionEGFP = new Image<Gray, Byte>[centroidPointsList.Count()];
@@ -1763,13 +1765,37 @@ namespace Gelation_Cloning_Control
                         
                     }
 
+                    //Draw bounding box and centroid
                     CircleF centroid = new CircleF(centroidPointsList[i], 2);
                     imageOverlayMask.Draw(centroid, boundingBoxColor, 1);
                     imageOverlayMask.Draw(boundingBoxList[i], boundingBoxColor, 1);
+
+                    //Calculate Num EGFP pixels / cell area (cell area defined as bounding box size). If the use bounding box checkbox is not selected, default bounding box size = 1
+                    if (checkBoxUseBoundingBox.IsChecked == true)
+                    {
+                        numFluorPixels.Add(numPixelsEGFP / (boundingBoxList[i].Width * boundingBoxList[i].Height));
+                    }
+                    else
+                    {
+                        numFluorPixels.Add(numPixelsEGFP);
+                    }
                     
                 }
-
                 ImageViewer.Show(imageOverlayMask, "EGFP pixels + bounding Box");
+
+                
+                double percentageKept = double.Parse(textBoxPercentageKept.Text) / 100;
+                int numColoniesKept = (int)Math.Floor(percentageKept * centroidPointsList.Count);
+                //Put all the lists in the class. This is a crappy way to do this: should have made the classes from the start to use less memory. Fix later
+                for (int i = 0; i < centroidPointsList.Count; i++)
+                {
+                    CellColony cellColony = new CellColony(areasList[i], centroidPointsList[i], boundingBoxList[i], numFluorPixels[i]);
+                    cellColonies.Add(cellColony);
+                }
+
+                //Sort all lists based on numFluorPixels
+                var cellColoniesSorted = cellColonies.OrderBy(x=>x.NumFluorPixels);
+
 
             }
             catch (Exception ex)
