@@ -1750,19 +1750,26 @@ namespace Gelation_Cloning_Control
 
                 //Create new sub images for each section as defined in ROI using brightfield detection. Count the number of white pixels (255) in each image
                 Image<Gray, Byte>[] colonySecretionEGFP = new Image<Gray, Byte>[centroidPointsList.Count()];
+                Gray boundingBoxColor = new Gray(0);
                 int minNumPixelsEGFP = 300;
                 for (int i = 0; i < centroidPointsList.Count(); i++)
                 {
                     colonySecretionEGFP[i] = maskImage.Copy(boundingBoxList[i]);
                     int numPixelsEGFP = Emgu.CV.CvInvoke.CountNonZero(colonySecretionEGFP[i]);
-                    Console.WriteLine("num pixels in bounding box " + i + " " + numPixelsEGFP);
+                    Console.WriteLine("num segmented EGFP pixels in bounding box " + i + " " + numPixelsEGFP);
                     if (numPixelsEGFP < minNumPixelsEGFP)
                     {
                         //Remove ones with 0? not sure if neccesary. I can just sort maybe
                         
                     }
-                    //ImageViewer.Show(colonySecretionEGFP[i]);
+
+                    CircleF centroid = new CircleF(centroidPointsList[i], 2);
+                    imageOverlayMask.Draw(centroid, boundingBoxColor, 1);
+                    imageOverlayMask.Draw(boundingBoxList[i], boundingBoxColor, 1);
+                    
                 }
+
+                ImageViewer.Show(imageOverlayMask, "EGFP pixels + bounding Box");
 
             }
             catch (Exception ex)
