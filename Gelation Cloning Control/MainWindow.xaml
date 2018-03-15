@@ -209,6 +209,7 @@
                             <Button x:Name="btnImageJFilePath" Content="ImageJ Path" FontSize="20" FontWeight="Bold" Grid.Row="5" Grid.Column="2" />
                             <Button x:Name="btnScan" Content="Scan" FontSize="20" FontWeight="Bold" Click="btnScan_Click" Grid.Row="6" Grid.ColumnSpan="3"/>
                             <Button x:Name="btnLoadStitchedImage" Content="Load Stitched Image" FontSize="20" FontWeight="Bold" Click="btnLoadStitchedImage_Click" Grid.Row="7" Grid.ColumnSpan="3"/>
+                            <Button x:Name="btnPatternUBC" Content="Pattern UBC" FontSize="20" FontWeight="Bold" Click="btnPatternUBC_Click" Grid.Row="8" Grid.ColumnSpan="3"/>
 
                         </Grid>
                     </Border>

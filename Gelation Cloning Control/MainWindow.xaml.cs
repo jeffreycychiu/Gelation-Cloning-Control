@@ -642,6 +642,74 @@ namespace Gelation_Cloning_Control
 
             listBoxLaserScanPoints.Items.Clear();
         }
+
+        //Hardcoded coordinates to pattern "UBC" in the well. Used for Pre Gel experiments
+        private async void btnPatternUBC_Click(object sender, RoutedEventArgs e)
+        {
+            await PatternUBC(true);
+        }
+
+        public async Task PatternUBC(bool param)
+        {
+            int delayTime = 4000;
+
+            serialPortArroyoSend("LASer:OUTput 1");
+            serialPortMicroscopeStageSend("GR,0,-25000");
+            await Task.Delay(delayTime);
+            serialPortMicroscopeStageSend("GR,-17500,0");
+            await Task.Delay(delayTime);
+            serialPortMicroscopeStageSend("GR,0,25000");
+            await Task.Delay(delayTime);
+            
+            //Space
+            serialPortArroyoSend("LASer:OUTput 0");
+            serialPortMicroscopeStageSend("GR,-17500,0");
+            await Task.Delay(delayTime);
+
+            //B
+            serialPortArroyoSend("LASer:OUTput 1");
+            serialPortMicroscopeStageSend("GR,-10000,0");
+            await Task.Delay(delayTime);
+            serialPortMicroscopeStageSend("GR,0,-12500");
+            await Task.Delay(delayTime);
+            serialPortMicroscopeStageSend("GR,-7500,0");
+            await Task.Delay(delayTime);
+            serialPortMicroscopeStageSend("GR,0,-12500");
+            await Task.Delay(delayTime);
+            serialPortMicroscopeStageSend("GR,17500,0");
+            await Task.Delay(delayTime);
+            serialPortMicroscopeStageSend("GR,0,12500");
+            await Task.Delay(delayTime);
+            serialPortMicroscopeStageSend("GR,-10000,0");
+            await Task.Delay(delayTime);
+            serialPortArroyoSend("LASer:OUTput 0");
+            serialPortMicroscopeStageSend("GR,10000,0");
+            await Task.Delay(delayTime);
+            serialPortArroyoSend("LASer:OUTput 1");
+            serialPortMicroscopeStageSend("GR,0,12500");
+            await Task.Delay(delayTime);
+
+            //Space
+            serialPortArroyoSend("LASer:OUTput 0");
+            serialPortMicroscopeStageSend("GR,-17500,0");
+            await Task.Delay(delayTime);
+            serialPortMicroscopeStageSend("GR,-17500,0");
+            await Task.Delay(delayTime);
+
+            //C
+            serialPortArroyoSend("LASer:OUTput 1");
+            serialPortMicroscopeStageSend("GR,-17500,0");
+            await Task.Delay(delayTime);
+            serialPortArroyoSend("LASer:OUTput 0");
+            serialPortMicroscopeStageSend("GR,17500,0");
+            await Task.Delay(delayTime);
+            serialPortArroyoSend("LASer:OUTput 1");
+            serialPortMicroscopeStageSend("GR,0,-25000");
+            await Task.Delay(delayTime);
+            serialPortMicroscopeStageSend("GR,-17500,0");
+            await Task.Delay(delayTime);
+            serialPortArroyoSend("LASer:OUTput 0");
+        }
         #endregion
 
         #region Laser Commands and Connections
@@ -2158,6 +2226,7 @@ namespace Gelation_Cloning_Control
 
             return stageConversion;
         }
+
 
 
 
