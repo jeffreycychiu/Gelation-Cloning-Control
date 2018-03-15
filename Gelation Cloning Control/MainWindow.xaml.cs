@@ -1854,7 +1854,10 @@ namespace Gelation_Cloning_Control
                 
                 double percentageKept = double.Parse(textBoxPercentageKept.Text) / 100;
                 int numColoniesKept = (int)Math.Floor(percentageKept * centroidPointsList.Count);
-                //Put all the lists in the class. This is a crappy way to do this: should have made the classes from the start to use less memory. Fix later
+                Console.WriteLine("Total Number of Colonies Detected: " + centroidPointsList.Count);
+                Console.WriteLine("Number of Colonies Kept: " + numColoniesKept);
+
+                //Put all the lists a list of the CellColonies class. This is a crappy way to do this: should have made the classes from the start to use less memory. Fix later
                 for (int i = 0; i < centroidPointsList.Count; i++)
                 {
                     CellColony cellColony = new CellColony(areasList[i], centroidPointsList[i], boundingBoxList[i], numFluorPixels[i]);
@@ -1862,7 +1865,15 @@ namespace Gelation_Cloning_Control
                 }
 
                 //Sort all lists based on numFluorPixels
-                var cellColoniesSorted = cellColonies.OrderBy(x=>x.NumFluorPixels);
+                Image<Gray, Byte> imageColoniesKept = imageBF.Add(maskImage);
+                var cellColoniesSorted = cellColonies.OrderByDescending(x=>x.NumFluorPixels).ToList();
+                for (int i = 0; i < numColoniesKept; i++)
+                {
+                    imageColoniesKept.Draw(new CircleF(cellColoniesSorted[i].Centroid,2), boundingBoxColor, 2);
+                    imageColoniesKept.Draw(cellColoniesSorted[i].BoundingBox, boundingBoxColor, 1);
+                }
+
+                ImageViewer.Show(imageColoniesKept, "Colonies kept");
 
 
             }
