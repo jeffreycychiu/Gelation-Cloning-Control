@@ -1770,6 +1770,7 @@ namespace Gelation_Cloning_Control
 
                 ImageViewer.Show(imageOverlayContoursSmallAreasRemoved, "small areas removed Contour drawn and overlaid on original image");
 
+                //imageOverlayContoursSmallAreasRemoved.Save("C:\\Users\\MDL\\Desktop\\Saved Images\\imageOverlayContoursSmallAreaRemoved.bmp");
 
                 //Not sure if these are neccesary
                 //imageBF.Dispose();
@@ -1875,6 +1876,8 @@ namespace Gelation_Cloning_Control
 
                 ImageViewer.Show(imageColoniesKept, "Colonies kept");
 
+                //imageOverlayMask.Save("C:\\Users\\MDL\\Desktop\\Saved Images\\OverlayEGFPMaskAndBF.bmp");
+                //imageColoniesKept.Save("C:\\Users\\MDL\\Desktop\\Saved Images\\imageColoniesKept.bmp");
 
             }
             catch (Exception ex)
