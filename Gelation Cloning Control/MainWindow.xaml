@@ -347,8 +347,8 @@
                     <Button x:Name="btnLoadImageEGFP" Content="Load Image (EGFP)" FontSize="20" FontWeight="Bold" Click="btnLoadImageEGFP_Click" IsEnabled="False" Grid.Row="2" Grid.ColumnSpan="3"/>
                     <Button x:Name="btnDetectCellsBF" Content="Detect Cells (BF)" FontSize="20" FontWeight="Bold" Click="btnDetectCellsBF_Click" Grid.Row="3" Grid.ColumnSpan="3"/>
                     <Button x:Name="btnDetectSecretionEGFP" Content="Detect Secretion (EGFP)" FontSize="20" FontWeight="Bold" Click="btnDetectSecretionEGFP_Click"  Grid.Row="4" Grid.ColumnSpan="3"/>
-                    <TextBlock x:Name="textBlockPercentageKept" Text="Top Producers Kept (%)" FontSize="20" FontWeight="Bold" FontStyle="Italic" VerticalAlignment="Center" TextWrapping="wrap" Grid.Row="5" Grid.Column="0"/>
-                    <TextBox x:Name="textBoxPercentageKept"  VerticalAlignment="Center" FontSize="20" HorizontalAlignment="Stretch" TextWrapping="Wrap" Text="50" Grid.Row="5" Grid.Column="1"/>
+                    <TextBlock x:Name="textBlockProducersKept" Text="Top Producers Kept (#)" FontSize="20" FontWeight="Bold" FontStyle="Italic" VerticalAlignment="Center" TextWrapping="wrap" Grid.Row="5" Grid.Column="0"/>
+                    <TextBox x:Name="textBoxProducersKept"  VerticalAlignment="Center" FontSize="20" HorizontalAlignment="Stretch" TextWrapping="Wrap" Text="3" Grid.Row="5" Grid.Column="1"/>
                     <CheckBox x:Name="checkBoxUseBoundingBox" HorizontalAlignment="Center" VerticalAlignment="Center"  Grid.Row="5" Grid.Column="2">
                         <TextBlock Text="Use Bounding Box Size" TextWrapping="Wrap" FontSize="16"/>
                     </CheckBox>

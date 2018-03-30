@@ -1852,9 +1852,11 @@ namespace Gelation_Cloning_Control
                 }
                 ImageViewer.Show(imageOverlayMask, "EGFP pixels + bounding Box");
 
-                
-                double percentageKept = double.Parse(textBoxPercentageKept.Text) / 100;
-                int numColoniesKept = (int)Math.Floor(percentageKept * centroidPointsList.Count);
+
+                //double percentageKept = double.Parse(textBoxPercentageKept.Text) / 100;
+                //int numColoniesKept = (int)Math.Floor(percentageKept * centroidPointsList.Count);
+                int numColoniesKept = int.Parse(textBoxProducersKept.Text);
+
                 Console.WriteLine("Total Number of Colonies Detected: " + centroidPointsList.Count);
                 Console.WriteLine("Number of Colonies Kept: " + numColoniesKept);
 
