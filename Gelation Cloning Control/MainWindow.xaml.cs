@@ -255,6 +255,7 @@ namespace Gelation_Cloning_Control
                     stitchedY1 = scanStagePosition[1] + 32031; //Adjust Y1 to real top left (should be 32031.25)
                     stitchedX2 = scanStagePosition[3] - 35125; //Adjust X2 to real bot right
                     stitchedY2 = scanStagePosition[4] - 32031; //Adjust Y2 to real top left (should be 32031.25)
+
                     break;
                 case "10X Nikon":
                     stitchedX1 = scanStagePosition[0] + 19173; //Adjust X1 to real top left (38345.8725 / 2 = 19172.93)
@@ -553,8 +554,6 @@ namespace Gelation_Cloning_Control
         {
             (windowsFormsHost.Child as System.Windows.Forms.PictureBox).SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
 
-            Console.WriteLine("Scroll detected");
-
             int zoomWidth = (windowsFormsHost.Child as System.Windows.Forms.PictureBox).Width;
             int zoomHeight = (windowsFormsHost.Child as System.Windows.Forms.PictureBox).Height;
 
@@ -607,7 +606,7 @@ namespace Gelation_Cloning_Control
                 
             }
 
-            //Sort list of (X,Y) locations by X. Will lower the travel time of the laser than random. Can improve this later by optimizing total path distance.
+            //Sort list of (X,Y) locations by X. Will decrease the total travel time of the laser than random. Can improve this later by optimizing total path distance.
             scanPoints = scanPoints.OrderBy(arr => arr[0]).ThenBy(arr => arr[1]).ToList();  
 
             foreach(var item in scanPoints)
@@ -1485,6 +1484,15 @@ namespace Gelation_Cloning_Control
             } 
         }
 
+        //Fit the camera image back to the size of the border of the picturebox
+        private void btnFitImageToScreen_Click(object sender, RoutedEventArgs e)
+        {
+            int width = (int)borderPictureBox.ActualWidth;
+            int height = (int)borderPictureBox.ActualHeight;
+            Console.WriteLine(width + " / " + height);
+            (windowsFormsHost.Child as System.Windows.Forms.PictureBox).Size = new System.Drawing.Size(width, height);
+            (windowsFormsHost.Child as System.Windows.Forms.PictureBox).SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+        }
         #endregion
 
         #region Image Processing
@@ -2242,6 +2250,7 @@ namespace Gelation_Cloning_Control
 
             return stageConversion;
         }
+
 
 
 

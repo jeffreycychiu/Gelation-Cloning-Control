@@ -11,7 +11,7 @@
         WindowStyle="None"
         Closing="MetroWindow_Closing"
         Icon="Logo_crop.ico"
-        Title="Gelation Control" Height="900" Width="1200">
+        Title="Gelation Control" Height="1045.5" Width="1200">
     <Controls:MetroWindow.Style>
         <Style TargetType="{x:Type Controls:MetroWindow}">
             <Setter Property="FontFamily" Value="Veranda" />
@@ -100,6 +100,8 @@
                         HorizontalAlignment="Left" Height="25" Margin="10,390,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="54"/>
                     <TextBlock x:Name="textBlockNumberCycles" HorizontalAlignment="Left" Margin="10,371,0,0" TextWrapping="Wrap" Text="Number of Cycles" VerticalAlignment="Top"/>
                     <Button x:Name="btnSetNumCycles" Content="Set" Click="btnSetNumCycles_Click" IsEnabled="false" Padding="0" HorizontalAlignment="Left" Margin="69,390,0,0" VerticalAlignment="Top" Width="43" Height="26"  
+                        Controls:ButtonHelper.PreserveTextCase="true" Style="{DynamicResource SquareButtonStyle}" />
+                    <Button x:Name="btnFitImageToScreen"  Content="Fit Image to Screen" Click="btnFitImageToScreen_Click"  Padding="0" HorizontalAlignment="Left" Margin="10,760,0,0" VerticalAlignment="Top" Width="140" Height="25"  
                         Controls:ButtonHelper.PreserveTextCase="true" Style="{DynamicResource SquareButtonStyle}" />
 
 
