@@ -630,7 +630,7 @@ namespace Gelation_Cloning_Control
                 //turn on laser
                 if (checkBoxActivateLaser.IsChecked == true)
                 {
-                    firePulsesPWM();
+                    await firePulsesPWM();
                 }
                 //wait a certain amount of time
                 await Task.Delay(delayTime);
@@ -928,32 +928,6 @@ namespace Gelation_Cloning_Control
         //Fire the amount of pulses as specified by the PWM settings
         private void btnFireCycles_Click(object sender, RoutedEventArgs e)
         {
-            ////Create a new timer for this purpose:
-            //int period = int.Parse(textBoxPeriodSet.Text);
-            //double dutyCycle = double.Parse(textBoxDutyCycleSet.Text);
-            ////int numCycles = int.Parse(textBlockNumberCycles.Text);
-            //int numCycles;
-            //int.TryParse(textBoxNumberCycles.Text, out numCycles);
-
-            //Stopwatch stopwatch = new Stopwatch();
-
-            //for(int i = 0; i < numCycles; i++)
-            //{
-            //    stopwatch.Start();
-
-            //    serialPortArroyoSend("LASer:OUTput 1");
-            //    serialPortArroyoSend("LASer:OUTput?");
-
-            //    while (stopwatch.ElapsedMilliseconds < Math.Floor(period * dutyCycle / 100)) ;  //do nothing
-
-            //    serialPortArroyoSend("LASer:OUTput 0");
-            //    serialPortArroyoSend("LASer:OUTput?");
-
-            //    while (stopwatch.ElapsedMilliseconds < period) ; //do nothing until period over
-
-            //    stopwatch.Reset();
-            //}
-
             firePulsesPWM();
         }
 
@@ -967,7 +941,7 @@ namespace Gelation_Cloning_Control
         }
 
         //Helper function: Fires the amount of pulses as specified by the PWM settings
-        private void firePulsesPWM ()
+        public async Task firePulsesPWM ()
         {
             //Create a new timer for this purpose:
             int period = int.Parse(textBoxPeriodSet.Text);
@@ -980,19 +954,23 @@ namespace Gelation_Cloning_Control
 
             for (int i = 0; i < numCycles; i++)
             {
-                stopwatch.Start();
+                //stopwatch.Start();
 
                 serialPortArroyoSend("LASer:OUTput 1");
                 serialPortArroyoSend("LASer:OUTput?");
 
-                while (stopwatch.ElapsedMilliseconds < Math.Floor(period * dutyCycle / 100)) ;  //do nothing
+                //while (stopwatch.ElapsedMilliseconds < Math.Floor(period * dutyCycle / 100)) ;  //do nothing
+                int onTime = (int)Math.Floor(period * dutyCycle / 100);
+                int offTime = period - onTime;
+                   
+                await Task.Delay(onTime);
 
                 serialPortArroyoSend("LASer:OUTput 0");
                 serialPortArroyoSend("LASer:OUTput?");
 
-                while (stopwatch.ElapsedMilliseconds < period) ; //do nothing until period over
-
-                stopwatch.Reset();
+                //while (stopwatch.ElapsedMilliseconds < period) ; //do nothing until period over
+                await Task.Delay(offTime);
+                //stopwatch.Reset();
             }
         }
 
