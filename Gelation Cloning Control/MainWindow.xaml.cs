@@ -595,7 +595,7 @@ namespace Gelation_Cloning_Control
         //
         public async Task laserScan(bool activateLaser)
         {
-            int delayTime = int.Parse(textBoxLaserTime.Text);    //needs to be adjusted based on laserTime
+            int delayTime = int.Parse(textBoxDelayTime.Text);    //needs to be adjusted based on laserTime
             List<int[]> scanPoints = new List<int[]>();
 
             //convert the listbox items into an list of int[2]'s. Each one of those int[2] is the x,y location of where the laser should go.
@@ -627,13 +627,14 @@ namespace Gelation_Cloning_Control
                 
                 //move stage to location
                 serialPortMicroscopeStageSend("G," + xPos.ToString() + "," + yPos.ToString());
+                await Task.Delay(delayTime);
                 //turn on laser
                 if (checkBoxActivateLaser.IsChecked == true)
                 {
                     await firePulsesPWM();
                 }
                 //wait a certain amount of time
-                await Task.Delay(delayTime);
+                
                 
             }
 
@@ -954,12 +955,9 @@ namespace Gelation_Cloning_Control
 
             for (int i = 0; i < numCycles; i++)
             {
-                //stopwatch.Start();
-
                 serialPortArroyoSend("LASer:OUTput 1");
                 serialPortArroyoSend("LASer:OUTput?");
-
-                //while (stopwatch.ElapsedMilliseconds < Math.Floor(period * dutyCycle / 100)) ;  //do nothing
+                
                 int onTime = (int)Math.Floor(period * dutyCycle / 100);
                 int offTime = period - onTime;
                    
@@ -968,9 +966,7 @@ namespace Gelation_Cloning_Control
                 serialPortArroyoSend("LASer:OUTput 0");
                 serialPortArroyoSend("LASer:OUTput?");
 
-                //while (stopwatch.ElapsedMilliseconds < period) ; //do nothing until period over
                 await Task.Delay(offTime);
-                //stopwatch.Reset();
             }
         }
 
