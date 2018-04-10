@@ -630,13 +630,11 @@ namespace Gelation_Cloning_Control
                 //turn on laser
                 if (checkBoxActivateLaser.IsChecked == true)
                 {
-                    serialPortArroyoSend("LASer:OUTput 1");
+                    firePulsesPWM();
                 }
                 //wait a certain amount of time
                 await Task.Delay(delayTime);
-
-                //turn off laser
-                serialPortArroyoSend("LASer:OUTput 0");
+                
             }
 
             listBoxLaserScanPoints.Items.Clear();
