@@ -16,7 +16,7 @@ Microscope:     Nikon Eclipse TI
 ## Software and Libraries used:
 EmguCV (OpenCV C# Wrapper)
 
-FIJI ImageJ
+FIJI ImageJ (used for grid stitching - EmguCV only had panorama stitching when this project was created)
 
 ## Install notes:
 Install Basler Pylon software & driver installed (otherwise will experience runtime SEHException error when running program): https://www.baslerweb.com/en/products/software/original-software/
