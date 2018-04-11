@@ -13,6 +13,7 @@ Microscope:     Nikon Eclipse TI
 
 ## Software and Libraries used:
 EmguCV (OpenCV C# Wrapper)
+
 FIJI ImageJ
 
 ## Install notes:
