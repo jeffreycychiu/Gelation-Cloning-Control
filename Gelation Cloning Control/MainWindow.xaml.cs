@@ -47,7 +47,7 @@ namespace Gelation_Cloning_Control
 
         //Create the controls for the camera controls
         IFloatParameter exposure = null;
-        IFloatParameter gain = null;
+        IIntegerParameter gain = null;
 
         DispatcherTimer timerUpdateBaslerDeviceList = new DispatcherTimer();
         DispatcherTimer timerUpdateStagePosition = new DispatcherTimer();
@@ -99,6 +99,7 @@ namespace Gelation_Cloning_Control
 
             //Disable all buttons
             EnableButtons(false, false);
+           
         }
 
         #region Stage Commands and Connections
@@ -1028,6 +1029,7 @@ namespace Gelation_Cloning_Control
             {
                 // Get the first selected item.
                 ListViewItem item = (ListViewItem)listViewCamera.SelectedItem;
+                
                 // Get the attached device data.
                 ICameraInfo selectedCamera = item.Tag as ICameraInfo;
                 try
@@ -1048,14 +1050,16 @@ namespace Gelation_Cloning_Control
                     // Open the connection to the camera device.
                     camera.Open();
 
-                    //if (camera.Parameters.Contains(PLCamera.GainAbs))
-                    //{
-                    //    gain = camera.Parameters[PLCamera.GainAbs];
-                    //}
-                    //else
-                    //{
-                    //    gain = camera.Parameters[PLCamera.Gain];
-                    //}
+                    //Kept the code from example C# code by basler, but the camera I am using (pia2400-17gm) the gain can only be accessed by PLCamera.GainRaw
+                    if (camera.Parameters.Contains(PLCamera.GainAbs))
+                    {
+                        //gain = camera.Parameters[PLCamera.GainAbs];
+                    }
+                    else
+                    {
+                        //gain = camera.Parameters[PLCamera.Gain];
+                        gain = camera.Parameters[PLCamera.GainRaw];
+                    }
 
                     if (camera.Parameters.Contains(PLCamera.ExposureTimeAbs))
                     {
@@ -1068,7 +1072,7 @@ namespace Gelation_Cloning_Control
 
                     //Set the textboxes of exposure/gain etc of the default setting
                     textBoxExposure.Text = exposure.GetValue().ToString();
-                    //textBoxGain.Text = gain.GetValue().ToString();
+                    textBoxGain.Text = gain.GetValue().ToString();
                 }
                 catch (Exception exception)
                 {
@@ -1337,7 +1341,7 @@ namespace Gelation_Cloning_Control
             btnCameraStop.IsEnabled = canStop;
             
             textBoxExposure.IsEnabled = canStop;
-            //textBoxGain.IsEnabled = canStop;
+            textBoxGain.IsEnabled = canStop;
         }
 
         // Updates the list of available camera devices.
@@ -1373,7 +1377,6 @@ namespace Gelation_Cloning_Control
                     if (newitem)
                     {
                         // Create the item to display.
-                        //ListViewItem item = new ListViewItem(cameraInfo[CameraInfoKey.FriendlyName]);
                         ListViewItem item = new ListViewItem();
 
                         // Create the tool tip text.
@@ -1384,8 +1387,10 @@ namespace Gelation_Cloning_Control
                         }
                         item.ToolTip = toolTipText;
 
-                        // Store the camera info in the displayed item.
+                        // Store the camera info in the displayed item. Even with data binding to the name it doesnt work? tested the same code with custom class and its fine but not with listviewitem
                         item.Tag = cameraInfo;
+                        item.Name = "BaslerName";
+                        item.Content = "BaslerContent";
 
                         // Attach the device data.
                         listViewCamera.Items.Add(item);
@@ -1441,7 +1446,18 @@ namespace Gelation_Cloning_Control
         {
             if (e.Key == Key.Enter)
             {
-                gain.ParseAndSetValue(textBoxGain.Text);
+                int gainInput;
+                if (int.TryParse(textBoxGain.Text, out gainInput))
+                {
+                    if (gainInput > 0 && gainInput <= 500)
+                    {
+                        gain.SetValue(gainInput);
+                    }
+                    else
+                    {
+                        MessageBox.Show("Error: Gain must be between 0 and 500");
+                    }
+                }
             }
         }
 

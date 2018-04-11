@@ -78,7 +78,7 @@
                     <ListView x:Name="listViewCamera" SelectionChanged="listViewCamera_SelectionChanged" HorizontalAlignment="Left" Height="80" Margin="10,493,0,0" VerticalAlignment="Top" Width="140" BorderThickness="2">
                         <ListView.View>
                             <GridView>
-                                <GridViewColumn  Header="Camera:" DisplayMemberBinding="{Binding DataContext}" />
+                                <GridViewColumn  Header="Camera" DisplayMemberBinding="{Binding Name}" Width="Auto" />
                             </GridView>
                         </ListView.View>
                     </ListView>
