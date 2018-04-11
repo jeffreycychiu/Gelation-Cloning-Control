@@ -3,15 +3,26 @@ This program allows for manual and automated control of a laser-microscope syste
 
 ![alt text](https://github.com/jeffreycychiu/Gelation-Cloning-Control/blob/master/Main%20Control%20resized.png)
 
+## Capabilities
+-Manual control of laser and stage
+-Image processing - cell and colony detection
+-Cell protein secretion measurement
+-Well scanning and image stitching
+-Auto-generate target points for laser
+-Simple pulse width modulation (PWM) of laser
+
+
 ## Hardware involved:
 
 Laser Module:   Arroyo 4308 LaserSource
 
 Camera:         Basler pia2400-17gm
 
+Microscope Stage and Controller: Prior H117 stage, ProScan III controller
+
 Microscope:     Nikon Eclipse TI
 
-*The program is specifically written for the laser and camera module above. Can be adapted to other systems but unfortunately I do not have the resources or time to implement and test a large amount of cameras and laser modules*
+*The program is specifically written for the laser, camera, and stage module above. Can be adapted to other systems but unfortunately I do not have the resources or time to implement and test a large amount of cameras and laser modules*
 
 ## Software and Libraries used:
 EmguCV (OpenCV C# Wrapper)
