@@ -4,7 +4,9 @@ This program allows for manual and automated control of a laser-microscope syste
 ## Hardware involved:
 
 Laser Module:   Arroyo 4308 LaserSource
+
 Camera:         Basler pia2400-17gm
+
 Microscope:     Nikon Eclipse TI
 
 *The program is specifically written for the laser and camera module above. Can be adapted to other systems but unfortunately I do not have the resources or time to implement and test a large amount of cameras and laser modules*
