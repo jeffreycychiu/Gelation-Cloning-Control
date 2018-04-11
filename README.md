@@ -2,4 +2,4 @@
 Control the hardware and camera devices for cloning project
 
 Install notes:
-Must have Basler Pylon software installed (this is the reason for the the runtime SEHException when running program)
+Must have Basler Pylon software & driver installed (otherwise will experience runtime SEHException error when running program)
