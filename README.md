@@ -4,12 +4,12 @@ This program allows for manual and automated control of a laser-microscope syste
 ![alt text](https://github.com/jeffreycychiu/Gelation-Cloning-Control/blob/master/Main%20Control%20resized.png)
 
 ## Capabilities
--Manual control of laser and stage
--Image processing - cell and colony detection
--Cell protein secretion measurement
--Well scanning and image stitching
--Auto-generate target points for laser
--Simple pulse width modulation (PWM) of laser
+- Manual control of laser and stage
+- Image processing - cell and colony detection
+- Cell protein secretion measurement
+- Well scanning and image stitching
+- Auto-generate target points for laser
+- Simple pulse width modulation (PWM) of laser
 
 
 ## Hardware involved:
