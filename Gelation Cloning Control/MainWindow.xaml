@@ -335,6 +335,7 @@
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
@@ -346,7 +347,7 @@
                         <ComboBoxItem>Leo</ComboBoxItem>
                     </ComboBox>
                     <Button x:Name="btnLoadImageBF" Content="Load Image (BF)" FontSize="20" FontWeight="Bold" Click="btnLoadImageBF_Click"  Grid.Row="1" Grid.ColumnSpan="3"/>
-                    <Button x:Name="btnLoadImageEGFP" Content="Load Image (EGFP)" FontSize="20" FontWeight="Bold" Click="btnLoadImageEGFP_Click" IsEnabled="False" Grid.Row="2" Grid.ColumnSpan="3"/>
+                    <Button x:Name="btnLoadImageFluor" Content="Load Image (Fluor)" FontSize="20" FontWeight="Bold" Click="btnLoadImageFluor_Click" IsEnabled="True" Grid.Row="2" Grid.ColumnSpan="3"/>
                     <Button x:Name="btnDetectCellsBF" Content="Detect Cells (BF)" FontSize="20" FontWeight="Bold" Click="btnDetectCellsBF_Click" Grid.Row="3" Grid.ColumnSpan="3"/>
                     <Button x:Name="btnDetectSecretionEGFP" Content="Detect Secretion (EGFP)" FontSize="20" FontWeight="Bold" Click="btnDetectSecretionEGFP_Click"  Grid.Row="4" Grid.ColumnSpan="3"/>
                     <TextBlock x:Name="textBlockProducersKept" Text="Top Producers Kept (#)" FontSize="20" FontWeight="Bold" FontStyle="Italic" VerticalAlignment="Center" TextWrapping="wrap" Grid.Row="5" Grid.Column="0"/>
@@ -355,8 +356,10 @@
                         <TextBlock Text="Use Bounding Box Size" TextWrapping="Wrap" FontSize="16"/>
                     </CheckBox>
                     <Button x:Name="btnCalculateArea" Content="Calculate Cell Area" FontSize="20" FontWeight="Bold" Click="btnCalculateArea_Click"  Grid.Row="6" Grid.ColumnSpan="3"/>
-                    <Button x:Name="btnProcessImage" Content="Process Image" FontSize="20" FontWeight="Bold" Click="btnProcessImage_Click" Grid.Row="7" Grid.ColumnSpan="3"/>
-                    <Button x:Name="btnGenerateTarget" Content="Generate Target Points" FontSize="20" FontWeight="Bold"  IsEnabled="False" Click="btnGenerateTarget_Click" Grid.Row="8" Grid.ColumnSpan="3"/>
+                    <TextBlock x:Name="textBlockFluorThreshold" Text="Fluor Threshold (1-255)" FontSize="20" FontWeight="Bold" FontStyle="Italic" VerticalAlignment="Center" TextWrapping="wrap" Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="2"/>
+                    <TextBox x:Name="textBoxFluorThreshold"  VerticalAlignment="Center" FontSize="20" HorizontalAlignment="Stretch" TextWrapping="Wrap" Text="128" Grid.Row="7" Grid.Column="2"/>
+                    <Button x:Name="btnDetectCellsFluor" Content="Detect Cells Fluor" FontSize="20" FontWeight="Bold" Click="btnDetectCellsFluor_Click" Grid.Row="8" Grid.ColumnSpan="3"/>
+                    <Button x:Name="btnGenerateTarget" Content="Generate Target Points" FontSize="20" FontWeight="Bold"  IsEnabled="False" Click="btnGenerateTarget_Click" Grid.Row="9" Grid.ColumnSpan="3"/>
 
                 </Grid>
             </TabItem>

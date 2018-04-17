@@ -22,7 +22,7 @@ namespace Gelation_Cloning_Control
             BoundingBox = new Rectangle();
             NumFluorPixels = 0;
         }
-        //Constructor with 4 arguments
+        
         public CellColony(double area, Point centroid, Rectangle boundingBox, double numFluorPixels)
         {
             Area = area;

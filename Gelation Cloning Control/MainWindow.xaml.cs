@@ -71,7 +71,7 @@ namespace Gelation_Cloning_Control
         public int offsetY = 0;
 
         public Mat stitchedImageBF = new Mat();
-        public Mat stitchedImageEGFP = new Mat();
+        public Mat stitchedImageFluor = new Mat();
         private System.Drawing.Point mouseDownLocation;
 
         List<double> areasList = new List<double>();
@@ -80,6 +80,7 @@ namespace Gelation_Cloning_Control
         List<double> numFluorPixels = new List<double>();
 
         List<CellColony> cellColonies = new List<CellColony>();
+        List<PointF> targetCells = new List<PointF>();
 
         public MainWindow()
         {
@@ -372,12 +373,12 @@ namespace Gelation_Cloning_Control
             {
                 Process process = new Process();
                 process.StartInfo.FileName = textBoxImageJFilePath.Text;
+                //Pass the arguments separated by commas. Use MicroscopeStitch.ijm ImageJ Macro file to configure stitching parameters
                 process.StartInfo.Arguments = "-macro MicroscopeStitch.ijm " + textBoxFieldsX.Text + "," + textBoxFieldsY.Text + "," + textBoxSaveScanImageFolderPath.Text.ToString();
                 Console.WriteLine("Arguments: " + process.StartInfo.Arguments.ToString());
                 process.Start();
             }
-
-            int[] positionArray = new int[] { xPosFirst, yPosFirst, zPosFirst, xPosLast, yPosLast, zPosLast };
+                int[] positionArray = new int[] { xPosFirst, yPosFirst, zPosFirst, xPosLast, yPosLast, zPosLast };
 
             return positionArray;
             
@@ -1499,11 +1500,11 @@ namespace Gelation_Cloning_Control
             }
 
            stitchedImageBF = CvInvoke.Imread(fileNameImageBF, Emgu.CV.CvEnum.LoadImageType.AnyColor);
-           btnLoadImageEGFP.IsEnabled = true;
+           btnLoadImageFluor.IsEnabled = true;
         }
 
         //Load the stitched flourescent EGFP image into memory
-        private void btnLoadImageEGFP_Click(object sender, RoutedEventArgs e)
+        private void btnLoadImageFluor_Click(object sender, RoutedEventArgs e)
         {
             string fileNameImageEGFP;
             OpenFileDialog openFileDialog = new OpenFileDialog();
@@ -1515,28 +1516,28 @@ namespace Gelation_Cloning_Control
                 return;
             }
 
-            stitchedImageEGFP = CvInvoke.Imread(fileNameImageEGFP, Emgu.CV.CvEnum.LoadImageType.AnyColor);
+            stitchedImageFluor = CvInvoke.Imread(fileNameImageEGFP, Emgu.CV.CvEnum.LoadImageType.AnyColor);
 
             //Pad the smaller of the images with 0's to be the same size as larger
-            double rowsToPad = Math.Abs(stitchedImageBF.Height - stitchedImageEGFP.Height);
-            double colsToPad = Math.Abs(stitchedImageBF.Width - stitchedImageEGFP.Width);
+            double rowsToPad = Math.Abs(stitchedImageBF.Height - stitchedImageFluor.Height);
+            double colsToPad = Math.Abs(stitchedImageBF.Width - stitchedImageFluor.Width);
             
-            if (stitchedImageBF.Height < stitchedImageEGFP.Height)
+            if (stitchedImageBF.Height < stitchedImageFluor.Height)
             {
                 CvInvoke.CopyMakeBorder(stitchedImageBF, stitchedImageBF, (int)Math.Ceiling(rowsToPad/2), (int)Math.Floor(rowsToPad/2), 0, 0, Emgu.CV.CvEnum.BorderType.Constant, new MCvScalar(0));
             }   
-            else if (stitchedImageBF.Height > stitchedImageEGFP.Height)
+            else if (stitchedImageBF.Height > stitchedImageFluor.Height)
             {
-                CvInvoke.CopyMakeBorder(stitchedImageEGFP, stitchedImageEGFP, (int)Math.Ceiling(rowsToPad/2), (int)Math.Floor(rowsToPad / 2), 0, 0, Emgu.CV.CvEnum.BorderType.Constant, new MCvScalar(0));
+                CvInvoke.CopyMakeBorder(stitchedImageFluor, stitchedImageFluor, (int)Math.Ceiling(rowsToPad/2), (int)Math.Floor(rowsToPad / 2), 0, 0, Emgu.CV.CvEnum.BorderType.Constant, new MCvScalar(0));
             }
 
-            if (stitchedImageBF.Width < stitchedImageEGFP.Width)
+            if (stitchedImageBF.Width < stitchedImageFluor.Width)
             {
                 CvInvoke.CopyMakeBorder(stitchedImageBF, stitchedImageBF, 0, 0, (int)Math.Ceiling(colsToPad / 2), (int)Math.Floor(colsToPad / 2), Emgu.CV.CvEnum.BorderType.Constant, new MCvScalar(0));
             }
-            else if (stitchedImageBF.Width > stitchedImageEGFP.Width)
+            else if (stitchedImageBF.Width > stitchedImageFluor.Width)
             {
-                CvInvoke.CopyMakeBorder(stitchedImageEGFP, stitchedImageEGFP, 0, 0, (int)Math.Ceiling(colsToPad / 2), (int)Math.Floor(colsToPad / 2), Emgu.CV.CvEnum.BorderType.Constant, new MCvScalar(0));
+                CvInvoke.CopyMakeBorder(stitchedImageFluor, stitchedImageFluor, 0, 0, (int)Math.Ceiling(colsToPad / 2), (int)Math.Floor(colsToPad / 2), Emgu.CV.CvEnum.BorderType.Constant, new MCvScalar(0));
             }
             
             //Register the EGFP image to the BF image
@@ -1788,7 +1789,7 @@ namespace Gelation_Cloning_Control
         {
             try
             {
-                Image<Gray, Byte> imageEGFP = stitchedImageEGFP.ToImage<Gray, Byte>();
+                Image<Gray, Byte> imageEGFP = stitchedImageFluor.ToImage<Gray, Byte>();
 
                 //Adaptive threshold 
                 int windowSize = 9;
@@ -2044,18 +2045,146 @@ namespace Gelation_Cloning_Control
         }
 
 
-        //Process the image in the picturebox.
-        //INPUT: Flourescent Image? Or multichannel
-        //RETURN: list of (X,Y) locations of the centroids of the colonies to be targetted
-        //Other things that could be returned: Number of cells? or should that be a different button all together
-        private void btnProcessImage_Click(object sender, RoutedEventArgs e)
+        //Detect the fluorescent cells in stitchedImageFluor
+        private void btnDetectCellsFluor_Click(object sender, RoutedEventArgs e)
         {
+            Image<Gray, Byte> imageFluor = stitchedImageFluor.ToImage<Gray, Byte>();
+            //Threshold
+            int userThreshold;
+            if (int.TryParse(textBoxFluorThreshold.Text, out userThreshold))
+            {
+                Emgu.CV.Structure.Gray threshold = new Emgu.CV.Structure.Gray(userThreshold);
+                Emgu.CV.Structure.Gray maxIntensity = new Emgu.CV.Structure.Gray(255);
+                Image<Gray, Byte> imageThreshold = imageFluor.ThresholdBinary(threshold, maxIntensity);
+                ImageViewer.Show(imageThreshold, "image after threshold");
+
+                //Remove small areas using opening/closing morphological methods
+                Mat se1 = Emgu.CV.CvInvoke.GetStructuringElement(Emgu.CV.CvEnum.ElementShape.Rectangle, new System.Drawing.Size(9, 9), new System.Drawing.Point(-1, 1));
+                Mat se2 = Emgu.CV.CvInvoke.GetStructuringElement(Emgu.CV.CvEnum.ElementShape.Rectangle, new System.Drawing.Size(5, 5), new System.Drawing.Point(-1, 1));
+
+                Mat morphologyMat = new Mat();
+                Emgu.CV.CvInvoke.MorphologyEx(imageThreshold, morphologyMat, Emgu.CV.CvEnum.MorphOp.Close, se1, new System.Drawing.Point(-1, 1), 1, Emgu.CV.CvEnum.BorderType.Default, new MCvScalar(1));
+                Emgu.CV.CvInvoke.MorphologyEx(morphologyMat, morphologyMat, Emgu.CV.CvEnum.MorphOp.Open, se2, new System.Drawing.Point(-1, 1), 1, Emgu.CV.CvEnum.BorderType.Default, new MCvScalar(1));
+
+                Image<Gray, Byte> morphologyImage = morphologyMat.ToImage<Gray, Byte>();
+                ImageViewer.Show(morphologyImage, "after morphology");
+
+                VectorOfVectorOfPoint contours = new VectorOfVectorOfPoint();
+                Mat hiearchy = new Mat();
+                
+                Emgu.CV.CvInvoke.FindContours(morphologyImage, contours, hiearchy, Emgu.CV.CvEnum.RetrType.List, Emgu.CV.CvEnum.ChainApproxMethod.ChainApproxNone);
+
+                Console.WriteLine("Number of contours detected: " + contours.Size);
+
+                List<CellColony> fluorCells = new List<CellColony>();
+
+
+                for (int i = 0; i < contours.Size; i++)
+                {
+                    double cellArea = CvInvoke.ContourArea(contours[i], false);
+                    MCvMoments moment = CvInvoke.Moments(contours[i]);
+                    int centroidX, centroidY;
+                    if (moment.M00 != 0)
+                    {
+                        centroidX = Convert.ToInt32(Math.Round(moment.M10 / moment.M00));
+                        centroidY = Convert.ToInt32(Math.Round(moment.M01 / moment.M00));
+                    }
+                    else
+                    {
+                        break;
+                    }
+
+                    System.Drawing.Point centroid = new System.Drawing.Point(centroidX, centroidY);
+                    CircleF centroidVisual = new CircleF(centroid, 2);
+                    //imageOverlayContours.Draw(centroidVisual, centroidColor, 1);
+
+                    //Get bounding box of each contour
+                    System.Drawing.Rectangle boundingRectangle = CvInvoke.BoundingRectangle(contours[i]);
+                    int inflateWidth = (int)Math.Round((double)boundingRectangle.Width * 1.0);
+                    int inflateHeight = (int)Math.Round((double)boundingRectangle.Height * 1.0);
+                    boundingRectangle.Inflate(inflateWidth, inflateHeight);
+                    //Make sure the bounding rectangle is within the dimensions of the image
+                    if (boundingRectangle.X + boundingRectangle.Width > stitchedImageBF.Width)
+                    {
+                        boundingRectangle.Width = stitchedImageBF.Width - boundingRectangle.X;
+                    }
+                    else if (boundingRectangle.X < 0)
+                    {
+                        boundingRectangle.X = 0;
+                    }
+                    if (boundingRectangle.Y + boundingRectangle.Height > stitchedImageBF.Height)
+                    {
+                        boundingRectangle.Height = stitchedImageBF.Height - boundingRectangle.Y;
+                    }
+                    else if (boundingRectangle.Y < 0)
+                    {
+                        boundingRectangle.Y = 0;
+                    }
+
+                    fluorCells.Add(new CellColony(cellArea, centroid, boundingRectangle, 0));
+                }
+
+                int minimumArea = 75;
+                int maxArea = 5000;
+                //Remove small and large areas
+                for (int i = fluorCells.Count - 1; i >= 0; i--)
+                {
+                    if (fluorCells[i].Area < minimumArea || fluorCells[i].Area > maxArea)
+                    {
+                        fluorCells.RemoveAt(i);
+                    }
+                }
+
+                //Draw contours on image to visualize
+                Gray centroidColor = new Gray(0);
+                Image<Gray, Byte> imageSmallAreasRemoved = imageThreshold;
+                foreach (CellColony cell in fluorCells)
+                {
+                    CircleF centroid = new CircleF(cell.Centroid, 2);
+                    imageSmallAreasRemoved.Draw(centroid, centroidColor, 1);
+                    //Add centroid to the list of target cells for laser. Need to convert from pixel location to stage units depending where the well is (found during stitching)
+                    int targetXuM = stitchedX1 - (int)(((double)cell.Centroid.X / (double)imageThreshold.Width) * (double)(stitchedX1 - stitchedX2));
+                    int targetYuM = stitchedY1 - (int)(((double)cell.Centroid.Y / (double)imageThreshold.Height) * (double)(stitchedY1 - stitchedY2));
+                    targetCells.Add(new PointF(targetXuM, targetYuM));
+                    Console.WriteLine("X: " + cell.Centroid.X + " Y: " + cell.Centroid.Y);
+                    //imageSmallAreasRemoved.Draw(cell.BoundingBox, centroidColor, 1);
+                }
+                
+
+                ImageViewer.Show(imageSmallAreasRemoved, "Contour drawn and overlaid on original image");
+
+                btnGenerateTarget.IsEnabled = true;
+            }
+            else
+            {
+                
+            }
+
+
+
 
         }
 
-        //After the scanned/stitched image is loaded back into program, generate the points which will be scanned
+        //Edit the cell centroid target locations in targetCells using the info gathered from the scan of the image
         private void btnGenerateTarget_Click(object sender, RoutedEventArgs e)
         {
+            foreach (PointF targetCell in targetCells)
+            {
+                //convert from pixel location to micrometers
+                //double targetX = targetCell.X / 0.04;
+                //double targetY = targetCell.Y / 0.04;
+                int targetX = (int)targetCell.X;
+                int targetY = (int)targetCell.Y;
+
+                targetX = targetX + offsetX;
+                targetY = targetY + offsetY;
+
+                //Add converted target cells to list box
+                ListBoxItem targetPoint = new ListBoxItem();
+                targetPoint.Content = targetX + "," + targetY;
+                listBoxLaserScanPoints.Items.Add(targetPoint);
+            }
+                    
              
         }
         #endregion
