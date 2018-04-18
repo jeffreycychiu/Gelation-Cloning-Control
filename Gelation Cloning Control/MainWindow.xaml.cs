@@ -489,13 +489,13 @@ namespace Gelation_Cloning_Control
                     case "4X Nikon":
                         break;
                     case "10X Nikon":
-                        //Conversions: (X: 1pixel=0.5um) , (Y: 1pixel=0.493827um). Conversions from hemocytometer calibration
-                        offsetXMicron = (mouseX - (pictureWidth / 2)) * 0.5;
-                        offsetYMicron = (mouseY - (pictureHeight / 2)) * 0.493827;
-
+                        //Conversions: (X: 1pixel=0.5um) , (Y: 1pixel=0.493827um). Conversions from hemocytometer calibration. Reminder: X axis (right is +'ve, left is -'ve) Y axis: (up is +'ve, down is -'ve)
+                        offsetXMicron = (((double)pictureWidth / 2) - mouseX) * 0.5;
+                        offsetYMicron = (((double)pictureHeight / 2) - mouseY) * 0.493827;
                         //Convert to stage units. 1 stage unit = 0.04um for prior stage
                         offsetX = Convert.ToInt32(offsetXMicron / 0.04);
                         offsetY = Convert.ToInt32(offsetYMicron / 0.04);
+
 
                         MessageBox.Show("New Offsets Set. X: " + offsetX.ToString() + " ; Y: " + offsetY.ToString());
 
@@ -619,13 +619,10 @@ namespace Gelation_Cloning_Control
             //Move laser to each point and shoot
             foreach (int[] location in scanPoints)
             {
-                //Change this after we get the offsets to be user entered.
-                int xOffset = 0;
-                int yOffset = 0;
 
                 //Add X and Y offset for where the laser is centered.
-                int xPos = location[0] + xOffset;
-                int yPos = location[1] + yOffset;
+                int xPos = location[0] + offsetX;
+                int yPos = location[1] + offsetY;
                 
                 //move stage to location
                 serialPortMicroscopeStageSend("G," + xPos.ToString() + "," + yPos.ToString());
@@ -2059,7 +2056,7 @@ namespace Gelation_Cloning_Control
                 ImageViewer.Show(imageThreshold, "image after threshold");
 
                 //Remove small areas using opening/closing morphological methods
-                Mat se1 = Emgu.CV.CvInvoke.GetStructuringElement(Emgu.CV.CvEnum.ElementShape.Rectangle, new System.Drawing.Size(9, 9), new System.Drawing.Point(-1, 1));
+                Mat se1 = Emgu.CV.CvInvoke.GetStructuringElement(Emgu.CV.CvEnum.ElementShape.Rectangle, new System.Drawing.Size(7, 7), new System.Drawing.Point(-1, 1));
                 Mat se2 = Emgu.CV.CvInvoke.GetStructuringElement(Emgu.CV.CvEnum.ElementShape.Rectangle, new System.Drawing.Size(5, 5), new System.Drawing.Point(-1, 1));
 
                 Mat morphologyMat = new Mat();
@@ -2068,6 +2065,9 @@ namespace Gelation_Cloning_Control
 
                 Image<Gray, Byte> morphologyImage = morphologyMat.ToImage<Gray, Byte>();
                 ImageViewer.Show(morphologyImage, "after morphology");
+
+                Image<Gray, Byte> imageOverlayMask = imageFluor.Add(morphologyImage);
+                ImageViewer.Show(imageOverlayMask, "mask added to original image");
 
                 VectorOfVectorOfPoint contours = new VectorOfVectorOfPoint();
                 Mat hiearchy = new Mat();
@@ -2095,8 +2095,6 @@ namespace Gelation_Cloning_Control
                     }
 
                     System.Drawing.Point centroid = new System.Drawing.Point(centroidX, centroidY);
-                    CircleF centroidVisual = new CircleF(centroid, 2);
-                    //imageOverlayContours.Draw(centroidVisual, centroidColor, 1);
 
                     //Get bounding box of each contour
                     System.Drawing.Rectangle boundingRectangle = CvInvoke.BoundingRectangle(contours[i]);
@@ -2124,7 +2122,7 @@ namespace Gelation_Cloning_Control
                     fluorCells.Add(new CellColony(cellArea, centroid, boundingRectangle, 0));
                 }
 
-                int minimumArea = 75;
+                int minimumArea = 20;
                 int maxArea = 5000;
                 //Remove small and large areas
                 for (int i = fluorCells.Count - 1; i >= 0; i--)
@@ -2135,8 +2133,10 @@ namespace Gelation_Cloning_Control
                     }
                 }
 
+                Console.WriteLine("Number of cells after small/large area removal: " + fluorCells.Count());
+
                 //Draw contours on image to visualize
-                Gray centroidColor = new Gray(0);
+                Gray centroidColor = new Gray(128);
                 Image<Gray, Byte> imageSmallAreasRemoved = imageThreshold;
                 foreach (CellColony cell in fluorCells)
                 {
@@ -2176,8 +2176,9 @@ namespace Gelation_Cloning_Control
                 int targetX = (int)targetCell.X;
                 int targetY = (int)targetCell.Y;
 
-                targetX = targetX + offsetX;
-                targetY = targetY + offsetY;
+                //No need to add offset because when it goes from the listbox -> stage the offset is added there
+                //targetX = targetX + offsetX;
+                //targetY = targetY + offsetY;
 
                 //Add converted target cells to list box
                 ListBoxItem targetPoint = new ListBoxItem();
