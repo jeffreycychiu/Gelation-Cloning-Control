@@ -270,11 +270,11 @@ namespace Gelation_Cloning_Control
 
 
             //Write position of X1,Y1,Z1, and X2,Y2,Z2
-            Console.WriteLine("ScanStagePosition:");
-            foreach (int num in scanStagePosition)
-            {
-                Console.WriteLine(num);
-            }
+            //Console.WriteLine("ScanStagePosition:");
+            //foreach (int num in scanStagePosition)
+            //{
+            //    Console.WriteLine(num);
+            //}
 
             textBoxX1.Text = stitchedX1.ToString();
             textBoxY1.Text = stitchedY1.ToString();
@@ -296,11 +296,11 @@ namespace Gelation_Cloning_Control
                 delayTime = (exposureTime * exposureTimeBase / 1000);
                 if (delayTime < 1500)
                     delayTime = 1500;
-                Console.WriteLine("delayTime: " + delayTime);
+                //Console.WriteLine("delayTime: " + delayTime);
             }
             else
             {
-                Console.WriteLine("No exposure time entered");
+                //Console.WriteLine("No exposure time entered");
                 delayTime = 1500; //time in milliseconds for camera to stay on target
             }
 
@@ -375,7 +375,7 @@ namespace Gelation_Cloning_Control
                 process.StartInfo.FileName = textBoxImageJFilePath.Text;
                 //Pass the arguments separated by commas. Use MicroscopeStitch.ijm ImageJ Macro file to configure stitching parameters
                 process.StartInfo.Arguments = "-macro MicroscopeStitch.ijm " + textBoxFieldsX.Text + "," + textBoxFieldsY.Text + "," + textBoxSaveScanImageFolderPath.Text.ToString();
-                Console.WriteLine("Arguments: " + process.StartInfo.Arguments.ToString());
+                //Console.WriteLine("Arguments: " + process.StartInfo.Arguments.ToString());
                 process.Start();
             }
                 int[] positionArray = new int[] { xPosFirst, yPosFirst, zPosFirst, xPosLast, yPosLast, zPosLast };
@@ -397,7 +397,7 @@ namespace Gelation_Cloning_Control
                 stitchedFileName = openFileDialog.FileName;
             else
                 return;
-            Console.WriteLine(stitchedFileName);
+            //Console.WriteLine(stitchedFileName);
 
             Mat stitchedImage = CvInvoke.Imread(stitchedFileName, Emgu.CV.CvEnum.LoadImageType.AnyColor);
             Mat displayStitchedImage = new Mat();
@@ -611,10 +611,10 @@ namespace Gelation_Cloning_Control
             //Sort list of (X,Y) locations by X. Will decrease the total travel time of the laser than random. Can improve this later by optimizing total path distance.
             scanPoints = scanPoints.OrderBy(arr => arr[0]).ThenBy(arr => arr[1]).ToList();  
 
-            foreach(var item in scanPoints)
-            {
-                Console.WriteLine(item[0] + "/" + item[1]);
-            }
+            //foreach(var item in scanPoints)
+            //{
+            //    Console.WriteLine(item[0] + "/" + item[1]);
+            //}
 
             //Move laser to each point and shoot
             foreach (int[] location in scanPoints)
@@ -1475,7 +1475,6 @@ namespace Gelation_Cloning_Control
         {
             int width = (int)borderPictureBox.ActualWidth;
             int height = (int)borderPictureBox.ActualHeight;
-            Console.WriteLine(width + " / " + height);
             (windowsFormsHost.Child as System.Windows.Forms.PictureBox).Size = new System.Drawing.Size(width, height);
             (windowsFormsHost.Child as System.Windows.Forms.PictureBox).SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
         }

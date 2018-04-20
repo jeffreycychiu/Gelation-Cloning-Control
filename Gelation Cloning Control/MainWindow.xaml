@@ -248,7 +248,7 @@
                 </Grid>
             </TabItem>
 
-            <TabItem Header="Scan (Man)">
+            <TabItem Header="Position">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*"/>
@@ -323,7 +323,7 @@
                 </Grid>
             </TabItem>
 
-            <TabItem Header="Scan (Auto)">
+            <TabItem Header="Image" Height="36" VerticalAlignment="Bottom">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*"/>
