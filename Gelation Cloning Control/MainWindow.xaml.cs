@@ -484,9 +484,6 @@ namespace Gelation_Cloning_Control
                 int mouseX = (int)(e.X * (imageWidth / pictureWidth));
                 int mouseY = (int)(e.Y * (imageHeight / pictureHeight));
 
-                double offsetXMicron;
-                double offsetYMicron;
-
                 //Calculate the offset based on user click position, as well as lens used for lasering
                 string laserLens = comboBoxLaserLens.Text;
 
@@ -499,16 +496,10 @@ namespace Gelation_Cloning_Control
                         MessageBox.Show("New Offsets Set. X: " + offsetX.ToString() + " ; Y: " + offsetY.ToString());
                         break;
                     case "10X Nikon":
-                        //Conversions: (X: 1pixel=0.5um) , (Y: 1pixel=0.493827um). Conversions from hemocytometer calibration. Reminder: X axis (right is +'ve, left is -'ve) Y axis: (up is +'ve, down is -'ve)
-                        offsetXMicron = (((double)pictureWidth / 2) - mouseX) * Constants.pixlesToStageX10X;
-                        offsetYMicron = (((double)pictureHeight / 2) - mouseY) * Constants.pixlesToStageY10X;
-                        //Convert to stage units. 1 stage unit = 0.04um for prior stage
-                        offsetX = Convert.ToInt32(offsetXMicron / 0.04);
-                        offsetY = Convert.ToInt32(offsetYMicron / 0.04);
-
+                        offsetX = Convert.ToInt32((mouseX - ((double)imageWidth / 2) + Constants.pixelsToStage4XTo10XConstantOffsetX) * Constants.pixelsToStage10X);
+                        offsetY = Convert.ToInt32((mouseY - ((double)imageHeight / 2) + Constants.pixelsToStage4XTo10XConstantOffsetY) * Constants.pixelsToStage10X);
 
                         MessageBox.Show("New Offsets Set. X: " + offsetX.ToString() + " ; Y: " + offsetY.ToString());
-
                         break;
                     default:    
 
@@ -2213,28 +2204,83 @@ namespace Gelation_Cloning_Control
         }
 
         //Scan and generate the points without stitching. This might work better so we don't get stitching problems
-        private void btnScanAndGenerate_Click(object sender, RoutedEventArgs e)
+        private async void btnScanAndGenerate_Click(object sender, RoutedEventArgs e)
         {
-            
-            Bitmap bitmap = (Bitmap)(windowsFormsHost.Child as System.Windows.Forms.PictureBox).Image;
+            await scanAndDetectFluorCells();
+
+            btnGenerateTarget.IsEnabled = true;
+        }
+
+        public async Task scanAndDetectFluorCells()
+        {
+            int exposureTime;
+            //default is 20us for the basler camera. The true time is exposure time * exposure time base. I think this camera is set to be absolute time in microseconds though.
+            //Think this parameter should be 4 but to be safe lets make it 10 for a longer delay between pictures
+            int exposureTimeBase = 10;
+            int delayTime;
+            if (Int32.TryParse(textBoxExposure.Text, out exposureTime))
+            {
+                delayTime = (exposureTime * exposureTimeBase / 1000);
+                if (delayTime < 1500)
+                    delayTime = 1500;
+                //Console.WriteLine("delayTime: " + delayTime);
+            }
+            else
+            {
+                //Console.WriteLine("No exposure time entered");
+                delayTime = 1500; //time in milliseconds for camera to stay on target
+            }
+
+            int xFields = int.Parse(textBoxFieldsX.Text);
+            int yFields = int.Parse(textBoxFieldsY.Text);
+            int moveStageX = Constants.moveStage4X_X;
+            int moveStageY = Constants.moveStage4X_Y;
+
+            for (int row = 0; row < yFields; row++)
+            {
+                for (int column = 0; column < xFields; column++)
+                {
+                    //Add detected cells to global list
+                    await Task.Delay(delayTime);
+                    targetCells.AddRange(detectFluorCellsThreshold((Bitmap)(windowsFormsHost.Child as System.Windows.Forms.PictureBox).Image));
+
+                    if (column < xFields - 1)
+                    {
+                        serialPortMicroscopeStageSend("GR," + moveStageX.ToString() + ",0");
+                    }
+                }
+                if (row < yFields - 1)
+                {
+                    moveStageX = -moveStageX;
+                    serialPortMicroscopeStageSend("GR,0," + moveStageY.ToString());
+                }
+            }
+
+        }
+
+        private List<PointF> detectFluorCellsThreshold(Bitmap bitmap)
+        {
+            List<PointF> detectedCells = new List<PointF>();
+
+            //bitmap = (Bitmap)(windowsFormsHost.Child as System.Windows.Forms.PictureBox).Image;
             Image<Gray, Byte> image = new Image<Gray, Byte>(bitmap);
-            
+
             int userThreshold = int.Parse(textBoxFluorThreshold.Text);
             Emgu.CV.Structure.Gray threshold = new Emgu.CV.Structure.Gray(userThreshold);
             Emgu.CV.Structure.Gray maxIntensity = new Emgu.CV.Structure.Gray(255);
             Image<Gray, Byte> imageThreshold = image.ThresholdBinary(threshold, maxIntensity);
-            ImageViewer.Show(imageThreshold, "image after threshold");
+            //ImageViewer.Show(imageThreshold, "image after threshold");
 
             //Remove small areas using opening/closing morphological methods
-            Mat se1 = Emgu.CV.CvInvoke.GetStructuringElement(Emgu.CV.CvEnum.ElementShape.Rectangle, new System.Drawing.Size(7, 7), new System.Drawing.Point(-1, 1));
-            Mat se2 = Emgu.CV.CvInvoke.GetStructuringElement(Emgu.CV.CvEnum.ElementShape.Rectangle, new System.Drawing.Size(5, 5), new System.Drawing.Point(-1, 1));
+            Mat se1 = Emgu.CV.CvInvoke.GetStructuringElement(Emgu.CV.CvEnum.ElementShape.Rectangle, new System.Drawing.Size(5, 5), new System.Drawing.Point(-1, 1));
+            Mat se2 = Emgu.CV.CvInvoke.GetStructuringElement(Emgu.CV.CvEnum.ElementShape.Rectangle, new System.Drawing.Size(3, 3), new System.Drawing.Point(-1, 1));
 
             Mat morphologyMat = new Mat();
             Emgu.CV.CvInvoke.MorphologyEx(imageThreshold, morphologyMat, Emgu.CV.CvEnum.MorphOp.Close, se1, new System.Drawing.Point(-1, 1), 1, Emgu.CV.CvEnum.BorderType.Default, new MCvScalar(1));
             Emgu.CV.CvInvoke.MorphologyEx(morphologyMat, morphologyMat, Emgu.CV.CvEnum.MorphOp.Open, se2, new System.Drawing.Point(-1, 1), 1, Emgu.CV.CvEnum.BorderType.Default, new MCvScalar(1));
 
             Image<Gray, Byte> morphologyImage = morphologyMat.ToImage<Gray, Byte>();
-            //ImageViewer.Show(morphologyImage, "after morphology");
+            //ImageViewer.Show(morphologyImage, "after morphology and threshold");
 
             Image<Gray, Byte> imageOverlayMask = image.Add(morphologyImage);
             //ImageViewer.Show(imageOverlayMask, "mask added to original image");
@@ -2292,8 +2338,8 @@ namespace Gelation_Cloning_Control
                 fluorCells.Add(new CellColony(cellArea, centroid, boundingRectangle, 0));
             }
 
-            int minimumArea = 20;
-            int maxArea = 5000;
+            int minimumArea = 5;
+            int maxArea = 1000;
             //Remove small and large areas
             for (int i = fluorCells.Count - 1; i >= 0; i--)
             {
@@ -2307,7 +2353,7 @@ namespace Gelation_Cloning_Control
 
             //Draw contours on image to visualize
             Gray centroidColor = new Gray(128);
-            Image<Gray, Byte> imageSmallAreasRemoved = imageThreshold;
+            Image<Gray, Byte> imageSmallAreasRemoved = image.Add(imageThreshold);
             foreach (CellColony cell in fluorCells)
             {
                 CircleF centroid = new CircleF(cell.Centroid, 2);
@@ -2315,13 +2361,17 @@ namespace Gelation_Cloning_Control
                 //Add centroid to the list of target cells for laser. To convert from 4X pixels -> stage units, use 30.535 multiplier
                 double targetXStage = Math.Round(double.Parse(textBoxXPosition.Text) - ((cell.Centroid.X - (double)image.Width / 2) * Constants.pixelsToStage4X));
                 double targetYStage = Math.Round(double.Parse(textBoxYPosition.Text) - ((cell.Centroid.Y - (double)image.Height / 2) * Constants.pixelsToStage4X));
-                targetCells.Add(new PointF((int)targetXStage, (int)targetYStage));
+                detectedCells.Add(new PointF((int)targetXStage, (int)targetYStage));
                 Console.WriteLine("X: " + cell.Centroid.X + " Y: " + cell.Centroid.Y);
                 //imageSmallAreasRemoved.Draw(cell.BoundingBox, centroidColor, 1);
             }
 
-            ImageViewer.Show(imageSmallAreasRemoved, "Contour drawn and overlaid on original image");
-            btnGenerateTarget.IsEnabled = true;
+            ImageViewer.Show(imageSmallAreasRemoved, "Centroid drawn and overlaid on original image");
+
+            image.Dispose();
+            bitmap.Dispose();
+
+            return detectedCells;
         }
 
 
