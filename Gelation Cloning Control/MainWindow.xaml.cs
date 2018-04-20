@@ -2205,8 +2205,117 @@ namespace Gelation_Cloning_Control
         //Scan and generate the points without stitching. This might work better so we don't get stitching problems
         private void btnScanAndGenerate_Click(object sender, RoutedEventArgs e)
         {
+            
+            Bitmap bitmap = (Bitmap)(windowsFormsHost.Child as System.Windows.Forms.PictureBox).Image;
+            Image<Gray, Byte> image = new Image<Gray, Byte>(bitmap);
+            
+            int userThreshold = int.Parse(textBoxFluorThreshold.Text);
+            Emgu.CV.Structure.Gray threshold = new Emgu.CV.Structure.Gray(userThreshold);
+            Emgu.CV.Structure.Gray maxIntensity = new Emgu.CV.Structure.Gray(255);
+            Image<Gray, Byte> imageThreshold = image.ThresholdBinary(threshold, maxIntensity);
+            ImageViewer.Show(imageThreshold, "image after threshold");
 
+            //Remove small areas using opening/closing morphological methods
+            Mat se1 = Emgu.CV.CvInvoke.GetStructuringElement(Emgu.CV.CvEnum.ElementShape.Rectangle, new System.Drawing.Size(7, 7), new System.Drawing.Point(-1, 1));
+            Mat se2 = Emgu.CV.CvInvoke.GetStructuringElement(Emgu.CV.CvEnum.ElementShape.Rectangle, new System.Drawing.Size(5, 5), new System.Drawing.Point(-1, 1));
+
+            Mat morphologyMat = new Mat();
+            Emgu.CV.CvInvoke.MorphologyEx(imageThreshold, morphologyMat, Emgu.CV.CvEnum.MorphOp.Close, se1, new System.Drawing.Point(-1, 1), 1, Emgu.CV.CvEnum.BorderType.Default, new MCvScalar(1));
+            Emgu.CV.CvInvoke.MorphologyEx(morphologyMat, morphologyMat, Emgu.CV.CvEnum.MorphOp.Open, se2, new System.Drawing.Point(-1, 1), 1, Emgu.CV.CvEnum.BorderType.Default, new MCvScalar(1));
+
+            Image<Gray, Byte> morphologyImage = morphologyMat.ToImage<Gray, Byte>();
+            ImageViewer.Show(morphologyImage, "after morphology");
+
+            Image<Gray, Byte> imageOverlayMask = image.Add(morphologyImage);
+            ImageViewer.Show(imageOverlayMask, "mask added to original image");
+
+            VectorOfVectorOfPoint contours = new VectorOfVectorOfPoint();
+            Mat hiearchy = new Mat();
+
+            Emgu.CV.CvInvoke.FindContours(morphologyImage, contours, hiearchy, Emgu.CV.CvEnum.RetrType.List, Emgu.CV.CvEnum.ChainApproxMethod.ChainApproxNone);
+
+            Console.WriteLine("Number of contours detected: " + contours.Size);
+
+            List<CellColony> fluorCells = new List<CellColony>();
+
+
+            for (int i = 0; i < contours.Size; i++)
+            {
+                double cellArea = CvInvoke.ContourArea(contours[i], false);
+                MCvMoments moment = CvInvoke.Moments(contours[i]);
+                int centroidX, centroidY;
+                if (moment.M00 != 0)
+                {
+                    centroidX = Convert.ToInt32(Math.Round(moment.M10 / moment.M00));
+                    centroidY = Convert.ToInt32(Math.Round(moment.M01 / moment.M00));
+                }
+                else
+                {
+                    break;
+                }
+
+                System.Drawing.Point centroid = new System.Drawing.Point(centroidX, centroidY);
+
+                //Get bounding box of each contour
+                System.Drawing.Rectangle boundingRectangle = CvInvoke.BoundingRectangle(contours[i]);
+                int inflateWidth = (int)Math.Round((double)boundingRectangle.Width * 1.0);
+                int inflateHeight = (int)Math.Round((double)boundingRectangle.Height * 1.0);
+                boundingRectangle.Inflate(inflateWidth, inflateHeight);
+                //Make sure the bounding rectangle is within the dimensions of the image
+                if (boundingRectangle.X + boundingRectangle.Width > stitchedImageBF.Width)
+                {
+                    boundingRectangle.Width = stitchedImageBF.Width - boundingRectangle.X;
+                }
+                else if (boundingRectangle.X < 0)
+                {
+                    boundingRectangle.X = 0;
+                }
+                if (boundingRectangle.Y + boundingRectangle.Height > stitchedImageBF.Height)
+                {
+                    boundingRectangle.Height = stitchedImageBF.Height - boundingRectangle.Y;
+                }
+                else if (boundingRectangle.Y < 0)
+                {
+                    boundingRectangle.Y = 0;
+                }
+
+                fluorCells.Add(new CellColony(cellArea, centroid, boundingRectangle, 0));
+            }
+
+            int minimumArea = 20;
+            int maxArea = 5000;
+            //Remove small and large areas
+            for (int i = fluorCells.Count - 1; i >= 0; i--)
+            {
+                if (fluorCells[i].Area < minimumArea || fluorCells[i].Area > maxArea)
+                {
+                    fluorCells.RemoveAt(i);
+                }
+            }
+
+            Console.WriteLine("Number of cells after small/large area removal: " + fluorCells.Count());
+
+            //Draw contours on image to visualize
+            Gray centroidColor = new Gray(128);
+            Image<Gray, Byte> imageSmallAreasRemoved = imageThreshold;
+            foreach (CellColony cell in fluorCells)
+            {
+                CircleF centroid = new CircleF(cell.Centroid, 2);
+                imageSmallAreasRemoved.Draw(centroid, centroidColor, 1);
+                //Add centroid to the list of target cells for laser. To convert from 4X pixels -> stage units, use 30.535 multiplier
+                double stageConversion4X = 30.535;
+                double targetXuM = Math.Round(double.Parse(textBoxXPosition.Text) - ((cell.Centroid.X - (double)image.Width / 2) * stageConversion4X));
+                double targetYuM = Math.Round(double.Parse(textBoxYPosition.Text) - ((cell.Centroid.Y - (double)image.Height / 2) * stageConversion4X));
+                targetCells.Add(new PointF((int)targetXuM, (int)targetYuM));
+                Console.WriteLine("X: " + cell.Centroid.X + " Y: " + cell.Centroid.Y);
+                //imageSmallAreasRemoved.Draw(cell.BoundingBox, centroidColor, 1);
+            }
+
+            ImageViewer.Show(imageSmallAreasRemoved, "Contour drawn and overlaid on original image");
+            btnGenerateTarget.IsEnabled = true;
         }
+
+
 
         #endregion
 
