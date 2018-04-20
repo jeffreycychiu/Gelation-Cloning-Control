@@ -609,7 +609,7 @@ namespace Gelation_Cloning_Control
             }
 
             //Sort list of (X,Y) locations by X. Will decrease the total travel time of the laser than random. Can improve this later by optimizing total path distance.
-            scanPoints = scanPoints.OrderBy(arr => arr[0]).ThenBy(arr => arr[1]).ToList();  
+            scanPoints = scanPoints.OrderByDescending(arr => arr[0]).ThenByDescending(arr => arr[1]).ToList();  
 
             //foreach(var item in scanPoints)
             //{
