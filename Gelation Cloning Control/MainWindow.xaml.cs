@@ -1202,8 +1202,18 @@ namespace Gelation_Cloning_Control
 
                         // Provide the display control with the new bitmap. This action automatically updates the display.
                         (windowsFormsHost.Child as System.Windows.Forms.PictureBox).Image = bitmap;
-                        
-                        if(bitmapOld != null)
+
+                        if (checkBoxShowCrosshair.IsChecked == true)
+                        {
+                            Graphics addCrosshair;
+                            addCrosshair = Graphics.FromImage(bitmap);
+                            System.Drawing.Pen crossHairPen = new System.Drawing.Pen(System.Drawing.Brushes.Red);
+                            addCrosshair.DrawLine(crossHairPen, bitmap.Width / 2, bitmap.Height / 2 - 25, bitmap.Width/2, bitmap.Height / 2 + 25);
+                            addCrosshair.DrawLine(crossHairPen, (bitmap.Width / 2 - 25), bitmap.Height / 2, bitmap.Width / 2 + 25, bitmap.Height / 2);
+                            addCrosshair.Dispose();
+                        }
+
+                        if (bitmapOld != null)
                         {
                             // Dispose the bitmap.
                             bitmapOld.Dispose();
@@ -2167,6 +2177,10 @@ namespace Gelation_Cloning_Control
         //Edit the cell centroid target locations in targetCells using the info gathered from the scan of the image
         private void btnGenerateTarget_Click(object sender, RoutedEventArgs e)
         {
+            //scanPoints = scanPoints.OrderByDescending(arr => arr[0]).ThenByDescending(arr => arr[1]).ToList();
+
+            targetCells = targetCells.OrderByDescending(x => x.X).ThenByDescending(y => y.Y).ToList();
+
             foreach (PointF targetCell in targetCells)
             {
                 //convert from pixel location to micrometers
@@ -2187,6 +2201,13 @@ namespace Gelation_Cloning_Control
                     
              
         }
+
+        //Scan and generate the points without stitching. This might work better so we don't get stitching problems
+        private void btnScanAndGenerate_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
         #endregion
 
         #region Serial Event Handlers
@@ -2367,6 +2388,7 @@ namespace Gelation_Cloning_Control
 
             return stageConversion;
         }
+
 
 
 
