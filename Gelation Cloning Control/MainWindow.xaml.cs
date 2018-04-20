@@ -30,6 +30,8 @@ using Emgu.CV.Stitching;
 using Emgu.CV.Util;
 using Emgu.CV.UI;
 
+
+
 namespace Gelation_Cloning_Control
 {
     /// <summary>
@@ -472,11 +474,15 @@ namespace Gelation_Cloning_Control
         {
             if (offsetFlag == true)
             {
-                int mouseX = e.X;
-                int mouseY = e.Y;
 
-                int pictureWidth = (windowsFormsHost.Child as System.Windows.Forms.PictureBox).Width;
-                int pictureHeight = (windowsFormsHost.Child as System.Windows.Forms.PictureBox).Height;
+
+                double pictureWidth = (windowsFormsHost.Child as System.Windows.Forms.PictureBox).Width;
+                double pictureHeight = (windowsFormsHost.Child as System.Windows.Forms.PictureBox).Height;
+                double imageWidth = (windowsFormsHost.Child as System.Windows.Forms.PictureBox).Image.Width;
+                double imageHeight = (windowsFormsHost.Child as System.Windows.Forms.PictureBox).Image.Height;
+
+                int mouseX = (int)(e.X * (imageWidth / pictureWidth));
+                int mouseY = (int)(e.Y * (imageHeight / pictureHeight));
 
                 double offsetXMicron;
                 double offsetYMicron;
@@ -487,11 +493,15 @@ namespace Gelation_Cloning_Control
                 switch(laserLens)
                 {
                     case "4X Nikon":
+                        offsetX = Convert.ToInt32((mouseX - ((double)imageWidth / 2)) * Constants.pixelsToStage4X);
+                        offsetY = Convert.ToInt32((mouseY - ((double)imageHeight / 2)) * Constants.pixelsToStage4X);
+
+                        MessageBox.Show("New Offsets Set. X: " + offsetX.ToString() + " ; Y: " + offsetY.ToString());
                         break;
                     case "10X Nikon":
                         //Conversions: (X: 1pixel=0.5um) , (Y: 1pixel=0.493827um). Conversions from hemocytometer calibration. Reminder: X axis (right is +'ve, left is -'ve) Y axis: (up is +'ve, down is -'ve)
-                        offsetXMicron = (((double)pictureWidth / 2) - mouseX) * 0.5;
-                        offsetYMicron = (((double)pictureHeight / 2) - mouseY) * 0.493827;
+                        offsetXMicron = (((double)pictureWidth / 2) - mouseX) * Constants.pixlesToStageX10X;
+                        offsetYMicron = (((double)pictureHeight / 2) - mouseY) * Constants.pixlesToStageY10X;
                         //Convert to stage units. 1 stage unit = 0.04um for prior stage
                         offsetX = Convert.ToInt32(offsetXMicron / 0.04);
                         offsetY = Convert.ToInt32(offsetYMicron / 0.04);
@@ -2224,10 +2234,10 @@ namespace Gelation_Cloning_Control
             Emgu.CV.CvInvoke.MorphologyEx(morphologyMat, morphologyMat, Emgu.CV.CvEnum.MorphOp.Open, se2, new System.Drawing.Point(-1, 1), 1, Emgu.CV.CvEnum.BorderType.Default, new MCvScalar(1));
 
             Image<Gray, Byte> morphologyImage = morphologyMat.ToImage<Gray, Byte>();
-            ImageViewer.Show(morphologyImage, "after morphology");
+            //ImageViewer.Show(morphologyImage, "after morphology");
 
             Image<Gray, Byte> imageOverlayMask = image.Add(morphologyImage);
-            ImageViewer.Show(imageOverlayMask, "mask added to original image");
+            //ImageViewer.Show(imageOverlayMask, "mask added to original image");
 
             VectorOfVectorOfPoint contours = new VectorOfVectorOfPoint();
             Mat hiearchy = new Mat();
@@ -2303,10 +2313,9 @@ namespace Gelation_Cloning_Control
                 CircleF centroid = new CircleF(cell.Centroid, 2);
                 imageSmallAreasRemoved.Draw(centroid, centroidColor, 1);
                 //Add centroid to the list of target cells for laser. To convert from 4X pixels -> stage units, use 30.535 multiplier
-                double stageConversion4X = 30.535;
-                double targetXuM = Math.Round(double.Parse(textBoxXPosition.Text) - ((cell.Centroid.X - (double)image.Width / 2) * stageConversion4X));
-                double targetYuM = Math.Round(double.Parse(textBoxYPosition.Text) - ((cell.Centroid.Y - (double)image.Height / 2) * stageConversion4X));
-                targetCells.Add(new PointF((int)targetXuM, (int)targetYuM));
+                double targetXStage = Math.Round(double.Parse(textBoxXPosition.Text) - ((cell.Centroid.X - (double)image.Width / 2) * Constants.pixelsToStage4X));
+                double targetYStage = Math.Round(double.Parse(textBoxYPosition.Text) - ((cell.Centroid.Y - (double)image.Height / 2) * Constants.pixelsToStage4X));
+                targetCells.Add(new PointF((int)targetXStage, (int)targetYStage));
                 Console.WriteLine("X: " + cell.Centroid.X + " Y: " + cell.Centroid.Y);
                 //imageSmallAreasRemoved.Draw(cell.BoundingBox, centroidColor, 1);
             }
