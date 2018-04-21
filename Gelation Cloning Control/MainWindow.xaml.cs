@@ -2241,6 +2241,7 @@ namespace Gelation_Cloning_Control
             int yFields = int.Parse(textBoxFieldsY.Text);
             int moveStageX = Constants.moveStage4X_X;
             int moveStageY = Constants.moveStage4X_Y;
+            List<PointF> targetCellsTemp = new List<PointF>();
 
             for (int row = 0; row < yFields; row++)
             {
@@ -2248,7 +2249,7 @@ namespace Gelation_Cloning_Control
                 {
                     //Add detected cells to global list
                     await Task.Delay(delayTime);
-                    targetCells.AddRange(detectFluorCellsThreshold((Bitmap)(windowsFormsHost.Child as System.Windows.Forms.PictureBox).Image, false));
+                    targetCellsTemp.AddRange(detectFluorCellsThreshold((Bitmap)(windowsFormsHost.Child as System.Windows.Forms.PictureBox).Image, false));
 
                     if (column < xFields - 1)
                     {
@@ -2261,6 +2262,8 @@ namespace Gelation_Cloning_Control
                     serialPortMicroscopeStageSend("GR,0," + moveStageY.ToString());
                 }
             }
+
+            targetCells = targetCellsTemp;
 
             //return to origin location. If yFields is even then there is no need to move in x direction
             await Task.Delay(delayTime);
