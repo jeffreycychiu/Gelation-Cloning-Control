@@ -2178,22 +2178,7 @@ namespace Gelation_Cloning_Control
         //Edit the cell centroid target locations in targetCells using the info gathered from the scan of the image
         private void btnGenerateTarget_Click(object sender, RoutedEventArgs e)
         {
-            //scanPoints = scanPoints.OrderByDescending(arr => arr[0]).ThenByDescending(arr => arr[1]).ToList();
-
             targetCells = targetCells.OrderByDescending(x => x.X).ThenByDescending(y => y.Y).ToList();
-
-            //foreach (PointF targetCell in targetCells)
-            //{
-
-            //    int targetX = (int)targetCell.X;
-            //    int targetY = (int)targetCell.Y;
-
-            //    //No need to add offset because when it goes from the listbox -> stage the offset is added there
-
-            //    ListBoxItem targetPoint = new ListBoxItem();
-            //    targetPoint.Content = targetX + "," + targetY;
-            //    listBoxLaserScanPoints.Items.Add(targetPoint);
-            //}
 
             //Add converted target cells to list box. Do not add if there is a spot within a 100*0.04 = 4um box
             for (int i = 0; i < targetCells.Count(); i++)
@@ -2236,8 +2221,8 @@ namespace Gelation_Cloning_Control
         {
             int exposureTime;
             //default is 20us for the basler camera. The true time is exposure time * exposure time base. I think this camera is set to be absolute time in microseconds though.
-            //Think this parameter should be 4 but to be safe lets make it 8 for a longer delay between pictures
-            int exposureTimeBase = 8;
+            //Think this parameter should be 4 but to be safe lets make it 6 for a longer delay between pictures
+            int exposureTimeBase = 6;
             int delayTime;
             if (Int32.TryParse(textBoxExposure.Text, out exposureTime))
             {
@@ -2289,8 +2274,7 @@ namespace Gelation_Cloning_Control
         private List<PointF> detectFluorCellsThreshold(Bitmap bitmap, bool showImage)
         {
             List<PointF> detectedCells = new List<PointF>();
-
-            //bitmap = (Bitmap)(windowsFormsHost.Child as System.Windows.Forms.PictureBox).Image;
+            
             Image<Gray, Byte> image = new Image<Gray, Byte>(bitmap);
 
             int userThreshold = int.Parse(textBoxFluorThreshold.Text);
@@ -2342,35 +2326,37 @@ namespace Gelation_Cloning_Control
 
                 //Get bounding box of each contour
                 System.Drawing.Rectangle boundingRectangle = CvInvoke.BoundingRectangle(contours[i]);
-                int inflateWidth = (int)Math.Round((double)boundingRectangle.Width * 1.0);
-                int inflateHeight = (int)Math.Round((double)boundingRectangle.Height * 1.0);
-                boundingRectangle.Inflate(inflateWidth, inflateHeight);
-                //Make sure the bounding rectangle is within the dimensions of the image
-                if (boundingRectangle.X + boundingRectangle.Width > stitchedImageBF.Width)
-                {
-                    boundingRectangle.Width = stitchedImageBF.Width - boundingRectangle.X;
-                }
-                else if (boundingRectangle.X < 0)
-                {
-                    boundingRectangle.X = 0;
-                }
-                if (boundingRectangle.Y + boundingRectangle.Height > stitchedImageBF.Height)
-                {
-                    boundingRectangle.Height = stitchedImageBF.Height - boundingRectangle.Y;
-                }
-                else if (boundingRectangle.Y < 0)
-                {
-                    boundingRectangle.Y = 0;
-                }
+
+                //int inflateWidth = (int)Math.Round((double)boundingRectangle.Width * 1.0);
+                //int inflateHeight = (int)Math.Round((double)boundingRectangle.Height * 1.0);
+                //boundingRectangle.Inflate(inflateWidth, inflateHeight);
+                ////Make sure the bounding rectangle is within the dimensions of the image
+                //if (boundingRectangle.X + boundingRectangle.Width > stitchedImageBF.Width)
+                //{
+                //    boundingRectangle.Width = stitchedImageBF.Width - boundingRectangle.X;
+                //}
+                //else if (boundingRectangle.X < 0)
+                //{
+                //    boundingRectangle.X = 0;
+                //}
+                //if (boundingRectangle.Y + boundingRectangle.Height > stitchedImageBF.Height)
+                //{
+                //    boundingRectangle.Height = stitchedImageBF.Height - boundingRectangle.Y;
+                //}
+                //else if (boundingRectangle.Y < 0)
+                //{
+                //    boundingRectangle.Y = 0;
+                //}
 
                 fluorCells.Add(new CellColony(cellArea, centroid, boundingRectangle, 0));
             }
 
-            int minimumArea = 5;
+            int minimumArea = 20;
             int maxArea = 1000;
             //Remove small and large areas
             for (int i = fluorCells.Count - 1; i >= 0; i--)
             {
+                //Console.WriteLine("Area: " + fluorCells[i].Area);
                 if (fluorCells[i].Area < minimumArea || fluorCells[i].Area > maxArea)
                 {
                     fluorCells.RemoveAt(i);
@@ -2380,7 +2366,7 @@ namespace Gelation_Cloning_Control
             Console.WriteLine("Number of cells after small/large area removal: " + fluorCells.Count());
 
             //Draw contours on image to visualize
-            Gray centroidColor = new Gray(128);
+            Gray centroidColor = new Gray(150);
             Image<Gray, Byte> imageSmallAreasRemoved = image.Add(imageThreshold);
             foreach (CellColony cell in fluorCells)
             {
@@ -2391,7 +2377,7 @@ namespace Gelation_Cloning_Control
                 double targetYStage = Math.Round(double.Parse(textBoxYPosition.Text) - ((cell.Centroid.Y - (double)image.Height / 2) * Constants.pixelsToStage4X));
                 detectedCells.Add(new PointF((int)targetXStage, (int)targetYStage));
                 Console.WriteLine("X: " + cell.Centroid.X + " Y: " + cell.Centroid.Y);
-                //imageSmallAreasRemoved.Draw(cell.BoundingBox, centroidColor, 1);
+                imageSmallAreasRemoved.Draw(cell.BoundingBox, centroidColor, 1);
             }
 
             if (showImage == true)
@@ -2400,7 +2386,7 @@ namespace Gelation_Cloning_Control
             }
 
             image.Dispose();
-            bitmap.Dispose();
+            //bitmap.Dispose();
 
             return detectedCells;
         }
