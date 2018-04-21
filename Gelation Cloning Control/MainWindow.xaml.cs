@@ -2182,22 +2182,43 @@ namespace Gelation_Cloning_Control
 
             targetCells = targetCells.OrderByDescending(x => x.X).ThenByDescending(y => y.Y).ToList();
 
-            foreach (PointF targetCell in targetCells)
+            //foreach (PointF targetCell in targetCells)
+            //{
+
+            //    int targetX = (int)targetCell.X;
+            //    int targetY = (int)targetCell.Y;
+
+            //    //No need to add offset because when it goes from the listbox -> stage the offset is added there
+
+            //    ListBoxItem targetPoint = new ListBoxItem();
+            //    targetPoint.Content = targetX + "," + targetY;
+            //    listBoxLaserScanPoints.Items.Add(targetPoint);
+            //}
+
+            //Add converted target cells to list box. Do not add if there is a spot within a 100*0.04 = 4um box
+            for (int i = 0; i < targetCells.Count(); i++)
             {
-                //convert from pixel location to micrometers
-                //double targetX = targetCell.X / 0.04;
-                //double targetY = targetCell.Y / 0.04;
-                int targetX = (int)targetCell.X;
-                int targetY = (int)targetCell.Y;
+                int targetX = (int)targetCells[i].X;
+                int targetY = (int)targetCells[i].Y;
 
-                //No need to add offset because when it goes from the listbox -> stage the offset is added there
-                //targetX = targetX + offsetX;
-                //targetY = targetY + offsetY;
+                if (i > 0)
+                {
+                    int targetXLast = (int)targetCells[i - 1].X;
+                    int targetYLast = (int)targetCells[i - 1].Y;
 
-                //Add converted target cells to list box
-                ListBoxItem targetPoint = new ListBoxItem();
-                targetPoint.Content = targetX + "," + targetY;
-                listBoxLaserScanPoints.Items.Add(targetPoint);
+                    if (Math.Abs(targetX - targetXLast) > 100 || Math.Abs(targetY - targetYLast) > 100)
+                    {
+                        ListBoxItem targetPoint = new ListBoxItem();
+                        targetPoint.Content = targetX + "," + targetY;
+                        listBoxLaserScanPoints.Items.Add(targetPoint);
+                    }
+                }
+                else
+                {
+                    ListBoxItem targetPoint = new ListBoxItem();
+                    targetPoint.Content = targetX + "," + targetY;
+                    listBoxLaserScanPoints.Items.Add(targetPoint);
+                }
             }
                     
              
@@ -2215,8 +2236,8 @@ namespace Gelation_Cloning_Control
         {
             int exposureTime;
             //default is 20us for the basler camera. The true time is exposure time * exposure time base. I think this camera is set to be absolute time in microseconds though.
-            //Think this parameter should be 4 but to be safe lets make it 10 for a longer delay between pictures
-            int exposureTimeBase = 10;
+            //Think this parameter should be 4 but to be safe lets make it 8 for a longer delay between pictures
+            int exposureTimeBase = 8;
             int delayTime;
             if (Int32.TryParse(textBoxExposure.Text, out exposureTime))
             {
@@ -2242,7 +2263,7 @@ namespace Gelation_Cloning_Control
                 {
                     //Add detected cells to global list
                     await Task.Delay(delayTime);
-                    targetCells.AddRange(detectFluorCellsThreshold((Bitmap)(windowsFormsHost.Child as System.Windows.Forms.PictureBox).Image));
+                    targetCells.AddRange(detectFluorCellsThreshold((Bitmap)(windowsFormsHost.Child as System.Windows.Forms.PictureBox).Image, false));
 
                     if (column < xFields - 1)
                     {
@@ -2256,9 +2277,16 @@ namespace Gelation_Cloning_Control
                 }
             }
 
+            //return to origin location. If yFields is even then there is no need to move in x direction
+            await Task.Delay(delayTime);
+            if (yFields % 2 == 0)
+                serialPortMicroscopeStageSend("GR,0," + (-moveStageY * (yFields - 1)).ToString());
+            else
+                serialPortMicroscopeStageSend("GR," + (-moveStageX * (xFields - 1)).ToString() + "," + (-moveStageY * (yFields - 1)).ToString());
         }
 
-        private List<PointF> detectFluorCellsThreshold(Bitmap bitmap)
+        //Detect fluorescent cells using thresholding. Returns a list of each cell's (X,Y) location
+        private List<PointF> detectFluorCellsThreshold(Bitmap bitmap, bool showImage)
         {
             List<PointF> detectedCells = new List<PointF>();
 
@@ -2366,7 +2394,10 @@ namespace Gelation_Cloning_Control
                 //imageSmallAreasRemoved.Draw(cell.BoundingBox, centroidColor, 1);
             }
 
-            ImageViewer.Show(imageSmallAreasRemoved, "Centroid drawn and overlaid on original image");
+            if (showImage == true)
+            {
+                ImageViewer.Show(imageSmallAreasRemoved, "Centroid drawn and overlaid on original image");
+            }
 
             image.Dispose();
             bitmap.Dispose();
@@ -2374,8 +2405,10 @@ namespace Gelation_Cloning_Control
             return detectedCells;
         }
 
-
-
+        private void btnTestThreshold_Click(object sender, RoutedEventArgs e)
+        {
+            detectFluorCellsThreshold((Bitmap)(windowsFormsHost.Child as System.Windows.Forms.PictureBox).Image, true);
+        }
         #endregion
 
         #region Serial Event Handlers
@@ -2556,6 +2589,7 @@ namespace Gelation_Cloning_Control
 
             return stageConversion;
         }
+
 
 
 

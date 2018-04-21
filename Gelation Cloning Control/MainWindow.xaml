@@ -342,6 +342,7 @@
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
@@ -365,8 +366,10 @@
                     <TextBlock x:Name="textBlockFluorThreshold" Text="Fluor Threshold (1-255)" FontSize="20" FontWeight="Bold" FontStyle="Italic" VerticalAlignment="Center" TextWrapping="wrap" Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="2"/>
                     <TextBox x:Name="textBoxFluorThreshold"  VerticalAlignment="Center" FontSize="20" HorizontalAlignment="Stretch" TextWrapping="Wrap" Text="128" Grid.Row="7" Grid.Column="2"/>
                     <Button x:Name="btnDetectCellsFluor" Content="Detect Cells Fluor" FontSize="20" FontWeight="Bold" Click="btnDetectCellsFluor_Click" Grid.Row="8" Grid.ColumnSpan="3"/>
-                    <Button x:Name="btnGenerateTarget" Content="Generate Target Points" FontSize="20" FontWeight="Bold"  IsEnabled="False" Click="btnGenerateTarget_Click" Grid.Row="9" Grid.ColumnSpan="3"/>
-                    <Button x:Name="btnScanAndGenerate" Content="Scan and Generate Points" FontSize="20" FontWeight="Bold"  IsEnabled="True" Click="btnScanAndGenerate_Click" Grid.Row="10" Grid.ColumnSpan="3"/>
+                    
+                    <Button x:Name="btnScanAndGenerate" Content="Scan and Generate Points" FontSize="20" FontWeight="Bold"  IsEnabled="True" Click="btnScanAndGenerate_Click" Grid.Row="9" Grid.ColumnSpan="3"/>
+                    <Button x:Name="btnTestThreshold" Content="Test Threshold" FontSize="20" FontWeight="Bold"  IsEnabled="True" Click="btnTestThreshold_Click"  Grid.Row="10" Grid.ColumnSpan="3"/>
+                    <Button x:Name="btnGenerateTarget" Content="Generate Target Points" FontSize="20" FontWeight="Bold"  IsEnabled="False" Click="btnGenerateTarget_Click" Grid.Row="11" Grid.ColumnSpan="3"/>
                 </Grid>
             </TabItem>
         </TabControl>
