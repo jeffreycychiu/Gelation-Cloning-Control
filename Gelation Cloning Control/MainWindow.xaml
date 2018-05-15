@@ -10,8 +10,9 @@
         WindowState="Maximized"
         WindowStyle="None"
         Closing="MetroWindow_Closing"
-        Icon="Logo_crop.ico"
+        
         Title="Gelation Control" Height="1045.5" Width="1200">
+        <!--Icon="Logo_crop.ico"-->
     <Controls:MetroWindow.Style>
         <Style TargetType="{x:Type Controls:MetroWindow}">
             <Setter Property="FontFamily" Value="Veranda" />
@@ -215,7 +216,7 @@
                             <Button x:Name="btnImageJFilePath" Content="ImageJ Path" FontSize="20" FontWeight="Bold" Grid.Row="5" Grid.Column="2" />
                             <Button x:Name="btnScan" Content="Scan" FontSize="20" FontWeight="Bold" Click="btnScan_Click" Grid.Row="6" Grid.ColumnSpan="3"/>
                             <Button x:Name="btnLoadStitchedImage" Content="Load Stitched Image" FontSize="20" FontWeight="Bold" Click="btnLoadStitchedImage_Click" Grid.Row="7" Grid.ColumnSpan="3"/>
-                            <Button x:Name="btnPatternUBC" Content="Pattern UBC" FontSize="20" FontWeight="Bold" Click="btnPatternUBC_Click" Grid.Row="8" Grid.ColumnSpan="3"/>
+                            <!--<Button x:Name="btnPatternUBC" Content="Pattern UBC" FontSize="20" FontWeight="Bold" Click="btnPatternUBC_Click" Grid.Row="8" Grid.ColumnSpan="3"/>-->
 
                         </Grid>
                     </Border>
@@ -226,29 +227,46 @@
 
             <TabItem Header="Serial">
                 <Grid>
-                    <TextBlock x:Name="textBlockSerialRecievedLaser" Text="Serial Recieved Laser" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top"/>
-                    <TextBlock x:Name="textBlockSerialSentLaser" Text="Serial Sent Laser" HorizontalAlignment="Left" Margin="10,205,0,0" TextWrapping="Wrap" VerticalAlignment="Top"/>
-                    <TextBlock x:Name="textBlockSerialSendSingleCommand" Text="Serial Send Command Laser" HorizontalAlignment="Left" Margin="10,155,0,0" TextWrapping="Wrap" VerticalAlignment="Top"/>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="4*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="4*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="4*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="4*"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock x:Name="textBlockSerialRecievedLaser" Text="Serial Recieved Laser" FontSize="18" FontWeight="Bold" VerticalAlignment="Center" Grid.Row="0" Grid.ColumnSpan="2"/>
+                    <ListBox x:Name="listBoxSerialRecievedLaser" x:FieldModifier="public" FontSize="10" Grid.Row="1" Grid.ColumnSpan="2"  BorderThickness="2"/>
+                    <TextBlock x:Name="textBlockSerialSendSingleCommand" Text="Serial Send Command Laser" FontSize="18" FontWeight="Bold" VerticalAlignment="Center" Grid.Row="2" Grid.ColumnSpan="2"/>
+                    <TextBox x:Name="textBoxSerialSendCommandLaser" IsEnabled="False"  Grid.Row="3"/>
+                    <Button x:Name="btnSerialSendCommandLaser" Content="Send" Click="btnSerialSendCommandLaser_Click" FontSize="18" FontWeight="Bold" IsEnabled="False" Grid.Row="3" Grid.Column="1" Controls:ButtonHelper.PreserveTextCase="true" Style="{DynamicResource SquareButtonStyle}" />
 
-                    <TextBlock x:Name="textBlockSerialRecievedStage" Text="Serial Recieved Stage" HorizontalAlignment="Left" Margin="10,349,0,0" TextWrapping="Wrap" VerticalAlignment="Top"/>
-                    <TextBlock x:Name="textBlockSerialSentStage" Text="Serial Sent Stage" HorizontalAlignment="Left" Margin="10,543,0,0" TextWrapping="Wrap" VerticalAlignment="Top"/>
-                    <TextBlock x:Name="textBlockSerialSendSingleStage" Text="Serial Send Command Stage" HorizontalAlignment="Left" Margin="10,493,0,0" TextWrapping="Wrap" VerticalAlignment="Top"/>
+                    <TextBlock x:Name="textBlockSerialSentLaser" Text="Serial Sent Laser" FontSize="18" FontWeight="Bold" Grid.Row="4" Grid.ColumnSpan="2" VerticalAlignment="Center"/>
+                    <ListBox x:Name="listBoxSerialSentLaser" BorderThickness="2" Grid.Row="5" Grid.ColumnSpan="2"/>
 
-                    <ListBox x:Name="listBoxSerialRecievedLaser" x:FieldModifier="public" FontSize="10" HorizontalAlignment="Left" Height="120" Margin="10,30,0,0" VerticalAlignment="Top" Width="200" BorderThickness="2"/>
-                    <ListBox x:Name="listBoxSerialRecievedMicroscopeStage" x:FieldModifier="public" FontSize="10" HorizontalAlignment="Left" Height="120" Margin="10,368,0,0" VerticalAlignment="Top" Width="200" BorderThickness="2"/>
-                    <ListBox x:Name="listBoxSerialSentLaser" HorizontalAlignment="Left" Height ="120" Margin="10,224,0,0" VerticalAlignment="Top" Width="200" BorderThickness="2"/>
-                    <TextBox x:Name="textBoxSerialSendCommandLaser" IsEnabled="False" HorizontalAlignment="Left" Height="25" Margin="10,174,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="148"/>
-                    <TextBox x:Name="textBoxSerialSendCommandMicroscopeStage" IsEnabled="True" HorizontalAlignment="Left" Height="25" Margin="10,512,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="148"/>
-                    <ListBox x:Name="listBoxSerialSentMicroscopeStage" HorizontalAlignment="Left" Height ="120" Margin="10,562,0,0" VerticalAlignment="Top" Width="200" BorderThickness="2"/>
+                    <TextBlock x:Name="textBlockSerialRecievedStage" Text="Serial Recieved Stage" FontSize="18" FontWeight="Bold" VerticalAlignment="Center" Grid.Row="6"/>
+                    <ListBox x:Name="listBoxSerialRecievedMicroscopeStage" x:FieldModifier="public" BorderThickness="2" Grid.Row="7" Grid.ColumnSpan="2"/>
 
-                    <Button x:Name="btnSerialSendCommandLaser" Content="Send" Click="btnSerialSendCommandLaser_Click"  IsEnabled="False" HorizontalAlignment="Left" Padding="0" Margin="167,175,0,0" 
-                        VerticalAlignment="Top" Width="43" Height="25" Controls:ButtonHelper.PreserveTextCase="true" Style="{DynamicResource SquareButtonStyle}" />
-                    <Button x:Name="btnSerialSendCommandMicroscopeStage" Content="Send" Click="btnSerialSendCommandMicroscopeStage_Click"  IsEnabled="True" HorizontalAlignment="Left" Padding="0" Margin="167,513,0,0" 
-                        VerticalAlignment="Top" Width="43" Height="25" Controls:ButtonHelper.PreserveTextCase="true" Style="{DynamicResource SquareButtonStyle}" />
-                    <CheckBox x:Name="checkBoxQueryStagePosition" Content="Query Stage Position" HorizontalAlignment="Left" Margin="10,687,0,0" IsChecked="true" VerticalAlignment="Top"/>
+                    <TextBlock x:Name="textBlockSerialSendSingleStage" Text="Serial Send Command Stage" FontSize="18" FontWeight="Bold" Grid.ColumnSpan="2" VerticalAlignment="Center" Grid.Row="8"/>
+                    <TextBox x:Name="textBoxSerialSendCommandMicroscopeStage" IsEnabled="True" Grid.Row="9"/>
+                    <Button x:Name="btnSerialSendCommandMicroscopeStage" Content="Send" FontSize="18" FontWeight="Bold" Click="btnSerialSendCommandMicroscopeStage_Click"  IsEnabled="True"
+                        Controls:ButtonHelper.PreserveTextCase="true" Style="{DynamicResource SquareButtonStyle}" Grid.Row="9" Grid.Column="2" />
 
+                    <TextBlock x:Name="textBlockSerialSentStage" Text="Serial Sent Stage" FontSize="18" FontWeight="Bold" TextWrapping="Wrap" Grid.ColumnSpan="2" VerticalAlignment="Center" Grid.Row="10"/>
+                    <ListBox x:Name="listBoxSerialSentMicroscopeStage" BorderThickness="2" Grid.Row="11" Grid.ColumnSpan="2"/>
 
-
+                    <CheckBox x:Name="checkBoxQueryStagePosition" Content="Query Stage Position" FontSize="18" FontWeight="Bold" Grid.ColumnSpan="2" IsChecked="true" VerticalAlignment="Center" Grid.Row="12"/>
                 </Grid>
             </TabItem>
 
