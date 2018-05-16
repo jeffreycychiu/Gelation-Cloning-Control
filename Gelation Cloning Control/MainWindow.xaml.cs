@@ -1762,17 +1762,19 @@ namespace Gelation_Cloning_Control
 
                 Image<Gray, Byte> imageOverlayContoursSmallAreasRemoved = imageBF;
 
-                //Draw the centroid and bounding box on picture
+                //Draw centroid and bounding box on picture in colour
+                Image<Bgr, Byte> imageOverlayContoursSmallAreasRemovedColour = imageBF.Convert<Bgr, Byte>();
+                Bgr red = new Bgr(0, 0, 255);
                 for (int i = 0; i < areasList.Count; i++)
                 {
                     CircleF centroid = new CircleF(centroidPointsList[i], 2);
-                    imageOverlayContoursSmallAreasRemoved.Draw(centroid, centroidColor, 1);
-                    imageOverlayContoursSmallAreasRemoved.Draw(boundingBoxList[i], centroidColor, 1);
+                    imageOverlayContoursSmallAreasRemovedColour.Draw(centroid, red, 2);
+                    imageOverlayContoursSmallAreasRemovedColour.Draw(boundingBoxList[i], red, 1);
                     Console.WriteLine("areas after removed: " + areasList[i].ToString());
                 }
 
+                ImageViewer.Show(imageOverlayContoursSmallAreasRemovedColour, "small areas removed Contour drawn and overlaid on original image");
 
-                ImageViewer.Show(imageOverlayContoursSmallAreasRemoved, "small areas removed Contour drawn and overlaid on original image");
 
                 //imageOverlayContoursSmallAreasRemoved.Save("C:\\Users\\MDL\\Desktop\\Saved Images\\imageOverlayContoursSmallAreaRemoved.bmp");
 
