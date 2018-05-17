@@ -1747,7 +1747,7 @@ namespace Gelation_Cloning_Control
 
                 //Remove small and large areas. Small areas are areas smaller than one cell. Large areas gets rid of the execcisvley big things incorrectly detected as contours
                 int minimumArea = 75;
-                int maxArea = 5000;
+                int maxArea = 2000;
                 System.Drawing.Point[][] contourArray = contours.ToArrayOfArray();
 
                 for (int i = areasList.Count - 1; i >= 0; i--)
@@ -1807,7 +1807,7 @@ namespace Gelation_Cloning_Control
 
                 //morphological open and close to get rid of noise
                 Mat se1 = Emgu.CV.CvInvoke.GetStructuringElement(Emgu.CV.CvEnum.ElementShape.Rectangle, new System.Drawing.Size(3, 3), new System.Drawing.Point(-1, 1));
-                Mat se2 = Emgu.CV.CvInvoke.GetStructuringElement(Emgu.CV.CvEnum.ElementShape.Rectangle, new System.Drawing.Size(7, 7), new System.Drawing.Point(-1, 1));
+                Mat se2 = Emgu.CV.CvInvoke.GetStructuringElement(Emgu.CV.CvEnum.ElementShape.Rectangle, new System.Drawing.Size(3, 3), new System.Drawing.Point(-1, 1));
 
                 //ImageViewer.Show(imageAdaptiveThreshold, "Thresholded EGFP image");
 
@@ -1816,18 +1816,27 @@ namespace Gelation_Cloning_Control
                 Emgu.CV.CvInvoke.MorphologyEx(mask, mask, Emgu.CV.CvEnum.MorphOp.Close, se2, new System.Drawing.Point(-1, 1), 1, Emgu.CV.CvEnum.BorderType.Default, new MCvScalar(1));
 
                 Image<Gray, Byte> maskImage = mask.ToImage<Gray, Byte>();
-                //ImageViewer.Show(maskImage, "Mask Image");
+                Mat blankChannel = new Mat(maskImage.Size, Emgu.CV.CvEnum.DepthType.Cv8U, 1);
+                Mat maskImageColourMat = new Mat();
+                Emgu.CV.CvInvoke.Merge(new VectorOfMat(blankChannel, maskImage.Mat, blankChannel), maskImageColourMat);
+                Image<Bgr, Byte> maskImageColour = maskImageColourMat.ToImage<Bgr, Byte>();
+                
+                
+                ImageViewer.Show(maskImageColour, "Mask Image");
                 //Image<Gray, Byte> morphologyImage = imageEGFP.Mul(maskImage);
                 //ImageViewer.Show(morphologyImage, "Image after noise filtering mask using morphology operations");
 
                 //Overlay mask with BF image
                 Image<Gray, Byte> imageBF = stitchedImageBF.ToImage<Gray, Byte>();
                 Image<Gray, Byte> imageOverlayMask = imageBF.Add(maskImage);
-                //ImageViewer.Show(imageOverlayMask, "mask added to BF image");
-
+                Image<Bgr, Byte> imageOverlayMaskColour = imageOverlayMask.Convert<Bgr, Byte>();
+                //imageOverlayMaskColour = imageOverlayMaskColour.Add(maskImageColour);
+                //ImageViewer.Show(imageOverlayMaskColour, "mask added to BF image");
+           
                 //Create new sub images for each section as defined in ROI using brightfield detection. Count the number of white pixels (255) in each image
                 Image<Gray, Byte>[] colonySecretionEGFP = new Image<Gray, Byte>[centroidPointsList.Count()];
                 Gray boundingBoxColor = new Gray(0);
+                Bgr red = new Bgr(0, 0, 255);
                 int minNumPixelsEGFP = 300;
                 for (int i = 0; i < centroidPointsList.Count(); i++)
                 {
@@ -1837,13 +1846,12 @@ namespace Gelation_Cloning_Control
                     if (numPixelsEGFP < minNumPixelsEGFP)
                     {
                         //Remove ones with 0? not sure if neccesary. I can just sort maybe
-                        
                     }
 
                     //Draw bounding box and centroid
                     CircleF centroid = new CircleF(centroidPointsList[i], 2);
-                    imageOverlayMask.Draw(centroid, boundingBoxColor, 1);
-                    imageOverlayMask.Draw(boundingBoxList[i], boundingBoxColor, 1);
+                    imageOverlayMaskColour.Draw(centroid, red, 3);
+                    imageOverlayMaskColour.Draw(boundingBoxList[i], red, 3);
 
                     //Calculate Num EGFP pixels / cell area (cell area defined as bounding box size). If the use bounding box checkbox is not selected, default bounding box size = 1
                     if (checkBoxUseBoundingBox.IsChecked == true)
@@ -1856,7 +1864,7 @@ namespace Gelation_Cloning_Control
                     }
                     
                 }
-                ImageViewer.Show(imageOverlayMask, "EGFP pixels + bounding Box");
+                ImageViewer.Show(imageOverlayMaskColour, "EGFP pixels + bounding Box");
 
 
                 //double percentageKept = double.Parse(textBoxPercentageKept.Text) / 100;
@@ -1875,14 +1883,15 @@ namespace Gelation_Cloning_Control
 
                 //Sort all lists based on numFluorPixels
                 Image<Gray, Byte> imageColoniesKept = imageBF.Add(maskImage);
+                Image<Bgr, Byte> imageColoniesKeptColour = imageColoniesKept.Convert<Bgr, Byte>();
                 var cellColoniesSorted = cellColonies.OrderByDescending(x=>x.NumFluorPixels).ToList();
                 for (int i = 0; i < numColoniesKept; i++)
                 {
-                    imageColoniesKept.Draw(new CircleF(cellColoniesSorted[i].Centroid,2), boundingBoxColor, 2);
-                    imageColoniesKept.Draw(cellColoniesSorted[i].BoundingBox, boundingBoxColor, 1);
+                    imageColoniesKeptColour.Draw(new CircleF(cellColoniesSorted[i].Centroid,2), red, 3);
+                    imageColoniesKeptColour.Draw(cellColoniesSorted[i].BoundingBox, red, 3);
                 }
 
-                ImageViewer.Show(imageColoniesKept, "Colonies kept");
+                ImageViewer.Show(imageColoniesKeptColour, "Colonies kept");
 
                 //imageOverlayMask.Save("C:\\Users\\MDL\\Desktop\\Saved Images\\OverlayEGFPMaskAndBF.bmp");
                 //imageColoniesKept.Save("C:\\Users\\MDL\\Desktop\\Saved Images\\imageColoniesKept.bmp");
