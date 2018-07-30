@@ -1,7 +1,7 @@
 # Gelation-Cloning-Control
 This program allows for manual and automated control of a laser-microscope system integrated with a Laser and Camera system. Written for cell experiments using lasers
 
-![alt text](https://github.com/jeffreycychiu/Gelation-Cloning-Control/blob/master/Main%20Control%20resized.png)
+![Main Screen Picture](https://github.com/jeffreycychiu/Gelation-Cloning-Control/blob/master/Main%20Control%20resized.png)
 
 ## Capabilities
 - Manual control of laser and stage
